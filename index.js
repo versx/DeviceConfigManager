@@ -8,17 +8,16 @@ const config = require('./config.json');
 const query = require('./db.js');
 
 // TODO: Create routes class
-// TODO: Create Config and Device models
+// TODO: Create Config and Device model classes
+// TODO: Error checking/handling
+// TODO: Sql cascading
+// TODO: Cleanup mysql connections after use
 
 // Middleware
 app.set('view engine', 'mustache');
 app.set('views', './views');
 app.engine("mustache", mustacheExpress());
-//app.use(express.json());       // to support JSON-encoded bodies
-//app.use(express.urlencoded()); // to support URL-encoded bodies
-//app.use(bodyParser.raw({ type: 'application/x-www-form-urlencoded' }));
 app.use(bodyParser.urlencoded({ extended: true, limit: '50mb' })); // for parsing application/x-www-form-urlencoded
-//app.use(bodyParser.json({ limit: '50mb' }));
 
 
 // UI Routes
@@ -26,12 +25,16 @@ app.get(['/', '/index'], function(req, res) {
     res.render('index', { title: config.title });
 });
 
-app.get('/configs', function(req, res) {
-    res.render('configs', { title: config.title });
-});
-
 app.get('/devices', function(req, res) {
     res.render('devices', { title: config.title });
+});
+
+app.get('/device/new', async function(req, res) {
+    res.render('device-new', { title: config.title });
+});
+
+app.get('/configs', function(req, res) {
+    res.render('configs', { title: config.title });
 });
 
 app.get('/config/assign/:uuid', async function(req, res) {
@@ -59,6 +62,7 @@ app.get('/config/edit/:name', async function(req, res) {
 	c.name = name;
 	var data = {
 		title: config.title,
+		old_name: name,
 		name: name,
 		backend_url: c.backend_url,
 		port: c.port,
@@ -108,6 +112,17 @@ app.get('/api/devices', async function(req, res) {
 	}
 });
 
+app.post('/api/device/new', async function(req, res) {
+	var sql = "INSERT INTO device (`uuid`, `config`) VALUES (?, ?)";
+	var args = [req.body.uuid, req.body.config || null];
+	var result = query(sql, args);
+	if (result.affectedRows === 1) {
+		// Success
+	}
+	console.log("New device result:", result);
+	res.redirect('/devices');
+});
+
 app.get('/api/configs', async function(req, res) {
 	try {
 		var configs = await query("SELECT * FROM config");
@@ -124,23 +139,17 @@ app.get('/api/configs', async function(req, res) {
 
 app.get('/api/config/:uuid', async function(req, res) {
     var uuid = req.params.uuid;
-	var sql = "SELECT * FROM device WHERE uuid = ?";
+	var sql = "SELECT uuid FROM device WHERE uuid = ?";
 	var args = [uuid];
 	var device = await query(sql, args);
-	if (!device) {
-		// Device doesn't exist, create db entry
-		await query("INSERT INTO device (`uuid`) VALUES (?)", args);
-		var data = {
-			status: "error",
-			error: "Device not assigned to config!"
-		}
-		var json = JSON.stringify(data);
-		res.send(json);
-	} else {
+	if (device) {
 		// Check if device config is empty, if not provide it as json response
 		if (device.config) {
-			var config = await query("SELECT * FROM config WHERE name = ? LIMIT 1", [device.config]);
+			sql = "SELECT * FROM config WHERE name = ? LIMIT 1";
+			args = [device.config];
+			var config = await query(sql, args);
 			var json = JSON.stringify(config[0]);
+			// TODO: Construct json config
 			res.send(json);
 		} else {
 			var data = {
@@ -150,6 +159,20 @@ app.get('/api/config/:uuid', async function(req, res) {
 			var json = JSON.stringify(data);
 			res.send(json);
 		}
+	} else {
+		// Device doesn't exist, create db entry
+		sql = "INSERT INTO device (`uuid`, `config`) VALUES (?, ?)";
+	    args = [uuid, null];
+		var result = await query(sql, args);
+		if (result.affectedRows === 1) {
+			// Success
+		}
+		var data = {
+			status: "error",
+			error: "Device not assigned to config!"
+		}
+		var json = JSON.stringify(data);
+		res.send(json);
 	}
 });
 
@@ -181,16 +204,19 @@ app.post('/api/config/new', async function(req, res) {
 		}
 	}
 	var result = await query(sql, args);
-	console.log("New config result:", result);
-	if (err) throw err;
-	console.log("Config inserted");
+	if (result.affectedRows === 1) {
+	    console.log("Config inserted");
+	} else {
+		console.error("Failed to create new config");
+	}
 	res.redirect('/configs');
 });
 
 app.post('/api/config/edit/:name', async function(req, res) {
 	var oldName = req.params.name;
-	var sql = "UPDATE device SET name=?, backend_url=?, port=?, heartbeat_max_time=?, pokemon_max_time=?, raid_max_time=?, startup_lat=?, startup_lon=?, token=?, jitter_value=?, max_warning_time_raid=?, encounter_delay=?, min_delay_logout=?, max_empty_gmo=?, max_failed_count=?, max_no_quests_count=?, logging_url=?, logging_port=?, logging_tls=?, logging_tcp=?, account_manager=?, deploy_eggs=?, nearby_tracker=?, auto_login=?, ultra_iv=?, ultra_quests=? WHERE name=?";
+	var sql = "UPDATE config SET name=?, backend_url=?, port=?, heartbeat_max_time=?, pokemon_max_time=?, raid_max_time=?, startup_lat=?, startup_lon=?, token=?, jitter_value=?, max_warning_time_raid=?, encounter_delay=?, min_delay_logout=?, max_empty_gmo=?, max_failed_count=?, max_no_quests_count=?, logging_url=?, logging_port=?, logging_tls=?, logging_tcp=?, account_manager=?, deploy_eggs=?, nearby_tracker=?, auto_login=?, ultra_iv=?, ultra_quests=? WHERE name=?";
 	var args = [
+		req.body.name,
 		req.body.backend_url,
 		req.body.port,
 		req.body.heartbeat_max_time,
@@ -208,17 +234,21 @@ app.post('/api/config/edit/:name', async function(req, res) {
 		req.body.max_no_quests_count,
 		req.body.logging_url,
 		req.body.logging_port,
-		req.body.logging_tls,
-		req.body.logging_tcp,
-		req.body.account_manager,
-		req.body.deploy_eggs,
-		req.body.nearby_tracker,
-		req.body.auto_login,
-		req.body.ultra_iv,
-		req.body.ultra_quests,
+		req.body.logging_tls === "on" ? 1 : 0,
+		req.body.logging_tcp === "on" ? 1 : 0,
+		req.body.account_manager === "on" ? 1 : 0,
+		req.body.deploy_eggs === "on" ? 1 : 0,
+		req.body.nearby_tracker === "on" ? 1 : 0,
+		req.body.auto_login === "on" ? 1 : 0,
+		req.body.ultra_iv === "on" ? 1 : 0,
+		req.body.ultra_quests === "on" ? 1 : 0,
 		oldName
 	];
+	console.log("Old name:", oldName);
 	var result = await query(sql, args);
+	if (result.affectedRows === 1) {
+		// Success
+	}
 	console.log("Edit config result:", result);
     res.redirect('/configs');
 });

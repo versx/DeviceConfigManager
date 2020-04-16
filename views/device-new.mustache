@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+    {{> header}}
+    <body>
+        {{> navbar}}
+        <br>
+        <h1 align="center">New Device</h1>
+        <br>
+        <div class="w-75" style="float: none; margin: 0 auto;">
+            <form action="/api/device/new" method="post">
+                <div class="form-group">
+                    UUID
+                    <input type="text" class="form-control" name="uuid" value="" placeholder="iPhone1" required>
+                </div>
+                <div class="form-group">
+                    Select Device Config
+                    <select class="form-control" name="config">
+                        <option value="" selected disabled hidden>Choose a Config</option>
+                        {{#configs}}
+                            <option value="{{name}}">{{name}}</option>
+                        {{/configs}}
+                    </select>
+                </div>
+                <br>
+                <button type="submit" class="btn btn-primary">Create</button>
+                <br>
+            </form>
+        </div>
+    </body>
+</html>

@@ -3,10 +3,10 @@
     <body>
         {{> navbar}}
         <br>
-        <h1 align="center">Edit Device Config {{name}}</h1>
+        <h1 align="center">Edit Device Config {{old_name}}</h1>
         <br>
         <div class="w-75" style="float: none; margin: 0 auto;">
-            <form action="/api/config/edit" method="post">
+            <form action="/api/config/edit/{{old_name}}" method="post">
                 <div class="form-group">
                     Name
                     <input type="text" class="form-control" name="name" value="{{name}}" placeholder="Main Config" required>
@@ -45,7 +45,7 @@
                 </div>
                 <div class="form-group">
                     Jitter Value
-                    <input type="number" class="form-control" name="jitter_value" value="{{jitter_value}}" step=1 min="0.0000009" max="10" required>
+                    <input type="number" class="form-control" name="jitter_value" value="{{jitter_value}}" step=1 min="0.00005" max="10" required>
                 </div>
                 <div class="form-group">
                     Max Warning Time Raid
@@ -70,7 +70,7 @@
                 </div>
                 <div class="form-group">
                     Maximum No Quests Count
-                    <input type="number" class="form-control" name="max_no_quests_count" value="{{max_no_quests_count" step=1 min="0" max="999" required>
+                    <input type="number" class="form-control" name="max_no_quests_count" value="{{max_no_quests_count}}" step=1 min="0" max="999" required>
                 </div>
 
                 <div class="form-group">
