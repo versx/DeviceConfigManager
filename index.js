@@ -45,6 +45,11 @@ app.get('/device/new', async function(req, res) {
     res.render('device-new', defaultData);
 });
 
+app.get('/device/delete/:uuid', async function(req, res) {
+	defaultData.uuid = req.params.uuid;
+	res.render('device-delete', defaultData);
+});
+
 app.get('/configs', function(req, res) {
     res.render('configs', defaultData);
 });
@@ -120,7 +125,8 @@ app.get('/api/devices', async function(req, res) {
     try {
         var devices = await query("SELECT * FROM device");
         devices.forEach(function(device) {
-            device.buttons = "<a href='/config/assign/" + device.uuid + "'><button type='button' class='btn btn-primary'>Assign Config</button></a>";
+			device.buttons = "<a href='/config/assign/" + device.uuid + "'><button type='button' class='btn btn-primary'>Assign</button></a> \
+                              <a href='/device/delete/" + device.uuid + "'><button type='button' class='btn btn-danger'>Delete</button></a>";
         });
         var json = JSON.stringify({ data: { devices: devices } });
         res.send(json);
@@ -138,6 +144,17 @@ app.post('/api/device/new', async function(req, res) {
     }
     console.log("New device result:", result);
     res.redirect('/devices');
+});
+
+app.post('/api/device/delete/:uuid', async function(req, res) {
+	var uuid = req.params.uuid;
+	var sql = "DELETE FROM device WHERE uuid = ?";
+	var args = [uuid];
+	var result = await query(sql, args);
+	if (result.affectedRows === 1) {
+		// Success
+	}
+	res.redirect('/devices');
 });
 
 app.get('/api/configs', async function(req, res) {
