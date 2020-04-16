@@ -6,6 +6,7 @@
         "port": 3306,
         "username": "user123",
         "password": "pass123",
-        "database": "dcm"
+        "database": "dcm",
+        "charset": "utf8"
     }
 }

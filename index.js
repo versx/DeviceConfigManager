@@ -12,29 +12,45 @@ const query = require('./db.js');
 // TODO: Error checking/handling
 // TODO: Sql cascading
 // TODO: Cleanup mysql connections after use
+// TODO: Delete device
+// TODO: Settings page?
+
 
 // Middleware
 app.set('view engine', 'mustache');
 app.set('views', './views');
 app.engine("mustache", mustacheExpress());
 app.use(bodyParser.urlencoded({ extended: true, limit: '50mb' })); // for parsing application/x-www-form-urlencoded
+app.use(express.static('static'))
 
+const defaultData = {
+	title: config.title
+};
 
 // UI Routes
-app.get(['/', '/index'], function(req, res) {
-    res.render('index', { title: config.title });
+app.get(['/', '/index'], async function(req, res) {
+	var devices = await query("SELECT uuid FROM device");
+	var configs = await query("SELECT name FROM config");
+	var data = defaultData;
+	data.devices = devices.length;
+	data.configs = configs.length;
+    res.render('index', data);
 });
 
 app.get('/devices', function(req, res) {
-    res.render('devices', { title: config.title });
+    res.render('devices', defaultData);
 });
 
 app.get('/device/new', async function(req, res) {
-    res.render('device-new', { title: config.title });
+    res.render('device-new', defaultData);
 });
 
 app.get('/configs', function(req, res) {
-    res.render('configs', { title: config.title });
+    res.render('configs', defaultData);
+});
+
+app.get('/logs', function(req, res) {
+	res.render('logs', defaultData);
 });
 
 app.get('/config/assign/:uuid', async function(req, res) {
@@ -49,7 +65,7 @@ app.get('/config/assign/:uuid', async function(req, res) {
 });
 
 app.get('/config/new', function(req, res) {
-    res.render('config-new', { title: config.title });
+    res.render('config-new', defaultData);
 });
 
 app.get('/config/edit/:name', async function(req, res) {
@@ -94,7 +110,8 @@ app.get('/config/edit/:name', async function(req, res) {
 });
 
 app.get('/config/delete/:name', function(req, res) {
-    res.render('config-delete', { title: config.title, name: req.params.name });
+	defaultData.name = req.params.name;
+    res.render('config-delete', defaultData);
 });
 
 
@@ -264,19 +281,5 @@ app.post('/api/config/delete/:name', async function(req, res) {
     res.redirect('/configs');
 });
 
-app.listen(config.port, () => console.log(`Listening on port ${config.port}...`));
 
-/**
- * Device connects, if it isn't in db create it, error out in kevin with device config not assigned message.
- * 
- * Dashboard Page
- * - Device Count?
- * - Config Count?
- * 
- * Device Page
- * - Add device manually
- * - Edit Device (Optional)
- * - Delete Device
- * 
- * Settings Page
- */
+app.listen(config.port, () => console.log(`Listening on port ${config.port}...`));

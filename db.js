@@ -8,6 +8,7 @@ const conn = mysql.createConnection({
     user: config.db.username,
     password: config.db.password,
     database: config.db.database,
+    charset: config.db.charset
     // TODO: Support charset
 });
 
@@ -26,6 +27,8 @@ function query(sql, args) {
         conn.query(sql, args, function (err, rows, fields) {
             // Call reject on error states,
             // call resolve with results
+            // TODO: conn.end(x=> {
+            //})
             if (err) {
                 return reject(err);
             }
