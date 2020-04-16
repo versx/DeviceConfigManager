@@ -29,14 +29,14 @@
 	$(document).ready(function() {
 		const table = $('#table').DataTable( {
 			"ajax": {
-				"url": "http://127.0.0.1:9991/api/get_configs",
+				"url": "/api/configs",
 				"dataSrc": "data.configs"
 			},
 			"paging":   true,
 			"lengthMenu": [[25, 50, 100, -1], [25, 50, 100, "All"]],
 			"columns": [
 				{ "data": "name" },
-				{ "data": "backend" },
+				{ "data": "backend_url" },
 				{ "data": "buttons" }
 			],
 			"info":     true,

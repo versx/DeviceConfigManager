@@ -11,7 +11,6 @@
                 <tr>
                     <th>UUID</th>
                     <th>Config</th>
-                    <th>Host</th>
                     <th width="5%"></th>
                 </tr>
                 </thead>
@@ -27,7 +26,7 @@
 	$(document).ready(function() {
 		const table = $('#table').DataTable( {
 			"ajax": {
-				"url": "http://127.0.0.1:9991/api/get_devices",
+				"url": "/api/devices",
 				"dataSrc": "data.devices"
 			},
 			"paging":   true,
@@ -35,14 +34,13 @@
 			"columns": [
 				{ "data": "uuid" },
                 { "data": "config" },
-				{ "data": "host" },
                 { "data": "buttons" },
 			],
 			"info": true,
 			"order": [[ 0, "asc" ]],
 			"search.caseInsensitive": true,
 			"columnDefs": [ {
-				"targets": [3],
+				"targets": [2],
 				"orderable": false
 			}],
             "responsive": true
@@ -50,7 +48,7 @@
         table.on('draw.dt', function() {
             setTimeout(function () {
                 table.ajax.reload(null, false);
-            }, 5 * 1000);
+            }, 5000);
         });
     });
 </script>

@@ -6,14 +6,14 @@
         <h1 align="center">New Device Config</h1>
         <br>
         <div class="w-75" style="float: none; margin: 0 auto;">
-            <form action="" method="post">
+            <form action="/api/config/new" method="post">
                 <div class="form-group">
                     Name
                     <input type="text" class="form-control" name="name" value="" placeholder="Main Config" required>
                 </div>
                 <div class="form-group">
                     Backend Url
-                    <input type="text" class="form-control" name="name" value="" placeholder="http://10.0.1.100:9001" required>
+                    <input type="text" class="form-control" name="backend_url" value="" placeholder="http://10.0.1.100:9001" required>
                 </div>
                 <div class="form-group">
                     Port
@@ -37,7 +37,7 @@
                 </div>
                 <div class="form-group">
                     Startup Longitude
-                    <input type="number" class="form-control" name="startup_lat" value="0.0" placeholder="0.0" step=1 min="-300" max="300" required>
+                    <input type="number" class="form-control" name="startup_lon" value="0.0" placeholder="0.0" step=1 min="-300" max="300" required>
                 </div>
                 <div class="form-group">
                     Backend Token
@@ -45,7 +45,7 @@
                 </div>
                 <div class="form-group">
                     Jitter Value
-                    <input type="number" class="form-control" name="jitter_value" value="0.00005" step=1 min="0.0000009" max="10" required>
+                    <input type="number" class="form-control" name="jitter_value" value="0.00005" step=1 min="0.00005" max="10.0" required>
                 </div>
                 <div class="form-group">
                     Max Warning Time Raid
@@ -79,7 +79,7 @@
                 </div>
                 <div class="form-group">
                     System Logging Port
-                    <input type="number" class="form-control" name="logging_port" value="89511" step=1 min="0" max="65535" required>
+                    <input type="number" class="form-control" name="logging_port" value="8511" step=1 min="0" max="65535" required>
                 </div>
                 <div class="form-check">
                     <input type="checkbox" class="form-check-input" name="logging_tls" checked>
@@ -116,6 +116,7 @@
                 </div>
                 <br>
                 <button type="submit" class="btn btn-primary">Create</button>
+                <br>
             </form>
         </div>
     </body>
