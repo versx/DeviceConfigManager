@@ -170,41 +170,51 @@ app.get('/api/config/:uuid', async function(req, res) {
     var uuid = req.params.uuid;
     var device = await Device.getByName(uuid);
 	// Check if device config is empty, if not provide it as json response
-	if (device.config) {
-		var sql = "SELECT * FROM config WHERE name = ? LIMIT 1";
-		var args = [device.config];
-		var configs = await query(sql, args);
-		if (configs.length > 0) {
-			var c = configs[0];
-			// Build json config
-			var cfg = buildConfig(
-				c.backend_url,
-				c.port,
-				c.heartbeat_max_time,
-				c.pokemon_max_time,
-				c.raid_max_time,
-				c.startup_lat,
-				c.startup_lon,
-				c.token,
-				c.jitter_value,
-				c.max_warning_time_raid,
-				c.encounter_delay,
-				c.min_delay_logout,
-				c.max_empty_gmo,
-				c.max_failed_count,
-				c.max_no_quests_count,
-				c.logging_url,
-				c.logging_port,
-				c.logging_tls,
-				c.logging_tcp,
-				c.account_manager,
-				c.deploy_eggs,
-				c.nearby_tracker,
-				c.auto_login,
-				c.ultra_iv,
-				c.ultra_quests,
-			);
-			res.send(cfg);
+	if (device) {
+		if (device.config) {
+			var sql = "SELECT * FROM config WHERE name = ? LIMIT 1";
+			var args = [device.config];
+			var configs = await query(sql, args);
+			if (configs.length > 0) {
+				var c = configs[0];
+				// Build json config
+				var cfg = buildConfig(
+					c.backend_url,
+					c.port,
+					c.heartbeat_max_time,
+					c.pokemon_max_time,
+					c.raid_max_time,
+					c.startup_lat,
+					c.startup_lon,
+					c.token,
+					c.jitter_value,
+					c.max_warning_time_raid,
+					c.encounter_delay,
+					c.min_delay_logout,
+					c.max_empty_gmo,
+					c.max_failed_count,
+					c.max_no_quests_count,
+					c.logging_url,
+					c.logging_port,
+					c.logging_tls,
+					c.logging_tcp,
+					c.account_manager,
+					c.deploy_eggs,
+					c.nearby_tracker,
+					c.auto_login,
+					c.ultra_iv,
+					c.ultra_quests,
+				);
+				res.send(cfg);
+			}
+		} else {
+			// Not assigned a config
+			var data = {
+				status: "error",
+				error: "Device not assigned to config!"
+			}
+			var json = JSON.stringify(data);
+			res.send(json);
 		}
     } else {
         // Device doesn't exist, create db entry
