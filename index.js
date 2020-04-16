@@ -12,8 +12,7 @@ const query = require('./db.js');
 // TODO: Error checking/handling
 // TODO: Sql cascading
 // TODO: Cleanup mysql connections after use
-// TODO: Settings page?
-
+// TODO: Security
 
 // Middleware
 app.set('view engine', 'mustache');
@@ -23,7 +22,8 @@ app.use(bodyParser.urlencoded({ extended: true, limit: '50mb' })); // for parsin
 app.use(express.static('static'))
 
 const defaultData = {
-    title: config.title
+	title: config.title,
+	locale: config.locale
 };
 
 // UI Routes
@@ -301,5 +301,17 @@ app.post('/api/config/delete/:name', async function(req, res) {
     res.redirect('/configs');
 });
 
+app.post('/api/logs/upload/:uuid', async function(req, res) {
+	var uuid = req.params.uuid;
+	var msg = req.body.msg;
+	var sql = "INSERT INTO log (uuid, timestamp, message) VALUES (?, UNIX_TIMESTAMP(), ?)";
+	var args = [uuid, msg];
+	var result = await query(sql, args);
+	if (result.affectedRows === 1) {
+		// Success
+	}
+	console.log("[SYSLOG] ", uuid, ": ", msg);
+	res.send('OK');
+});
 
 app.listen(config.port, () => console.log(`Listening on port ${config.port}...`));

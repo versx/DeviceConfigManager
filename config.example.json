@@ -1,6 +1,7 @@
 {
     "title": "Device Config Manager",
     "port": 9991,
+    "locale": "en",
     "db": {
         "host": "127.0.0.1",
         "port": 3306,
