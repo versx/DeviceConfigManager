@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+    {{> header}}
+    <body>
+        {{> navbar}}
+        <br>
+        <h1 align="center">New Device Config</h1>
+        <br>
+        <div class="w-75" style="float: none; margin: 0 auto;">
+            <form action="" method="post">
+                <div class="form-group">
+                    Name
+                    <input type="text" class="form-control" name="name" value="" placeholder="Main Config" required>
+                </div>
+                <div class="form-group">
+                    Backend Url
+                    <input type="text" class="form-control" name="name" value="" placeholder="http://10.0.1.100:9001" required>
+                </div>
+                <div class="form-group">
+                    Port
+                    <input type="number" class="form-control" name="port" value="8080" step=1 min="1" max="65535" required>
+                </div>
+                <div class="form-group">
+                    Heartbeat Max Time
+                    <input type="number" class="form-control" name="heartbeat_max_time" value="120.0" step=1 min="1" max="999" required>
+                </div>
+                <div class="form-group">
+                    Pokemon Max Time
+                    <input type="number" class="form-control" name="pokemon_max_time" value="45.0" step=1 min="1" max="300" required>
+                </div>
+                <div class="form-group">
+                    Raid Max Time
+                    <input type="number" class="form-control" name="raid_max_time" value="25.0" step=1 min="1" max="300" required>
+                </div>
+                <div class="form-group">
+                    Startup Latitude
+                    <input type="number" class="form-control" name="startup_lat" value="0.0" placeholder="0.0" step=1 min="-300" max="300" required>
+                </div>
+                <div class="form-group">
+                    Startup Longitude
+                    <input type="number" class="form-control" name="startup_lat" value="0.0" placeholder="0.0" step=1 min="-300" max="300" required>
+                </div>
+                <div class="form-group">
+                    Backend Token
+                    <input type="text" class="form-control" name="token" value="">
+                </div>
+                <div class="form-group">
+                    Jitter Value
+                    <input type="number" class="form-control" name="jitter_value" value="0.00005" step=1 min="0.0000009" max="10" required>
+                </div>
+                <div class="form-group">
+                    Max Warning Time Raid
+                    <input type="number" class="form-control" name="max_warning_time_raid" value="432000" step=1 min="0" max="5000000" required>
+                </div>
+                <div class="form-group">
+                    Encounter Delay
+                    <input type="number" class="form-control" name="encounter_delay" value="0" step=1 min="0" max="99999" required>
+                </div>
+                <div class="form-group">
+                    Minimum Delay Logout
+                    <input type="number" class="form-control" name="min_delay_logout" value="120" step=1 min="0" max="99999" required>
+                </div>
+
+                <div class="form-group">
+                    Maximum Empty GMO
+                    <input type="number" class="form-control" name="max_empty_gmo" value="50" step=1 min="0" max="999" required>
+                </div>
+                <div class="form-group">
+                    Maximum Failed Count
+                    <input type="number" class="form-control" name="max_failed_count" value="5" step=1 min="0" max="999" required>
+                </div>
+                <div class="form-group">
+                    Maximum No Quests Count
+                    <input type="number" class="form-control" name="max_no_quests_count" value="5" step=1 min="0" max="999" required>
+                </div>
+
+                <div class="form-group">
+                    System Logging URL
+                    <input type="text" class="form-control" name="logging_url" value="">
+                </div>
+                <div class="form-group">
+                    System Logging Port
+                    <input type="number" class="form-control" name="logging_port" value="89511" step=1 min="0" max="65535" required>
+                </div>
+                <div class="form-check">
+                    <input type="checkbox" class="form-check-input" name="logging_tls" checked>
+                    <label class="form-check-label" for="logging_tls">System Logging uses TLS</label>
+                </div>
+                <div class="form-check">
+                    <input type="checkbox" class="form-check-input" name="logging_tcp" checked>
+                    <label class="form-check-label" for="logging_tcp">System Logging uses TCP</label>
+                </div>
+
+                <div class="form-check">
+                    <input type="checkbox" class="form-check-input" name="account_manager" checked>
+                    <label class="form-check-label" for="account_manager">Account Manager</label>
+                </div>
+                <div class="form-check">
+                    <input type="checkbox" class="form-check-input" name="deploy_eggs" checked>
+                    <label class="form-check-label" for="deploy_eggs">Deploy Eggs</label>
+                </div>
+                <div class="form-check">
+                    <input type="checkbox" class="form-check-input" name="nearby_tracker" checked>
+                    <label class="form-check-label" for="nearby_tracker">Nearby Tracker</label>
+                </div>
+                <div class="form-check">
+                    <input type="checkbox" class="form-check-input" name="auto_login" checked>
+                    <label class="form-check-label" for="auto_login">Auto-Login</label>
+                </div>
+                <div class="form-check">
+                    <input type="checkbox" class="form-check-input" name="ultra_iv" checked>
+                    <label class="form-check-label" for="ultra_iv">Ultra IV</label>
+                </div>
+                <div class="form-check">
+                    <input type="checkbox" class="form-check-input" name="ultra_quests" checked>
+                    <label class="form-check-label" for="ultra_quests">Ultra Quests</label>
+                </div>
+                <br>
+                <button type="submit" class="btn btn-primary">Create</button>
+            </form>
+        </div>
+    </body>
+</html>
