@@ -12,7 +12,6 @@ const query = require('./db.js');
 // TODO: Error checking/handling
 // TODO: Sql cascading
 // TODO: Cleanup mysql connections after use
-// TODO: Delete device
 // TODO: Settings page?
 
 
@@ -117,6 +116,10 @@ app.get('/config/edit/:name', async function(req, res) {
 app.get('/config/delete/:name', function(req, res) {
     defaultData.name = req.params.name;
     res.render('config-delete', defaultData);
+});
+
+app.get('/settings', function(req, res) {
+	res.render('settings', defaultData);
 });
 
 
