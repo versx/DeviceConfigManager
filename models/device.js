@@ -8,7 +8,7 @@ class Device {
         this.config = config;
     }
     static async getAll() {
-        var devices = await query("SELECT * FROM device");
+        var devices = await query("SELECT uuid, config FROM device");
         return devices;
     }
     static async getByName(uuid) {

@@ -35,3 +35,11 @@ CREATE TABLE IF NOT EXISTS `config` (
     `ultra_iv` tinyint(1) DEFAULT 1,
     `ultra_quests` tinyint(1) DEFAULT 1
 );
+
+CREATE TABLE IF NOT EXISTS `log` (
+    `id` int PRIMARY KEY UNIQUE AUTO_INCREMENT,
+    `uuid` varchar(128) NOT NULL,
+	`model` varchar(128) NOT NULL,
+    `timestamp` int unsigned,
+    `message` text NOT NULL
+);

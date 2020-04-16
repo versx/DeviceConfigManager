@@ -11,7 +11,6 @@ const Config = require('./models/config.js');
 
 // TODO: Create routes class
 // TODO: Error checking/handling
-// TODO: Sql cascading
 // TODO: Cleanup mysql connections after use
 // TODO: Security
 
@@ -19,12 +18,12 @@ const Config = require('./models/config.js');
 app.set('view engine', 'mustache');
 app.set('views', './views');
 app.engine("mustache", mustacheExpress());
-app.use(bodyParser.urlencoded({ extended: true, limit: '50mb' })); // for parsing application/x-www-form-urlencoded
-app.use(express.static('static'))
+app.use(bodyParser.urlencoded({ extended: false, limit: '50mb' })); // for parsing application/x-www-form-urlencoded
+app.use(express.static('static'));
 
 const defaultData = {
-	title: config.title,
-	locale: config.locale
+    title: config.title,
+    locale: config.locale
 };
 
 // UI Routes
@@ -46,8 +45,8 @@ app.get('/device/new', async function(req, res) {
 });
 
 app.get('/device/delete/:uuid', async function(req, res) {
-	defaultData.uuid = req.params.uuid;
-	res.render('device-delete', defaultData);
+    defaultData.uuid = req.params.uuid;
+    res.render('device-delete', defaultData);
 });
 
 app.get('/configs', function(req, res) {
@@ -55,8 +54,7 @@ app.get('/configs', function(req, res) {
 });
 
 app.get('/config/assign/:uuid', async function(req, res) {
-    var sql = "SELECT name FROM config";
-    var configs = await query(sql, []);
+    var configs = await Config.getAll();
     var data = {
         title: config.title,
         configs: configs,
@@ -120,7 +118,7 @@ app.get('/logs', function(req, res) {
 });
 
 app.get('/settings', function(req, res) {
-	res.render('settings', defaultData);
+    res.render('settings', defaultData);
 });
 
 
@@ -129,7 +127,7 @@ app.get('/api/devices', async function(req, res) {
     try {
         var devices = await Device.getAll();
         devices.forEach(function(device) {
-			device.buttons = "<a href='/config/assign/" + device.uuid + "'><button type='button' class='btn btn-primary'>Assign</button></a> \
+            device.buttons = "<a href='/config/assign/" + device.uuid + "'><button type='button' class='btn btn-primary'>Assign</button></a> \
                               <a href='/device/delete/" + device.uuid + "'><button type='button' class='btn btn-danger'>Delete</button></a>";
         });
         var json = JSON.stringify({ data: { devices: devices } });
@@ -140,19 +138,20 @@ app.get('/api/devices', async function(req, res) {
 });
 
 app.post('/api/device/new', async function(req, res) {
-	var uuid = req.body.uuid;
-	var config = req.body.config;
-	var result = await Device.create(uuid, config || null)
+    var uuid = req.body.uuid;
+    var config = req.body.config;
+    var result = await Device.create(uuid, config || null)
     console.log("New device result:", result);
     res.redirect('/devices');
 });
 
 app.post('/api/device/delete/:uuid', async function(req, res) {
-	var uuid = req.params.uuid;
-	var result = await Device.delete(uuid);
-	res.redirect('/devices');
+    var uuid = req.params.uuid;
+    var result = await Device.delete(uuid);
+    res.redirect('/devices');
 });
 
+// Config API requests
 app.get('/api/configs', async function(req, res) {
     try {
         var configs = await Config.getAll();
@@ -168,28 +167,48 @@ app.get('/api/configs', async function(req, res) {
 });
 
 app.get('/api/config/:uuid', async function(req, res) {
-	var uuid = req.params.uuid;
-	var device = await Device.getByName(uuid);
-    if (device) {
-        // Check if device config is empty, if not provide it as json response
-        if (device.config) {
-            sql = "SELECT * FROM config WHERE name = ? LIMIT 1";
-            args = [device.config];
-            var config = await query(sql, args);
-            var json = JSON.stringify(config[0]);
-            // TODO: Construct json config
-            res.send(json);
-        } else {
-            var data = {
-                status: "error",
-                error: "Device not assigned to config!"
-            }
-            var json = JSON.stringify(data);
-            res.send(json);
-        }
+    var uuid = req.params.uuid;
+    var device = await Device.getByName(uuid);
+	// Check if device config is empty, if not provide it as json response
+	if (device.config) {
+		var sql = "SELECT * FROM config WHERE name = ? LIMIT 1";
+		var args = [device.config];
+		var configs = await query(sql, args);
+		if (configs.length > 0) {
+			var c = configs[0];
+			// Build json config
+			var cfg = buildConfig(
+				c.backend_url,
+				c.port,
+				c.heartbeat_max_time,
+				c.pokemon_max_time,
+				c.raid_max_time,
+				c.startup_lat,
+				c.startup_lon,
+				c.token,
+				c.jitter_value,
+				c.max_warning_time_raid,
+				c.encounter_delay,
+				c.min_delay_logout,
+				c.max_empty_gmo,
+				c.max_failed_count,
+				c.max_no_quests_count,
+				c.logging_url,
+				c.logging_port,
+				c.logging_tls,
+				c.logging_tcp,
+				c.account_manager,
+				c.deploy_eggs,
+				c.nearby_tracker,
+				c.auto_login,
+				c.ultra_iv,
+				c.ultra_quests,
+			);
+			res.send(cfg);
+		}
     } else {
-		// Device doesn't exist, create db entry
-		var result = await Device.create(uuid);
+        // Device doesn't exist, create db entry
+        var result = await Device.create(uuid);
         var data = {
             status: "error",
             error: "Device not assigned to config!"
@@ -277,22 +296,90 @@ app.post('/api/config/edit/:name', async function(req, res) {
 });
 
 app.post('/api/config/delete/:name', async function(req, res) {
-	var name = req.params.name;
-	var result = Config.delete(name);
+    var name = req.params.name;
+    var result = await Config.delete(name);
     res.redirect('/configs');
 });
 
-app.post('/api/logs/upload/:uuid', async function(req, res) {
+
+// Log API requests
+app.get('/api/logs', async function(req, res) {
+    try {
+        var sql = "SELECT * FROM log";
+        var logs = await query(sql, []);
+        logs.forEach(function(log) {
+            log.date = getDateTime(log.timestamp); // TODO: Make ajax request for delete to prevent page reload
+            log.buttons = "<a href='/api/log/delete/" + log.id + "'><button type='button'class='btn btn-danger' onclick='return confirm(\"Are you sure you want to delete log #" + log.id + "?\");'>Delete</button></a>";
+        });
+        var json = JSON.stringify({ data: { logs: logs } });
+        res.send(json);
+    } catch (e) {
+        console.error("Logs error:", e);
+    }
+});
+
+app.post('/api/log/new/:uuid', async function(req, res) {
 	var uuid = req.params.uuid;
-	var msg = req.body.msg;
-	var sql = "INSERT INTO log (uuid, timestamp, message) VALUES (?, UNIX_TIMESTAMP(), ?)";
-	var args = [uuid, msg];
+	var msg = Object.keys(req.body)[0]; // Dumb hack
+    var sql = "INSERT INTO log (uuid, timestamp, message) VALUES (?, UNIX_TIMESTAMP(), ?)";
+    var args = [uuid, msg];
+    var result = await query(sql, args);
+    if (result.affectedRows === 1) {
+        // Success
+    }
+    console.log("[SYSLOG] ", uuid, ": ", msg);
+    res.send('OK');
+});
+
+app.get('/api/log/delete/:id', async function(req, res) {
+	var id = req.params.id;
+	var sql = "DELETE FROM log WHERE id = ?";
+	var args = [id];
 	var result = await query(sql, args);
 	if (result.affectedRows === 1) {
 		// Success
 	}
-	console.log("[SYSLOG] ", uuid, ": ", msg);
-	res.send('OK');
+    res.redirect('/logs');
 });
 
 app.listen(config.port, () => console.log(`Listening on port ${config.port}...`));
+
+function getDateTime(timestamp) {
+	var unixTimestamp = timestamp * 1000;
+	var d = new Date(unixTimestamp);
+	return d.toLocaleDateString("en-US") + " " + d.toLocaleTimeString("en-US"); // TODO: locale
+}
+
+function buildConfig(backendUrl, port, heartbeatMaxTime, pokemonMaxTime, raidMaxTime, startupLat, startupLon, token, jitterValue,
+					 maxWarningTimeRaid, encounterDelay, minDelayLogout, maxEmptyGmo, maxFailedCount, maxNoQuestsCount, loggingURL,
+					 loggingPort, loggingTLS, loggingTCP, accountManager, deployEggs, nearbyTracker, autoLogin, ultraIV, ultraQuests) {
+	var obj = {
+		backendURL: backendUrl,
+		port: port,
+		heartbeatMaxTime: heartbeatMaxTime,
+		pokemonMaxTime: pokemonMaxTime,
+		raidMaxTime: raidMaxTime,
+		startupLat: startupLat,
+		startupLon: startupLon,
+		token: token,
+		jitterValue: jitterValue,//5.0e-05,
+		maxWarningTimeRaid: maxWarningTimeRaid,
+		encounterDelay: encounterDelay,
+		minDelayLogout: minDelayLogout,
+		maxEmptyGmo: maxEmptyGmo,
+		maxFailedCount: maxFailedCount,
+		maxNoQuestsCount: maxNoQuestsCount,
+		loggingURL: loggingURL,
+		loggingPort: loggingPort,
+		loggingTLS: loggingTLS,
+		loggingTCP: loggingTCP,
+		accountManager: accountManager,
+		deployEggs: deployEggs,
+		nearbyTracker: nearbyTracker,
+		autoLogin: autoLogin,
+		ultraIV: ultraIV,
+		ultraQuests: ultraQuests
+	};
+	var json = JSON.stringify(obj);
+	return json;
+}

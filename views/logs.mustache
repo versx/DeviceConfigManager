@@ -12,6 +12,9 @@
                 <thead>
                 <tr>
                     <th>Date</th>
+                    <th>UUID</th>
+                    <th>Model</th>
+                    <th>Message</th>
                     <th width="5%"></th>
                 </tr>
                 </thead>
@@ -22,3 +25,36 @@
         <br>
     </body>
 </html>
+
+<script>
+    $(document).ready(function() {
+        const table = $('#table').DataTable( {
+            "ajax": {
+                "url": "/api/logs",
+                "dataSrc": "data.logs"
+            },
+            "paging":   true,
+            "lengthMenu": [[25, 50, 100, -1], [25, 50, 100, "All"]],
+            "columns": [
+                { "data": "date" },
+                { "data": "uuid" },
+                { "data": "model" },
+                { "data": "message" },
+                { "data": "buttons" }
+            ],
+            "info":     true,
+            "order": [[ 0, "desc" ]],
+            "search.caseInsensitive": true,
+            "columnDefs": [ {
+                "targets": [4],
+                "orderable": false
+            }],
+            "responsive": true
+        });
+        $('#table').on( 'draw.dt', function () {
+            setTimeout( function () {
+                table.ajax.reload(null, false);
+            }, 5000);
+        } );
+    } );
+</script>

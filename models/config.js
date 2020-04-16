@@ -3,17 +3,84 @@
 const query = require('../db.js');
 
 class Config {
-    constructor(name, backendUrl) {
+    constructor(name, backendUrl, port, heartbeatMaxTime, pokemonMaxTime, raidMaxTime, startupLat, startupLon, token, jitterValue, maxWarningTimeRaid, encounterDelay, minDelayLogout, maxEmptyGmo, maxFailedCount, maxNoQuestsCount, loggingUrl, loggingPort, loggingTls, loggingTcp, accountManager, deployEggs, nearbyTracker, autoLogin, ultraIV, ultraQuests) {
         this.name = name;
         this.backendUrl = backendUrl;
+        this.port = port;
+        this.heartbeatMaxTime = heartbeatMaxTime;
+        this.pokemonMaxTime = pokemonMaxTime;
+        this.raidMaxTime = raidMaxTime;
+        this.startupLat = startupLat;
+        this.startupLon = startupLon;
+        this.token = token;
+        this.jitterValue = jitterValue;
+        this.maxWarningTimeRaid = maxWarningTimeRaid;
+        this.encounterDelay = encounterDelay;
+        this.minDelayLogout = minDelayLogout;
+        this.maxEmptyGmo = maxEmptyGmo;
+        this.maxFailedCount = maxFailedCount;
+        this.maxNoQuestsCount = maxNoQuestsCount;
+        this.loggingUrl = loggingUrl;
+        this.loggingPort = loggingPort;
+        this.loggingTls = loggingTls;
+        this.loggingTcp = loggingTcp;
+        this.accountManager = accountManager;
+        this.deployEggs = deployEggs;
+        this.nearbyTracker = nearbyTracker;
+        this.autoLogin = autoLogin;
+        this.ultraIV = ultraIV;
+        this.ultraQuests = ultraQuests;
     }
     static async getAll() {
         var configs = await query("SELECT * FROM config");
         return configs;
     }
-    static async create(name, backendUrl) {
-        var sql = "INSERT INTO config (name, backend_url) VALUES (?, ?)";
-        var args = [name, backendUrl];
+    static async getByName(name) {
+        var sql = "SELECT backend_url, port, heartbeat_max_time, pokemon_max_time, raid_max_time, startup_lat, startup_lon, token, jitter_value, \
+                          max_warning_time_raid, encounter_delay, min_delay_logout, max_empty_gmo, max_failed_count, max_no_quests_count, logging_url, \
+                          logging_port, logging_tls, logging_tcp, account_manager, deploy_eggs, nearby_tracker, auto_login, ultra_iv, ultra_quests \
+                   FROM config \
+                   WHERE name = ? \
+                   LIMIT 1";
+        var args = [name];
+        var result = await query(sql, args);
+        // TODO: Error checking
+        var c = result[0];
+        c.name = name;
+        var data = new Config(
+            name,
+            c.backend_url,
+            c.port,
+            c.heartbeat_max_time,
+            c.pokemon_max_time,
+            c.raid_max_time,
+            c.startup_lat,
+            c.startup_lon,
+            c.token,
+            c.jitter_value,
+            c.max_warning_time_raid,
+            c.encounter_delay,
+            c.min_delay_logout,
+            c.max_empty_gmo,
+            c.max_failed_count,
+            c.max_no_quests_count,
+            c.logging_url,
+            c.logging_port,
+            c.logging_tls,
+            c.logging_tcp,
+            c.account_manager,
+            c.deploy_eggs,
+            c.nearby_tracker,
+            c.auto_login,
+            c.ultra_iv,
+            c.ultra_quests
+        );
+        return data;
+    }
+    static async create(name, backendUrl, port, heartbeatMaxTime, pokemonMaxTime, raidMaxTime, startupLat, startupLon, token, jitterValue, maxWarningTimeRaid, encounterDelay, minDelayLogout, maxEmptyGmo, maxFailedCount, maxNoQuestsCount, loggingUrl, loggingPort, loggingTls, loggingTcp, accountManager, deployEggs, nearbyTracker, autoLogin, ultraIV, ultraQuests) {
+        var sql = "INSERT INTO config (name, backend_url, port, heartbeat_max_time, pokemon_max_time, raid_max_time, startup_lat, startup_lon, token, jitter_value, max_warning_time_raid, encounter_delay, min_delay_logout, max_empty_gmo, max_failed_count, max_no_quests_count, logging_url, logging_port, logging_tls, logging_tcp, account_manager, deploy_eggs, nearby_tracker, auto_login, ultra_iv, ultra_quests)" +
+                  "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+        var args = [name, backendUrl, port, heartbeatMaxTime, pokemonMaxTime, raidMaxTime, startupLat, startupLon, token, jitterValue, maxWarningTimeRaid, encounterDelay, minDelayLogout, maxEmptyGmo, maxFailedCount, maxNoQuestsCount, loggingUrl, loggingPort, loggingTls, loggingTcp, accountManager, deployEggs, nearbyTracker, autoLogin, ultraIV, ultraQuests];
         var result = await query(sql, args);
         return result.affectedRows === 1;
     }
@@ -24,6 +91,7 @@ class Config {
         return result.affectedRows === 1;
     }
     async save(oldName) {
+        // TODO: Update remaining columns
         var sql = "UPDATE config SET name = ? WHERE name = ?";
         var args = [this.name, oldName];
         var result = await query(sql, args);
