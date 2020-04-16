@@ -20,7 +20,8 @@ app.engine("mustache", mustacheExpress());
 app.use(bodyParser.urlencoded({ extended: true, limit: '50mb' })); // for parsing application/x-www-form-urlencoded
 //app.use(bodyParser.json({ limit: '50mb' }));
 
-// Routes
+
+// UI Routes
 app.get(['/', '/index'], function(req, res) {
     res.render('index', { title: config.title });
 });
@@ -89,15 +90,11 @@ app.get('/config/edit/:name', async function(req, res) {
 });
 
 app.get('/config/delete/:name', function(req, res) {
-	// TODO: Delete config
-    var data = {
-        title: config.title
-    };
-    res.render('config-delete', data);
+    res.render('config-delete', { title: config.title, name: req.params.name });
 });
 
 
-
+// API Routes
 app.get('/api/devices', async function(req, res) {
 	try {
 		var devices = await query("SELECT * FROM device");
@@ -162,7 +159,9 @@ app.post('/api/config/assign/:uuid', async function(req, res) {
 	var sql = "UPDATE device SET config = ? WHERE uuid = ?";
 	var args = [config, uuid];
 	var result = await query(sql, args);
-	console.log("Assign result:", result);
+	if (result.affectedRows === 1) {
+		// Success
+	}
     res.redirect('/devices');
 });
 
@@ -188,7 +187,7 @@ app.post('/api/config/new', async function(req, res) {
 	res.redirect('/configs');
 });
 
-app.post('/api/config/edit/:name', function(req, res) {
+app.post('/api/config/edit/:name', async function(req, res) {
 	var oldName = req.params.name;
 	var sql = "UPDATE device SET name=?, backend_url=?, port=?, heartbeat_max_time=?, pokemon_max_time=?, raid_max_time=?, startup_lat=?, startup_lon=?, token=?, jitter_value=?, max_warning_time_raid=?, encounter_delay=?, min_delay_logout=?, max_empty_gmo=?, max_failed_count=?, max_no_quests_count=?, logging_url=?, logging_port=?, logging_tls=?, logging_tcp=?, account_manager=?, deploy_eggs=?, nearby_tracker=?, auto_login=?, ultra_iv=?, ultra_quests=? WHERE name=?";
 	var args = [
@@ -224,13 +223,18 @@ app.post('/api/config/edit/:name', function(req, res) {
     res.redirect('/configs');
 });
 
-app.post('/api/config/delete/:name', function(req, res) {
-	// TODO: Delete config
-    res.send('OK');
+app.post('/api/config/delete/:name', async function(req, res) {
+	var name = req.params.name;
+	var sql = "DELETE FROM config WHERE name = ?";
+	var args = [name];
+	var result = await query(sql, args);
+	if (result.affectedRows === 1) {
+		// Success
+	}
+    res.redirect('/configs');
 });
 
 app.listen(config.port, () => console.log(`Listening on port ${config.port}...`));
-
 
 /**
  * Device connects, if it isn't in db create it, error out in kevin with device config not assigned message.
@@ -241,14 +245,8 @@ app.listen(config.port, () => console.log(`Listening on port ${config.port}...`)
  * 
  * Device Page
  * - Add device manually
- * - Assign Config
  * - Edit Device (Optional)
  * - Delete Device
- * 
- * Config Page
- * - Add
- * - Edit
- * - Delete
  * 
  * Settings Page
  */

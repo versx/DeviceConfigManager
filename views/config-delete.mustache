@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+    {{> header}}
+    <body>
+        {{> navbar}}
+        <br>
+        <h1 align="center">Delete Device Config {{name}}</h1>
+        <br>
+        <div class="w-75" style="float: none; margin: 0 auto;">
+            <form action="/api/config/delete/{{name}}" method="post">
+                <div align="center">
+                    <h3>Are you sure that you want to delete device config {{name}}?</h3>
+                    <a href="/" id="cancel" name="cancel" class="btn btn-secondary">Cancel</a>
+                    <button type="submit" class="btn btn-danger">Delete</button>
+                </div>
+                <br>
+            </form>
+        </div>
+    </body>
+</html>
