@@ -6,9 +6,10 @@ const app = express();
 const mustacheExpress = require('mustache-express');
 const config = require('./config.json');
 const query = require('./db.js');
+const Device = require('./models/device.js');
+const Config = require('./models/config.js');
 
 // TODO: Create routes class
-// TODO: Create Config and Device model classes
 // TODO: Error checking/handling
 // TODO: Sql cascading
 // TODO: Cleanup mysql connections after use
@@ -51,10 +52,6 @@ app.get('/device/delete/:uuid', async function(req, res) {
 
 app.get('/configs', function(req, res) {
     res.render('configs', defaultData);
-});
-
-app.get('/logs', function(req, res) {
-    res.render('logs', defaultData);
 });
 
 app.get('/config/assign/:uuid', async function(req, res) {
@@ -118,6 +115,10 @@ app.get('/config/delete/:name', function(req, res) {
     res.render('config-delete', defaultData);
 });
 
+app.get('/logs', function(req, res) {
+    res.render('logs', defaultData);
+});
+
 app.get('/settings', function(req, res) {
 	res.render('settings', defaultData);
 });
@@ -126,7 +127,7 @@ app.get('/settings', function(req, res) {
 // API Routes
 app.get('/api/devices', async function(req, res) {
     try {
-        var devices = await query("SELECT * FROM device");
+        var devices = await Device.getAll();
         devices.forEach(function(device) {
 			device.buttons = "<a href='/config/assign/" + device.uuid + "'><button type='button' class='btn btn-primary'>Assign</button></a> \
                               <a href='/device/delete/" + device.uuid + "'><button type='button' class='btn btn-danger'>Delete</button></a>";
@@ -139,30 +140,22 @@ app.get('/api/devices', async function(req, res) {
 });
 
 app.post('/api/device/new', async function(req, res) {
-    var sql = "INSERT INTO device (`uuid`, `config`) VALUES (?, ?)";
-    var args = [req.body.uuid, req.body.config || null];
-    var result = query(sql, args);
-    if (result.affectedRows === 1) {
-        // Success
-    }
+	var uuid = req.body.uuid;
+	var config = req.body.config;
+	var result = await Device.create(uuid, config || null)
     console.log("New device result:", result);
     res.redirect('/devices');
 });
 
 app.post('/api/device/delete/:uuid', async function(req, res) {
 	var uuid = req.params.uuid;
-	var sql = "DELETE FROM device WHERE uuid = ?";
-	var args = [uuid];
-	var result = await query(sql, args);
-	if (result.affectedRows === 1) {
-		// Success
-	}
+	var result = await Device.delete(uuid);
 	res.redirect('/devices');
 });
 
 app.get('/api/configs', async function(req, res) {
     try {
-        var configs = await query("SELECT * FROM config");
+        var configs = await Config.getAll();
         configs.forEach(function(config) {
             config.buttons = "<a href='/config/edit/" + config.name + "'><button type='button' class='btn btn-primary' data-toggle='modal' data-target='#editConfigModal'>Edit</button></a> \
                               <a href='/config/delete/" + config.name + "'><button type='button'class='btn btn-danger' data-toggle='modal' data-target='#deleteConfigModal'>Delete</button></a>";
@@ -175,10 +168,8 @@ app.get('/api/configs', async function(req, res) {
 });
 
 app.get('/api/config/:uuid', async function(req, res) {
-    var uuid = req.params.uuid;
-    var sql = "SELECT uuid FROM device WHERE uuid = ?";
-    var args = [uuid];
-    var device = await query(sql, args);
+	var uuid = req.params.uuid;
+	var device = await Device.getByName(uuid);
     if (device) {
         // Check if device config is empty, if not provide it as json response
         if (device.config) {
@@ -197,13 +188,8 @@ app.get('/api/config/:uuid', async function(req, res) {
             res.send(json);
         }
     } else {
-        // Device doesn't exist, create db entry
-        sql = "INSERT INTO device (`uuid`, `config`) VALUES (?, ?)";
-        args = [uuid, null];
-        var result = await query(sql, args);
-        if (result.affectedRows === 1) {
-            // Success
-        }
+		// Device doesn't exist, create db entry
+		var result = await Device.create(uuid);
         var data = {
             status: "error",
             error: "Device not assigned to config!"
@@ -291,13 +277,8 @@ app.post('/api/config/edit/:name', async function(req, res) {
 });
 
 app.post('/api/config/delete/:name', async function(req, res) {
-    var name = req.params.name;
-    var sql = "DELETE FROM config WHERE name = ?";
-    var args = [name];
-    var result = await query(sql, args);
-    if (result.affectedRows === 1) {
-        // Success
-    }
+	var name = req.params.name;
+	var result = Config.delete(name);
     res.redirect('/configs');
 });
 

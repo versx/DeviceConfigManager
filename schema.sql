@@ -2,7 +2,9 @@ CREATE SCHEMA `dcm`;
 
 CREATE TABLE IF NOT EXISTS `device` (
     `uuid` varchar(128) PRIMARY KEY UNIQUE NOT NULL,
-    `config` VARCHAR(64) DEFAULT NULL
+    `config` varchar(64) DEFAULT NULL,
+    UNIQUE KEY `uk_iconfig_name` (`config`),
+    CONSTRAINT `fk_config_name` FOREIGN KEY (`config`) REFERENCES `config` (`name`) ON DELETE SET NULL ON UPDATE CASCADE,
 );
 
 CREATE TABLE IF NOT EXISTS `config` (
