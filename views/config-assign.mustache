@@ -9,7 +9,7 @@
             <form action="/api/config/assign/{{device}}" method="post">
                 <div class="form-group">
                     Select Device Config
-                    <select class="form-control" name="instance" required>
+                    <select class="form-control" name="config" required>
                         <option value="" {{#nothing_selected}}selected{{/nothing_selected}} disabled hidden>Choose a Config</option>
                         {{#configs}}
                             <option value="{{name}}" {{#selected}}selected{{/selected}}>{{name}}</option>
