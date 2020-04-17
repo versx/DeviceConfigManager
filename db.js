@@ -19,6 +19,10 @@ conn.connect(err => {
     console.log('Database connection established');
 });
 
+conn.on('error', function(err) {
+    console.error("Mysql error:", err);
+});
+
 function query(sql, args) {
     return new Promise(function(resolve, reject) {
         // The Promise constructor should catch any errors thrown on
@@ -30,6 +34,9 @@ function query(sql, args) {
                 return reject(err);
             }
             resolve(rows);
+            //conn.end(function(err, args) {
+            //    console.log("Closed mysql connection");
+            //});
         });
     });
 }

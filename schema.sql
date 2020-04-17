@@ -23,7 +23,7 @@ CREATE TABLE IF NOT EXISTS `config` (
     `min_delay_logout` int DEFAULT 120,
     `max_empty_gmo` int DEFAULT 50,
     `max_failed_count` int DEFAULT 5,
-    `max_no_quests_count` int DEFAULT 5,
+    `max_no_quest_count` int DEFAULT 5,
     `logging_url` varchar(255) DEFAULT NULL,
     `logging_port` int DEFAULT 8432,
     `logging_tls` tinyint(1) DEFAULT 0,

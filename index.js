@@ -69,7 +69,7 @@ app.get('/config/new', function(req, res) {
 
 app.get('/config/edit/:name', async function(req, res) {
     var name = req.params.name;
-    var sql = "SELECT backend_url, port, heartbeat_max_time, pokemon_max_time, raid_max_time, startup_lat, startup_lon, token, jitter_value, max_warning_time_raid, encounter_delay, min_delay_logout, max_empty_gmo, max_failed_count, max_no_quests_count, logging_url, logging_port, logging_tls, logging_tcp, account_manager, deploy_eggs, nearby_tracker, auto_login, ultra_iv, ultra_quests FROM config WHERE name=? LIMIT 1";
+    var sql = "SELECT backend_url, port, heartbeat_max_time, pokemon_max_time, raid_max_time, startup_lat, startup_lon, token, jitter_value, max_warning_time_raid, encounter_delay, min_delay_logout, max_empty_gmo, max_failed_count, max_no_quest_count, logging_url, logging_port, logging_tls, logging_tcp, account_manager, deploy_eggs, nearby_tracker, auto_login, ultra_iv, ultra_quests FROM config WHERE name=? LIMIT 1";
     var args = [name];
     var cfg = await query(sql, args);
     // TODO: Error checking
@@ -93,7 +93,7 @@ app.get('/config/edit/:name', async function(req, res) {
         min_delay_logout: c.min_delay_logout,
         max_empty_gmo: c.max_empty_gmo,
         max_failed_count: c.max_failed_count,
-        max_no_quests_count: c.max_no_quests_count,
+        max_no_quest_count: c.max_no_quest_count,
         logging_url: c.logging_url,
         logging_port: c.logging_port,
         logging_tls: c.logging_tls == 1 ? "checked" : "",
@@ -178,7 +178,7 @@ app.get('/api/config/:uuid', async function(req, res) {
 			if (configs.length > 0) {
 				var c = configs[0];
 				// Build json config
-				var cfg = buildConfig(
+				var json = buildConfig(
 					c.backend_url,
 					c.port,
 					c.heartbeat_max_time,
@@ -193,7 +193,7 @@ app.get('/api/config/:uuid', async function(req, res) {
 					c.min_delay_logout,
 					c.max_empty_gmo,
 					c.max_failed_count,
-					c.max_no_quests_count,
+					c.max_no_quest_count,
 					c.logging_url,
 					c.logging_port,
 					c.logging_tls,
@@ -205,7 +205,8 @@ app.get('/api/config/:uuid', async function(req, res) {
 					c.ultra_iv,
 					c.ultra_quests,
 				);
-				res.send(cfg);
+				console.log("Config response:", json);
+				res.send(json);
 			}
 		} else {
 			// Not assigned a config
@@ -218,7 +219,10 @@ app.get('/api/config/:uuid', async function(req, res) {
 		}
     } else {
         // Device doesn't exist, create db entry
-        var result = await Device.create(uuid);
+		var result = await Device.create(uuid);
+		if (result) {
+			// Success
+		}
         var data = {
             status: "error",
             error: "Device not assigned to config!"
@@ -241,22 +245,36 @@ app.post('/api/config/assign/:uuid', async function(req, res) {
 });
 
 app.post('/api/config/new', async function(req, res) {
-    var sql = "INSERT INTO config (name, backend_url, port, heartbeat_max_time, pokemon_max_time, raid_max_time, startup_lat, startup_lon, token, jitter_value, max_warning_time_raid, encounter_delay, min_delay_logout, max_empty_gmo, max_failed_count, max_no_quests_count, logging_url, logging_port, logging_tls, logging_tcp, account_manager, deploy_eggs, nearby_tracker, auto_login, ultra_iv, ultra_quests)" +
-              "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
-    var args = [];
-    var keys = Object.keys(req.body);
-    for (var i = 0; i < keys.length; i++) {
-        var key = keys[i];
-        var value = req.body[key];
-        var booleans = ["logging_tls", "logging_tcp", "account_manager", "deploy_eggs", "nearby_tracker", "auto_login", "ultra_iv", "ultra_quests"];
-        if (booleans.includes(key)) {
-            args.push(value === 'on' ? 1 : 0);
-        } else {
-            args.push(value);
-        }
-    }
-    var result = await query(sql, args);
-    if (result.affectedRows === 1) {
+	var data = req.body;
+	var result = await Config.create(
+		data.name,
+		data.backend_url,
+		data.port,
+		data.heartbeat_max_time,
+		data.pokemon_max_time,
+		data.raid_max_time,
+		data.startup_lat,
+		data.startup_lon,
+		data.token,
+		data.jitter_value,
+		data.max_warning_time_raid,
+		data.encounter_delay,
+		data.min_delay_logout,
+		data.max_empty_gmo,
+		data.max_failed_count,
+		data.max_no_quest_count,
+		data.logging_url,
+		data.logging_port,
+		data.logging_tls === 'on' ? 1 : 0,
+		data.logging_tcp === 'on' ? 1 : 0,
+		data.account_manager === 'on' ? 1 : 0,
+		data.deploy_eggs === 'on' ? 1 : 0,
+		data.nearby_tracker === 'on' ? 1 : 0,
+		data.auto_login === 'on' ? 1 : 0,
+		data.ultra_iv === 'on' ? 1 : 0,
+		data.ultra_quests === 'on' ? 1 : 0,
+	);
+	if (result) {
         console.log("Config inserted");
     } else {
         console.error("Failed to create new config");
@@ -265,49 +283,46 @@ app.post('/api/config/new', async function(req, res) {
 });
 
 app.post('/api/config/edit/:name', async function(req, res) {
-    var oldName = req.params.name;
-    var sql = "UPDATE config SET name=?, backend_url=?, port=?, heartbeat_max_time=?, pokemon_max_time=?, raid_max_time=?, startup_lat=?, startup_lon=?, token=?, jitter_value=?, max_warning_time_raid=?, encounter_delay=?, min_delay_logout=?, max_empty_gmo=?, max_failed_count=?, max_no_quests_count=?, logging_url=?, logging_port=?, logging_tls=?, logging_tcp=?, account_manager=?, deploy_eggs=?, nearby_tracker=?, auto_login=?, ultra_iv=?, ultra_quests=? WHERE name=?";
-    var args = [
-        req.body.name,
-        req.body.backend_url,
-        req.body.port,
-        req.body.heartbeat_max_time,
-        req.body.pokemon_max_time,
-        req.body.raid_max_time,
-        req.body.startup_lat,
-        req.body.startup_lon,
-        req.body.token,
-        req.body.jitter_value,
-        req.body.max_warning_time_raid,
-        req.body.encounter_delay,
-        req.body.min_delay_logout,
-        req.body.max_empty_gmo,
-        req.body.max_failed_count,
-        req.body.max_no_quests_count,
-        req.body.logging_url,
-        req.body.logging_port,
-        req.body.logging_tls === "on" ? 1 : 0,
-        req.body.logging_tcp === "on" ? 1 : 0,
-        req.body.account_manager === "on" ? 1 : 0,
-        req.body.deploy_eggs === "on" ? 1 : 0,
-        req.body.nearby_tracker === "on" ? 1 : 0,
-        req.body.auto_login === "on" ? 1 : 0,
-        req.body.ultra_iv === "on" ? 1 : 0,
-        req.body.ultra_quests === "on" ? 1 : 0,
-        oldName
-    ];
-    console.log("Old name:", oldName);
-    var result = await query(sql, args);
-    if (result.affectedRows === 1) {
-        // Success
-    }
-    console.log("Edit config result:", result);
+	var oldName = req.params.name;
+	var c = await Config.getByName(oldName);
+	c.name = req.body.name;
+	c.backendUrl = req.body.backend_url;
+	c.port = req.body.port;
+	c.heartbeatMaxTime = req.body.heartbeat_max_time;
+	c.pokemonMaxTime = req.body.pokemon_max_time;
+	c.raidMaxTime = req.body.raid_max_time;
+	c.startupLat = req.body.startup_lat;
+	c.startupLon = req.body.startup_lon;
+	c.token = req.body.token;
+	c.jitterValue = req.body.jitter_value;
+	c.maxWarningTimeRaid = req.body.max_warning_time_raid;
+	c.encounterDelay = req.body.encounter_delay;
+	c.minDelayLogout = req.body.min_delay_logout;
+	c.maxEmptyGmo = req.body.max_empty_gmo;
+	c.maxFailedCount = req.body.max_failed_count;
+	c.maxNoQuestCount = req.body.max_no_quest_count;
+	c.loggingUrl = req.body.logging_url;
+	c.loggingPort = req.body.logging_port;
+	c.loggingTls = req.body.logging_tls === "on" ? 1 : 0;
+	c.loggingTcp = req.body.logging_tcp === "on" ? 1 : 0;
+	c.accountManager = req.body.account_manager === "on" ? 1 : 0;
+	c.deployEggs = req.body.deploy_eggs === "on" ? 1 : 0;
+	c.nearbyTracker = req.body.nearby_tracker === "on" ? 1 : 0;
+	c.autoLogin = req.body.auto_login === "on" ? 1 : 0;
+	c.ultraIV = req.body.ultra_iv === "on" ? 1 : 0;
+	c.ultraQuests = req.body.ultra_quests === "on" ? 1 : 0;
+	if (await c.save(oldName)) {
+		// Success
+	}
     res.redirect('/configs');
 });
 
 app.post('/api/config/delete/:name', async function(req, res) {
     var name = req.params.name;
-    var result = await Config.delete(name);
+	var result = await Config.delete(name);
+	if (result) {
+		// Success
+	}
     res.redirect('/configs');
 });
 
@@ -352,6 +367,15 @@ app.get('/api/log/delete/:id', async function(req, res) {
     res.redirect('/logs');
 });
 
+app.get('/api/logs/delete_all', async function(req, res) {
+	var sql = "TRUNCATE TABLE log";
+	var result = await query(sql, []);
+	if (result.affectedRows > 0) {
+		// Success
+	}
+	res.redirect('/logs');
+});
+
 app.listen(config.port, () => console.log(`Listening on port ${config.port}...`));
 
 function getDateTime(timestamp) {
@@ -361,35 +385,35 @@ function getDateTime(timestamp) {
 }
 
 function buildConfig(backendUrl, port, heartbeatMaxTime, pokemonMaxTime, raidMaxTime, startupLat, startupLon, token, jitterValue,
-					 maxWarningTimeRaid, encounterDelay, minDelayLogout, maxEmptyGmo, maxFailedCount, maxNoQuestsCount, loggingURL,
-					 loggingPort, loggingTLS, loggingTCP, accountManager, deployEggs, nearbyTracker, autoLogin, ultraIV, ultraQuests) {
+					 maxWarningTimeRaid, encounterDelay, minDelayLogout, maxEmptyGmo, maxFailedCount, maxNoQuestCount, loggingUrl,
+					 loggingPort, loggingTls, loggingTcp, accountManager, deployEggs, nearbyTracker, autoLogin, ultraIV, ultraQuests) {
 	var obj = {
-		backendURL: backendUrl,
-		port: port,
-		heartbeatMaxTime: heartbeatMaxTime,
-		pokemonMaxTime: pokemonMaxTime,
-		raidMaxTime: raidMaxTime,
-		startupLat: startupLat,
-		startupLon: startupLon,
-		token: token,
-		jitterValue: jitterValue,//5.0e-05,
-		maxWarningTimeRaid: maxWarningTimeRaid,
-		encounterDelay: encounterDelay,
-		minDelayLogout: minDelayLogout,
-		maxEmptyGmo: maxEmptyGmo,
-		maxFailedCount: maxFailedCount,
-		maxNoQuestsCount: maxNoQuestsCount,
-		loggingURL: loggingURL,
-		loggingPort: loggingPort,
-		loggingTLS: loggingTLS,
-		loggingTCP: loggingTCP,
-		accountManager: accountManager,
-		deployEggs: deployEggs,
-		nearbyTracker: nearbyTracker,
-		autoLogin: autoLogin,
-		ultraIV: ultraIV,
-		ultraQuests: ultraQuests
+		'backendURL': backendUrl,
+		'port': port,
+		'heartbeatMaxTime': heartbeatMaxTime,
+		'pokemonMaxTime': pokemonMaxTime,
+		'raidMaxTime': raidMaxTime,
+		'startupLat': startupLat,
+		'startupLon': startupLon,
+		'token': token,
+		'jitterValue': jitterValue,//5.0e-05,
+		'maxWarningTimeRaid': maxWarningTimeRaid,
+		'encounterDelay': encounterDelay,
+		'minDelayLogout': minDelayLogout,
+		'maxEmptyGMO': maxEmptyGmo,
+		'maxFailedCount': maxFailedCount,
+		'maxNoQuestCount': maxNoQuestCount,
+		'loggingURL': loggingUrl,
+		'loggingPort': loggingPort,
+		'loggingTLS': loggingTls,
+		'loggingTCP': loggingTcp,
+		'accountManager': accountManager,
+		'deployEggs': deployEggs,
+		'nearbyTracker': nearbyTracker,
+		'autoLogin': autoLogin,
+		'ultraIV': ultraIV,
+		'ultraQuests': ultraQuests
 	};
-	var json = JSON.stringify(obj);
+	var json = JSON.stringify(obj, null, 2);
 	return json;
 }
