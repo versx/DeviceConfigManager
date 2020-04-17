@@ -13,7 +13,7 @@ class Log {
         return logs;
     }
     static async create(uuid, message) {
-        var sql = "INSERT INTO device (uuid, timestamp, message) VALUES (?, UNIX_TIMESTAMP(), ?)";
+        var sql = "INSERT INTO log (uuid, timestamp, message) VALUES (?, UNIX_TIMESTAMP(), ?)";
         var args = [uuid, message];
         var result = await query(sql, args);
         return result.affectedRows === 1;

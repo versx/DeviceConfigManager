@@ -13,6 +13,7 @@
                 <tr>
                     <th>UUID</th>
                     <th>Config</th>
+                    <th>Last Seen</th>
                     <th width="5%"></th>
                 </tr>
                 </thead>
@@ -40,13 +41,14 @@
             "columns": [
                 { "data": "uuid" },
                 { "data": "config" },
+                { "data": "last_seen" },
                 { "data": "buttons" },
             ],
             "info": true,
             "order": [[ 0, "asc" ]],
             "search.caseInsensitive": true,
             "columnDefs": [ {
-                "targets": [2],
+                "targets": [3],
                 "orderable": false
             }],
             "responsive": true

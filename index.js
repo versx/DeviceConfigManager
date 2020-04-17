@@ -127,6 +127,7 @@ app.get('/api/devices', async function(req, res) {
     try {
         var devices = await Device.getAll();
         devices.forEach(function(device) {
+			device.last_seen = getDateTime(device.last_seen);
             device.buttons = "<a href='/config/assign/" + device.uuid + "'><button type='button' class='btn btn-primary'>Assign</button></a> \
                               <a href='/device/delete/" + device.uuid + "'><button type='button' class='btn btn-danger'>Delete</button></a>";
         });
@@ -174,7 +175,7 @@ app.get('/api/config/:uuid', async function(req, res) {
     var device = await Device.getByName(uuid);
     // Check if device config is empty, if not provide it as json response
     if (device) {
-		device.lastSeen = new Date().getSeconds();
+		device.lastSeen = new Date() / 1000;
 		device.save();
         if (device.config) {
             var sql = "SELECT * FROM config WHERE name = ? LIMIT 1";

@@ -16,7 +16,14 @@ class Device {
         var sql = "SELECT uuid, config, last_seen FROM device WHERE uuid = ?";
         var args = [uuid];
         var result = await query(sql, args);
-        return result[0];
+        if (result && result.length > 0) {
+            return new Device(
+                result[0].uuid,
+                result[0].config,
+                result[0].last_seen
+            );
+        }
+        return null;
     }
     static async create(uuid, config = null, lastSeen = null) {
         var sql = "INSERT INTO device (uuid, config, last_seen) VALUES (?, ?, ?)";
