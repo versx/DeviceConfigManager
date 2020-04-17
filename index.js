@@ -12,7 +12,6 @@ const Log = require('./models/log.js');
 
 // TODO: Create routes class
 // TODO: Error checking/handling
-// TODO: Cleanup mysql connections after use
 // TODO: Security
 
 // Middleware
