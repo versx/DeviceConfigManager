@@ -13,7 +13,7 @@ function getConnection() {
         charset: config.db.charset
     });
     
-    conn.connect(err => {
+    conn.connect(function(err) {
         if (err) {
             console.log('Error connecting to database');
             return;
@@ -31,7 +31,7 @@ function query(sql, args) {
         // The Promise constructor should catch any errors thrown on
         // this tick. Alternately, try/catch and reject(err) on catch.
         var conn = getConnection();
-        conn.query(sql, args, function (err, rows, fields) {
+        conn.query(sql, args, function(err, rows, fields) {
             // Call reject on error states,
             // call resolve with results
             if (err) {

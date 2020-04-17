@@ -9,6 +9,6 @@
         "username": "user123",
         "password": "pass123",
         "database": "dcm",
-        "charset": "utf8"
+        "charset": "utf8mb4"
     }
 }
