@@ -1,7 +1,3 @@
-CREATE SCHEMA IF NOT EXISTS `dcm`;
-
-USE `dcm`;
-
 CREATE TABLE IF NOT EXISTS `device` (
     `uuid` varchar(128) PRIMARY KEY UNIQUE NOT NULL,
     `config` varchar(64) DEFAULT NULL,
