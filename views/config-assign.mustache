@@ -3,7 +3,7 @@
     <body>
         {{> navbar}}
         <br>
-        <h1 align="center">Assign Config to {{device}}</h1>
+        <h1 align="center" id="header">Assign Config to {{device}}</h1>
         <br>
         <div class="w-75" style="float: none; margin: 0 auto;">
             <form action="/api/config/assign/{{device}}" method="post">
@@ -22,3 +22,11 @@
         <br>    
     </body>
 </html>
+
+<script>
+    if ("{{style}}" === 'dark') {
+        console.log("Dark enabled");
+        $('body').css('background-color', 'rgb(33, 37, 41)');
+        $('#header').css('color', 'white');
+    }
+</script>

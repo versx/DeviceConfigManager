@@ -8,6 +8,7 @@ const config = require('./config.json');
 const query = require('./db.js');
 const Device = require('./models/device.js');
 const Config = require('./models/config.js');
+const Log = require('./models/log.js');
 
 // TODO: Create routes class
 // TODO: Error checking/handling
@@ -55,12 +56,10 @@ app.get('/configs', function(req, res) {
 });
 
 app.get('/config/assign/:uuid', async function(req, res) {
-    var configs = await Config.getAll();
-    var data = {
-        title: config.title,
-        configs: configs,
-        device: req.params.uuid
-    };
+	var configs = await Config.getAll();
+	var data = defaultData;
+    data.configs = configs;
+    data.device = req.params.uuid;
     res.render('config-assign', data);
 });
 
@@ -336,8 +335,7 @@ app.post('/api/config/delete/:name', async function(req, res) {
 // Log API requests
 app.get('/api/logs', async function(req, res) {
     try {
-        var sql = "SELECT * FROM log";
-        var logs = await query(sql, []);
+		var logs = await Log.getAll();
         logs.forEach(function(log) {
             log.date = getDateTime(log.timestamp); // TODO: Make ajax request for delete to prevent page reload
             log.buttons = "<a href='/api/log/delete/" + log.id + "'><button type='button'class='btn btn-danger' onclick='return confirm(\"Are you sure you want to delete log #" + log.id + "?\");'>Delete</button></a>";
@@ -350,35 +348,30 @@ app.get('/api/logs', async function(req, res) {
 });
 
 app.post('/api/log/new/:uuid', async function(req, res) {
-    var uuid = req.params.uuid;
-    var msg = Object.keys(req.body)[0]; // Dumb hack
-    var sql = "INSERT INTO log (uuid, timestamp, message) VALUES (?, UNIX_TIMESTAMP(), ?)";
-    var args = [uuid, msg];
-    var result = await query(sql, args);
-    if (result.affectedRows === 1) {
-        // Success
-    }
+	var uuid = req.params.uuid;
+	var msg = Object.keys(req.body)[0]; // Dumb hack
+	var result = await Log.create(uuid, msg);
+	if (result) {
+		// Success
+	}
     console.log("[SYSLOG]", uuid, ":", msg);
     res.send('OK');
 });
 
 app.get('/api/log/delete/:id', async function(req, res) {
-    var id = req.params.id;
-    var sql = "DELETE FROM log WHERE id = ?";
-    var args = [id];
-    var result = await query(sql, args);
-    if (result.affectedRows === 1) {
-        // Success
-    }
+	var id = req.params.id;
+	var result = await Log.delete(id);
+	if (result) {
+		// Success
+	}
     res.redirect('/logs');
 });
 
 app.get('/api/logs/delete_all', async function(req, res) {
-    var sql = "TRUNCATE TABLE log";
-    var result = await query(sql, []);
-    if (result.affectedRows > 0) {
-        // Success
-    }
+	var result = await Log.deleteAll();
+	if (result) {
+		// Success
+	}
     res.redirect('/logs');
 });
 
