@@ -39,7 +39,6 @@ CREATE TABLE IF NOT EXISTS `config` (
 CREATE TABLE IF NOT EXISTS `log` (
     `id` int PRIMARY KEY UNIQUE AUTO_INCREMENT,
     `uuid` varchar(128) NOT NULL,
-	`model` varchar(128) NOT NULL,
     `timestamp` int unsigned,
     `message` text NOT NULL
 );
