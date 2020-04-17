@@ -114,6 +114,11 @@
                     <input type="checkbox" class="form-check-input" name="ultra_quests" {{ultra_quests}}>
                     <label class="form-check-label" for="ultra_quests">Ultra Quests</label>
                 </div>
+
+                <div class="form-check">
+                    <input type="checkbox" class="form-check-input" name="is_default" {{is_default}}>
+                    <label class="form-check-label" for="is_default">Is Default Config</label>
+                </div>
                 <br>
                 <button type="submit" class="btn btn-primary">Save</button>
                 <br>
@@ -125,6 +130,7 @@
 <script>
     if ("{{style}}" === 'dark') {
         $('body').css('background-color', 'rgb(33, 37, 41)');
-        $('#header').css('color', 'white');
+        $('body').css('color', 'rgb(255, 255, 255)');
+        //$('#header').css('color', 'white');
     }
 </script>

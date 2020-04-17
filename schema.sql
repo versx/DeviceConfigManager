@@ -24,7 +24,8 @@ CREATE TABLE IF NOT EXISTS `config` (
     `nearby_tracker` tinyint(1) DEFAULT 1,
     `auto_login` tinyint(1) DEFAULT 1,
     `ultra_iv` tinyint(1) DEFAULT 1,
-    `ultra_quests` tinyint(1) DEFAULT 1
+    `ultra_quests` tinyint(1) DEFAULT 1,
+    `is_default` tinyint(1) DEFAULT 0
 );
 
 CREATE TABLE IF NOT EXISTS `log` (

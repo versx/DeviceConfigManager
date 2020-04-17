@@ -13,7 +13,10 @@ class Device {
         return devices;
     }
     static async getByName(uuid) {
-        var sql = "SELECT uuid, config, last_seen FROM device WHERE uuid = ?";
+        var sql = `
+        SELECT uuid, config, last_seen
+        FROM device
+        WHERE uuid = ?`;
         var args = [uuid];
         var result = await query(sql, args);
         if (result && result.length > 0) {
@@ -26,7 +29,9 @@ class Device {
         return null;
     }
     static async create(uuid, config = null, lastSeen = null) {
-        var sql = "INSERT INTO device (uuid, config, last_seen) VALUES (?, ?, ?)";
+        var sql = `
+        INSERT INTO device (uuid, config, last_seen)
+        VALUES (?, ?, ?)`;
         var args = [uuid, config, lastSeen];
         var result = await query(sql, args);
         return result.affectedRows === 1;
@@ -38,7 +43,10 @@ class Device {
         return result.affectedRows === 1;
     }
     async save() {
-        var sql = "UPDATE device SET config = ?, last_seen = ? WHERE uuid = ?";
+        var sql = `
+        UPDATE device
+        SET config = ?, last_seen = ?
+        WHERE uuid = ?`;
         var args = [this.config, this.lastSeen, this.uuid];
         var result = await query(sql, args);
         return result.affectedRows === 1;
