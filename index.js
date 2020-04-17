@@ -12,7 +12,8 @@ const Log = require('./models/log.js');
 
 // TODO: Create routes class
 // TODO: Error checking/handling
-// TODO: Security
+// TODO: Security / token auth
+// TODO: Default config for devices, auto assigned?
 
 // Middleware
 app.set('view engine', 'mustache');
@@ -95,14 +96,14 @@ app.get('/config/edit/:name', async function(req, res) {
         max_no_quest_count: c.max_no_quest_count,
         logging_url: c.logging_url,
         logging_port: c.logging_port,
-        logging_tls: c.logging_tls == 1 ? "checked" : "",
-        logging_tcp: c.logging_tcp == 1 ? "checked" : "",
-        account_manager: c.account_manager == 1 ? "checked" : "",
-        deploy_eggs: c.deploy_eggs == 1 ? "checked" : "",
-        nearby_tracker: c.nearby_tracker == 1 ? "checked" : "",
-        auto_login: c.auto_login == 1 ? "checked" : "",
-        ultra_iv: c.ultra_iv == 1 ? "checked" : "",
-        ultra_quests: c.ultra_quests == 1 ? "checked" : ""
+        logging_tls: c.logging_tls === 1 ? "checked" : "",
+        logging_tcp: c.logging_tcp === 1 ? "checked" : "",
+        account_manager: c.account_manager === 1 ? "checked" : "",
+        deploy_eggs: c.deploy_eggs === 1 ? "checked" : "",
+        nearby_tracker: c.nearby_tracker === 1 ? "checked" : "",
+        auto_login: c.auto_login === 1 ? "checked" : "",
+        ultra_iv: c.ultra_iv === 1 ? "checked" : "",
+        ultra_quests: c.ultra_quests === 1 ? "checked" : ""
     };
     res.render('config-edit', data);
 });
@@ -288,34 +289,35 @@ app.post('/api/config/new', async function(req, res) {
 });
 
 app.post('/api/config/edit/:name', async function(req, res) {
-    var oldName = req.params.name;
-    var c = await Config.getByName(oldName);
-    c.name = req.body.name;
-    c.backendUrl = req.body.backend_url;
-    c.port = req.body.port;
-    c.heartbeatMaxTime = req.body.heartbeat_max_time;
-    c.pokemonMaxTime = req.body.pokemon_max_time;
-    c.raidMaxTime = req.body.raid_max_time;
-    c.startupLat = req.body.startup_lat;
-    c.startupLon = req.body.startup_lon;
-    c.token = req.body.token;
-    c.jitterValue = req.body.jitter_value;
-    c.maxWarningTimeRaid = req.body.max_warning_time_raid;
-    c.encounterDelay = req.body.encounter_delay;
-    c.minDelayLogout = req.body.min_delay_logout;
-    c.maxEmptyGmo = req.body.max_empty_gmo;
-    c.maxFailedCount = req.body.max_failed_count;
-    c.maxNoQuestCount = req.body.max_no_quest_count;
-    c.loggingUrl = req.body.logging_url;
-    c.loggingPort = req.body.logging_port;
-    c.loggingTls = req.body.logging_tls === "on" ? 1 : 0;
-    c.loggingTcp = req.body.logging_tcp === "on" ? 1 : 0;
-    c.accountManager = req.body.account_manager === "on" ? 1 : 0;
-    c.deployEggs = req.body.deploy_eggs === "on" ? 1 : 0;
-    c.nearbyTracker = req.body.nearby_tracker === "on" ? 1 : 0;
-    c.autoLogin = req.body.auto_login === "on" ? 1 : 0;
-    c.ultraIV = req.body.ultra_iv === "on" ? 1 : 0;
-    c.ultraQuests = req.body.ultra_quests === "on" ? 1 : 0;
+	var oldName = req.params.name;
+	var data = req.body;
+	var c = await Config.getByName(oldName);
+    c.name = data.name;
+    c.backendUrl = data.backend_url;
+    c.port = data.port;
+    c.heartbeatMaxTime = data.heartbeat_max_time;
+    c.pokemonMaxTime = data.pokemon_max_time;
+    c.raidMaxTime = data.raid_max_time;
+    c.startupLat = data.startup_lat;
+    c.startupLon = data.startup_lon;
+    c.token = data.token;
+    c.jitterValue = data.jitter_value;
+    c.maxWarningTimeRaid = data.max_warning_time_raid;
+    c.encounterDelay = data.encounter_delay;
+    c.minDelayLogout = data.min_delay_logout;
+    c.maxEmptyGmo = data.max_empty_gmo;
+    c.maxFailedCount = data.max_failed_count;
+    c.maxNoQuestCount = data.max_no_quest_count;
+    c.loggingUrl = data.logging_url;
+    c.loggingPort = data.logging_port;
+    c.loggingTls = data.logging_tls === "on" ? 1 : 0;
+    c.loggingTcp = data.logging_tcp === "on" ? 1 : 0;
+    c.accountManager = data.account_manager === "on" ? 1 : 0;
+    c.deployEggs = data.deploy_eggs === "on" ? 1 : 0;
+    c.nearbyTracker = data.nearby_tracker === "on" ? 1 : 0;
+    c.autoLogin = data.auto_login === "on" ? 1 : 0;
+    c.ultraIV = data.ultra_iv === "on" ? 1 : 0;
+    c.ultraQuests = data.ultra_quests === "on" ? 1 : 0;
     if (await c.save(oldName)) {
         // Success
     }
