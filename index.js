@@ -23,7 +23,8 @@ app.use(express.static('static'));
 
 const defaultData = {
     title: config.title,
-    locale: config.locale
+	locale: config.locale,
+	style: config.style == "dark" ? 'dark' : ''
 };
 
 // UI Routes
@@ -140,14 +141,17 @@ app.get('/api/devices', async function(req, res) {
 app.post('/api/device/new', async function(req, res) {
     var uuid = req.body.uuid;
     var config = req.body.config;
-    var result = await Device.create(uuid, config || null)
+    var result = await Device.create(uuid, config || null, null)
     console.log("New device result:", result);
     res.redirect('/devices');
 });
 
 app.post('/api/device/delete/:uuid', async function(req, res) {
     var uuid = req.params.uuid;
-    var result = await Device.delete(uuid);
+	var result = await Device.delete(uuid);
+	if (result) {
+		// Success
+	}
     res.redirect('/devices');
 });
 
@@ -167,12 +171,12 @@ app.get('/api/configs', async function(req, res) {
 });
 
 app.get('/api/config/:uuid', async function(req, res) {
-    // TODO: Add last seen property to device
-
     var uuid = req.params.uuid;
     var device = await Device.getByName(uuid);
     // Check if device config is empty, if not provide it as json response
     if (device) {
+		device.lastSeen = new Date().getSeconds();
+		device.save();
         if (device.config) {
             var sql = "SELECT * FROM config WHERE name = ? LIMIT 1";
             var args = [device.config];
@@ -211,7 +215,7 @@ app.get('/api/config/:uuid', async function(req, res) {
                 res.send(json);
             }
         } else {
-            // Not assigned a config
+			// Not assigned a config
             var data = {
                 status: "error",
                 error: "Device not assigned to config!"
@@ -354,7 +358,7 @@ app.post('/api/log/new/:uuid', async function(req, res) {
     if (result.affectedRows === 1) {
         // Success
     }
-    console.log("[SYSLOG] ", uuid, ": ", msg);
+    console.log("[SYSLOG]", uuid, ":", msg);
     res.send('OK');
 });
 

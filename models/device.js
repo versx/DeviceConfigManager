@@ -3,23 +3,24 @@
 const query = require('../db.js');
 
 class Device {
-    constructor(uuid, config) {
+    constructor(uuid, config, lastSeen) {
         this.uuid = uuid;
         this.config = config;
+        this.lastSeen = lastSeen;
     }
     static async getAll() {
-        var devices = await query("SELECT uuid, config FROM device");
+        var devices = await query("SELECT uuid, config, last_seen FROM device");
         return devices;
     }
     static async getByName(uuid) {
-        var sql = "SELECT uuid, config FROM device WHERE uuid = ?";
+        var sql = "SELECT uuid, config, last_seen FROM device WHERE uuid = ?";
         var args = [uuid];
         var result = await query(sql, args);
         return result[0];
     }
-    static async create(uuid, config = null) {
-        var sql = "INSERT INTO device (uuid, config) VALUES (?, ?)";
-        var args = [uuid, config];
+    static async create(uuid, config = null, lastSeen = null) {
+        var sql = "INSERT INTO device (uuid, config, last_seen) VALUES (?, ?, ?)";
+        var args = [uuid, config, lastSeen];
         var result = await query(sql, args);
         return result.affectedRows === 1;
     }
@@ -30,8 +31,8 @@ class Device {
         return result.affectedRows === 1;
     }
     async save() {
-        var sql = "UPDATE device SET config = ? WHERE uuid = ?";
-        var args = [this.config, this.uuid];
+        var sql = "UPDATE device SET config = ?, last_seen = ? WHERE uuid = ?";
+        var args = [this.config, this.lastSeen, this.uuid];
         var result = await query(sql, args);
         return result.affectedRows === 1;
     }

@@ -2,7 +2,7 @@
   <div class="navbar-header">
     <a class="navbar-brand" href="/">
       <!--<img src="./static/logo.svg" width="30" height="30" class="d-inline-block align-top" alt="">-->
-      Device Config Manager
+      {{title}}
     </a>
   </div>
   <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -10,7 +10,7 @@
   </button>
   <div class="collapse navbar-collapse" id="navbar">
     <ul class="navbar-nav mr-auto">
-      <li class="nav-item active">
+      <li class="nav-item">
         <a class="nav-link" href="/"><i class="fa fa-fw fa-tachometer" aria-hidden="true"></i>&nbsp;Home <span class="sr-only"></span></a>
       </li>
       <li class="nav-item">
@@ -32,3 +32,11 @@
 </nav>
 <br>
 <br>
+
+<script>
+    $(document).ready(function() {
+	      // Get current URL path and assign 'active' class
+        var pathname = window.location.pathname;
+        $('#navbar > ul > li > a[href="'+pathname+'"]').parent().addClass('active');
+    });
+</script>

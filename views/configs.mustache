@@ -3,13 +3,13 @@
     <body>
         {{> navbar}}
         <br>
-        <h1 align="center">Configure {{title}}'s Configs!</h1>
+        <h1 align="center" id="header">Configs</h1>
         <br>
         <div style="width:90%; margin-left:calc(5%);">
             <a href="/config/new" role="button" style="float: right;" class="btn btn-success">New Config</a>
             <br><br>
-            <table id="table" class="table table-striped table-bordered dt-responsive nowrap" style="position: center; width:100%">
-                <thead>
+            <table id="table" class="table table-{{style}} table-striped table-bordered table-hover dt-responsive nowrap" style="position: center; width:100%">
+                <thead class="thead-dark">
                 <tr>
                     <th>Name</th>
                     <th>Backend</th>
@@ -26,6 +26,10 @@
 </html>
 
 <script>
+    if ("{{style}}" === 'dark') {
+        $('body').css('background-color', 'rgb(33, 37, 41)');
+        $('#header').css('color', 'white');
+    }
     $(document).ready(function() {
         const table = $('#table').DataTable( {
             "ajax": {

@@ -3,7 +3,7 @@
     <body>
         {{> navbar}}
         <br>
-        <h1 align="center">{{title}}</h1>
+        <h1 align="center" id="header">{{title}}</h1>
         <div class="card text-center p-1 m-3">
         <div class="card-header bg-dark text-light text-center"><b>Overivew</b></div>
             <div class="card-body">
@@ -12,18 +12,18 @@
                         <div class="col-md-6 p-1">
                             <div class="list-group">
                                 <a class="list-group-item">
-                                <h3 class="pull-right"><img src="./img/device.png" width="64" height="64"/></h3>
-                                <h4 class="list-group-item-heading">{{devices}}</h4>
-                                <p class="list-group-item-text">Devices</p>
+                                    <h3 class="pull-right"><img src="./img/device.png" width="64" height="64"/></h3>
+                                    <h4 class="list-group-item-heading">{{devices}}</h4>
+                                    <p class="list-group-item-text">Devices</p>
                                 </a>
                             </div>
                         </div>
                         <div class="col-md-6 p-1">
                             <div class="list-group">
                                 <a class="list-group-item">
-                                <h3 class="pull-right"><img src="./img/config.png" width="64" height="64"/></h3>
-                                <h4 class="list-group-item-heading">{{configs}}</h4>
-                                <p class="list-group-item-text">Configs</p>
+                                    <h3 class="pull-right"><img src="./img/config.png" width="64" height="64"/></h3>
+                                    <h4 class="list-group-item-heading">{{configs}}</h4>
+                                    <p class="list-group-item-text">Configs</p>
                                 </a>
                             </div>
                         </div>
@@ -33,3 +33,10 @@
         </div>
     </body>
 </html>
+
+<script>
+    if ("{{style}}" === 'dark') {
+        $('body').css('background-color', 'rgb(33, 37, 41)');
+        $('#header').css('color', 'white');
+    }
+</script>
