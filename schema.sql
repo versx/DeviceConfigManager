@@ -1,4 +1,6 @@
-CREATE SCHEMA `dcm`;
+CREATE SCHEMA IF NOT EXISTS `dcm`;
+
+USE `dcm`;
 
 CREATE TABLE IF NOT EXISTS `device` (
     `uuid` varchar(128) PRIMARY KEY UNIQUE NOT NULL,
