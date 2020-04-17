@@ -1,11 +1,3 @@
-CREATE TABLE IF NOT EXISTS `device` (
-    `uuid` varchar(128) PRIMARY KEY UNIQUE NOT NULL,
-    `config` varchar(64) DEFAULT NULL,
-    `last_seen` int DEFAULT NULL,
-    UNIQUE KEY `uk_iconfig_name` (`config`),
-    CONSTRAINT `fk_config_name` FOREIGN KEY (`config`) REFERENCES `config` (`name`) ON DELETE SET NULL ON UPDATE CASCADE
-);
-
 CREATE TABLE IF NOT EXISTS `config` (
     `name` varchar(64) PRIMARY KEY UNIQUE NOT NULL,
     `backend_url` varchar(255) NOT NULL,
@@ -40,4 +32,12 @@ CREATE TABLE IF NOT EXISTS `log` (
     `uuid` varchar(128) NOT NULL,
     `timestamp` int unsigned,
     `message` text NOT NULL
+);
+
+CREATE TABLE IF NOT EXISTS `device` (
+    `uuid` varchar(128) PRIMARY KEY UNIQUE NOT NULL,
+    `config` varchar(64) DEFAULT NULL,
+    `last_seen` int DEFAULT NULL,
+    UNIQUE KEY `uk_iconfig_name` (`config`),
+    CONSTRAINT `fk_config_name` FOREIGN KEY (`config`) REFERENCES `config` (`name`) ON DELETE SET NULL ON UPDATE CASCADE
 );
