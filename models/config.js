@@ -49,9 +49,11 @@ class Config {
         LIMIT 1`;
         var args = [name];
         var result = await query(sql, args);
+        if (result.length === 0) {
+            return null;
+        }
         // TODO: Error checking
         var c = result[0];
-        c.name = name;
         var data = new Config(
             name,
             c.backend_url,

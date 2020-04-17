@@ -13,8 +13,6 @@ const Log = require('./models/log.js');
 // TODO: Create routes class
 // TODO: Error checking/handling
 // TODO: Security / token auth
-// TODO: Default config for devices, auto assigned?
-// TODO: If default config is set, assign to device
 
 // Middleware
 app.set('view engine', 'mustache');
@@ -71,37 +69,36 @@ app.get('/config/new', function(req, res) {
 app.get('/config/edit/:name', async function(req, res) {
 	var name = req.params.name;
 	var c = await Config.getByName(name);
-    var data = {
-        title: config.title,
-        old_name: name,
-        name: c.name,
-        backend_url: c.backendUrl,
-        port: c.port,
-        heartbeat_max_time: c.heartbeatMaxTime,
-        pokemon_max_time: c.pokemonMaxTime,
-        raid_max_time: c.raidMaxTime,
-        startup_lat: c.startupLat,
-        startup_lon: c.startupLon,
-        token: c.token,
-        jitter_value: c.jitterValue,
-        max_warning_time_raid: c.maxWarningTimeRaid,
-        encounter_delay: c.encounterDelay,
-        min_delay_logout: c.minDelayLogout,
-        max_empty_gmo: c.maxEmptyGmo,
-        max_failed_count: c.maxFailedCount,
-        max_no_quest_count: c.maxNoQuestCount,
-        logging_url: c.loggingUrl,
-        logging_port: c.loggingPort,
-        logging_tls: c.loggingTls === 1 ? "checked" : "",
-        logging_tcp: c.loggingTcp === 1 ? "checked" : "",
-        account_manager: c.accountManager === 1 ? "checked" : "",
-        deploy_eggs: c.deployEggs === 1 ? "checked" : "",
-        nearby_tracker: c.nearbyTracker === 1 ? "checked" : "",
-        auto_login: c.autoLogin === 1 ? "checked" : "",
-        ultra_iv: c.ultraIV === 1 ? "checked" : "",
-		ultra_quests: c.ultraQuests === 1 ? "checked" : "",
-        is_default: c.isDefault === 1 ? "checked" : ""
-    };
+	var data = defaultData;
+    data.title = config.title;
+    data.old_name = name;
+    data.name = c.name;
+    data.backend_url = c.backendUrl;
+    data.port = c.port;
+    data.heartbeat_max_time = c.heartbeatMaxTime;
+    data.pokemon_max_time = c.pokemonMaxTime;
+    data.raid_max_time = c.raidMaxTime;
+    data.startup_lat = c.startupLat;
+    data.startup_lon = c.startupLon;
+    data.token = c.token;
+    data.jitter_value = c.jitterValue;
+    data.max_warning_time_raid = c.maxWarningTimeRaid;
+    data.encounter_delay = c.encounterDelay;
+    data.min_delay_logout = c.minDelayLogout;
+    data.max_empty_gmo = c.maxEmptyGmo;
+    data.max_failed_count = c.maxFailedCount;
+    data.max_no_quest_count = c.maxNoQuestCount;
+    data.logging_url = c.loggingUrl;
+    data.logging_port = c.loggingPort;
+    data.logging_tls = c.loggingTls === 1 ? "checked" : "";
+    data.logging_tcp = c.loggingTcp === 1 ? "checked" : "";
+    data.account_manager = c.accountManager === 1 ? "checked" : "";
+    data.deploy_eggs = c.deployEggs === 1 ? "checked" : "";
+    data.nearby_tracker = c.nearbyTracker === 1 ? "checked" : "";
+    data.auto_login = c.autoLogin === 1 ? "checked" : "";
+    data.ultra_iv = c.ultraIV === 1 ? "checked" : "";
+	data.ultra_quests = c.ultraQuests === 1 ? "checked" : "";
+    data.is_default = c.isDefault === 1 ? "checked" : "";
     res.render('config-edit', data);
 });
 
@@ -172,11 +169,6 @@ app.get('/api/configs', async function(req, res) {
 });
 
 app.get('/api/config/:uuid', async function(req, res) {
-	// TODO: Device says hello, db checks if it exists.
-	// TODO: If device does exist, check if it has been assigned a config.
-	// TODO: - if device is assigned config, send it. If it isn't attempt the assign default config if there is one.
-	// TODO: if device does not exist, create it and attempt to assign default config if there is one.
-
     var uuid = req.params.uuid;
 	var device = await Device.getByName(uuid);
 	var noConfig = false;
@@ -203,7 +195,7 @@ app.get('/api/config/:uuid', async function(req, res) {
     } else {
 		console.log("Device doesn't exist, creating...");
         // Device doesn't exist, create db entry
-        var result = await Device.create(uuid);
+        var result = await Device.create(uuid); // REVIEW: Maybe return Device object upon creation to prevent another sql call to get Device object?
         if (result) {
 			// Success, assign default config if there is one.
 			var defaultConfig = await Config.getDefault();
@@ -223,7 +215,7 @@ app.get('/api/config/:uuid', async function(req, res) {
 	}
 
 	if (noConfig) {
-		console.log("No config assigned to device", uuid, "and no default config to assign!");
+		console.error("No config assigned to device", uuid, "and no default config to assign!");
         var data = {
             status: "error",
             error: "Device not assigned to config!"
@@ -233,119 +225,48 @@ app.get('/api/config/:uuid', async function(req, res) {
 		return;
 	}
 	
-	// TODO: Use Config.getByName instead
-	var sql = "SELECT * FROM config WHERE name = ? LIMIT 1";
-	var args = [device.config];
-	var configs = await query(sql, args);
-	if (configs.length > 0) {
-		var c = configs[0];
-		// Build json config
-		var json = buildConfig(
-			c.backend_url,
-			c.port,
-			c.heartbeat_max_time,
-			c.pokemon_max_time,
-			c.raid_max_time,
-			c.startup_lat,
-			c.startup_lon,
-			c.token,
-			c.jitter_value,
-			c.max_warning_time_raid,
-			c.encounter_delay,
-			c.min_delay_logout,
-			c.max_empty_gmo,
-			c.max_failed_count,
-			c.max_no_quest_count,
-			c.logging_url,
-			c.logging_port,
-			c.logging_tls,
-			c.logging_tcp,
-			c.account_manager,
-			c.deploy_eggs,
-			c.nearby_tracker,
-			c.auto_login,
-			c.ultra_iv,
-			c.ultra_quests,
-			c.is_default
-		);
-		console.log("Config response:", json);
-		res.send(json);
-	}
-});
-
-app.get('/api/config/:uuid', async function(req, res) {
-	// TODO: Device says hello, db checks if it exists.
-	// TODO: If device does exist, check if it has been assigned a config.
-	// TODO: - if device is assigned config, send it. If it isn't attempt the assign default config if there is one.
-	// TODO: if device does not exist, create it and attempt to assign default config if there is one.
-
-    var uuid = req.params.uuid;
-    var device = await Device.getByName(uuid);
-    // Check if device config is empty, if not provide it as json response
-    if (device) {
-		device.lastSeen = new Date() / 1000;
-		device.save();
-        if (device.config) {
-			// TODO: Use Config.getByName instead
-            var sql = "SELECT * FROM config WHERE name = ? LIMIT 1";
-            var args = [device.config];
-            var configs = await query(sql, args);
-            if (configs.length > 0) {
-                var c = configs[0];
-                // Build json config
-                var json = buildConfig(
-                    c.backend_url,
-                    c.port,
-                    c.heartbeat_max_time,
-                    c.pokemon_max_time,
-                    c.raid_max_time,
-                    c.startup_lat,
-                    c.startup_lon,
-                    c.token,
-                    c.jitter_value,
-                    c.max_warning_time_raid,
-                    c.encounter_delay,
-                    c.min_delay_logout,
-                    c.max_empty_gmo,
-                    c.max_failed_count,
-                    c.max_no_quest_count,
-                    c.logging_url,
-                    c.logging_port,
-                    c.logging_tls,
-                    c.logging_tcp,
-                    c.account_manager,
-                    c.deploy_eggs,
-                    c.nearby_tracker,
-                    c.auto_login,
-                    c.ultra_iv,
-					c.ultra_quests,
-                    c.is_default
-                );
-                console.log("Config response:", json);
-                res.send(json);
-            }
-        } else {
-			// Not assigned a config
-            var data = {
-                status: "error",
-                error: "Device not assigned to config!"
-            }
-            var json = JSON.stringify(data);
-            res.send(json);
-        }
-    } else {
-        // Device doesn't exist, create db entry
-        var result = await Device.create(uuid);
-        if (result) {
-            // Success
-        }
+	var c = await Config.getByName(device.config);
+	if (c === null) {
+		console.error("Failed to grab config", device.config);
         var data = {
             status: "error",
             error: "Device not assigned to config!"
         }
         var json = JSON.stringify(data);
-        res.send(json);
-    }
+		res.send(json);
+		return;
+	}
+	// Build json config
+	var json = buildConfig(
+		c.backend_url,
+		c.port,
+		c.heartbeat_max_time,
+		c.pokemon_max_time,
+		c.raid_max_time,
+		c.startup_lat,
+		c.startup_lon,
+		c.token,
+		c.jitter_value,
+		c.max_warning_time_raid,
+		c.encounter_delay,
+		c.min_delay_logout,
+		c.max_empty_gmo,
+		c.max_failed_count,
+		c.max_no_quest_count,
+		c.logging_url,
+		c.logging_port,
+		c.logging_tls,
+		c.logging_tcp,
+		c.account_manager,
+		c.deploy_eggs,
+		c.nearby_tracker,
+		c.auto_login,
+		c.ultra_iv,
+		c.ultra_quests,
+		c.is_default
+	);
+	console.log("Config response:", json);
+	res.send(json);
 });
 
 app.post('/api/config/assign/:uuid', async function(req, res) {
