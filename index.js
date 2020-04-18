@@ -55,10 +55,19 @@ app.get('/configs', function(req, res) {
 });
 
 app.get('/config/assign/:uuid', async function(req, res) {
+	var uuid = req.params.uuid;
+	var device = await Device.getByName(uuid);
 	var configs = await Config.getAll();
 	var data = defaultData;
+    if (device.config) {
+        configs.forEach(function(cfg) {
+			cfg.selected = (device.config === cfg.name);
+        });
+    } else {
+		data.nothing_selected = true;
+	}
     data.configs = configs;
-    data.device = req.params.uuid;
+    data.device = uuid;
     res.render('config-assign', data);
 });
 
