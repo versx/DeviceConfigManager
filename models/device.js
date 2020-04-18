@@ -19,14 +19,14 @@ class Device {
         WHERE uuid = ?`;
         var args = [uuid];
         var result = await query(sql, args);
-        if (result && result.length > 0) {
-            return new Device(
-                result[0].uuid,
-                result[0].config,
-                result[0].last_seen
-            );
+        if (result.length === 0) {
+            return null;
         }
-        return null;
+        return new Device(
+            result[0].uuid,
+            result[0].config,
+            result[0].last_seen
+        );
     }
     static async create(uuid, config = null, lastSeen = null) {
         var sql = `

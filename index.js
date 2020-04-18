@@ -12,7 +12,7 @@ const Log = require('./models/log.js');
 
 // TODO: Create routes class
 // TODO: Error checking/handling
-// TODO: Security / token auth
+// TODO: Security / token auth / users (maybe?) or basic authentication
 
 // Middleware
 app.set('view engine', 'mustache');
@@ -247,32 +247,32 @@ app.get('/api/config/:uuid', async function(req, res) {
 	}
 	// Build json config
 	var json = buildConfig(
-		c.backend_url,
+		c.backendUrl,
 		c.port,
-		c.heartbeat_max_time,
-		c.pokemon_max_time,
-		c.raid_max_time,
-		c.startup_lat,
-		c.startup_lon,
+		c.heartbeatMaxTime,
+		c.pokemonMaxTime,
+		c.raidMaxTime,
+		c.startupLat,
+		c.startupLon,
 		c.token,
-		c.jitter_value,
-		c.max_warning_time_raid,
-		c.encounter_delay,
-		c.min_delay_logout,
-		c.max_empty_gmo,
-		c.max_failed_count,
-		c.max_no_quest_count,
-		c.logging_url,
-		c.logging_port,
-		c.logging_tls,
-		c.logging_tcp,
-		c.account_manager,
-		c.deploy_eggs,
-		c.nearby_tracker,
-		c.auto_login,
-		c.ultra_iv,
-		c.ultra_quests,
-		c.is_default
+		c.jitterValue,
+		c.maxWarningTimeRaid,
+		c.encounterDelay,
+		c.minDelayLogout,
+		c.maxEmptyGmo,
+		c.maxFailedCount,
+		c.maxNoQuestCount,
+		c.loggingUrl,
+		c.loggingPort,
+		c.loggingTls,
+		c.loggingTcp,
+		c.accountManager,
+		c.deployEggs,
+		c.nearbyTracker,
+		c.autoLogin,
+		c.ultraIV,
+		c.ultraQuests,
+		c.isDefault
 	);
 	console.log("Config response:", json);
 	res.send(json);
