@@ -24,7 +24,8 @@ app.use(express.static('static'));
 const defaultData = {
     title: config.title,
 	locale: config.locale,
-	style: config.style == "dark" ? 'dark' : ''
+	style: config.style == "dark" ? 'dark' : '',
+	logging: config.logging
 };
 
 // UI Routes
@@ -395,6 +396,10 @@ app.get('/api/logs', async function(req, res) {
 });
 
 app.post('/api/log/new/:uuid', async function(req, res) {
+	if (config.logging === false) {
+		// Logs are disabled
+		return;
+	}
 	var uuid = req.params.uuid;
 	var msg = Object.keys(req.body)[0]; // Dumb hack
 	var result = await Log.create(uuid, msg);

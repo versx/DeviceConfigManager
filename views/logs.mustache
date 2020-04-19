@@ -3,6 +3,13 @@
     <body>
         {{> navbar}}
         <br>
+        <div class="alert alert-danger w-75 {{#logging}}d-none{{/logging}}" style="float: none; margin: 0 auto;">
+            <strong>All device logging is disabled!</strong></a>
+        </div>
+        {{^logging}}<br>{{/logging}}
+
+
+        <br>
         <h1 align="center" id="header">Device Logs</h1>
         <br>
         <div style="width:90%; margin-left:calc(5%);">
