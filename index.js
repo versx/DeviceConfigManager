@@ -9,7 +9,11 @@ const query = require('./db.js');
 const Device = require('./models/device.js');
 const Config = require('./models/config.js');
 const Log = require('./models/log.js');
+const Migrator = require('./migrator.js');
 
+// Start database migrator
+var dbMigrator = new Migrator
+dbMigrator.load();
 // TODO: Create routes class
 // TODO: Error checking/handling
 // TODO: Security / token auth / users (maybe?) or basic authentication
