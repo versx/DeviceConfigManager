@@ -1,0 +1,1 @@
+RENAME TABLE device TO devices, config TO configs, log TO logs;

@@ -1,3 +1,5 @@
+"use strict"
+
 const path = require('path');
 const fs = require('fs');
 const query = require('./db.js');
@@ -62,7 +64,7 @@ class Migrator {
     async migrate(fromVersion, toVersion) {
         if (fromVersion < toVersion) {
             // TODO: Wait 30 seconds and let user know we are about to migrate the database and for them to make a backup until we handle backups and rollbacks.
-            console.log("[DController] MIGRATION IS ABOUT TO START IN 30 SECONDS, PLEASE MAKE SURE YOU HAVE A BACKUP!!!")
+            console.log("[DBController] MIGRATION IS ABOUT TO START IN 30 SECONDS, PLEASE MAKE SURE YOU HAVE A BACKUP!!!")
             await snooze(30 * 1000);
             console.log("[DBController] Migrating database to version " + (fromVersion + 1));
             var migrateSQL;
@@ -113,7 +115,7 @@ class Migrator {
                     process.exit(-1);
                 });
             console.log("[DBController] Migration successful");
-            migrate(fromVersion + 1, toVersion);
+            this.migrate(fromVersion + 1, toVersion);
         }
     }
     backup() {

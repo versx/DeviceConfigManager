@@ -11,12 +11,14 @@ const Config = require('./models/config.js');
 const Log = require('./models/log.js');
 const Migrator = require('./migrator.js');
 
-// Start database migrator
-var dbMigrator = new Migrator
-dbMigrator.load();
-// TODO: Create routes class
+// TODO: Create route classes
 // TODO: Error checking/handling
 // TODO: Security / token auth / users (maybe?) or basic authentication
+// TODO: Listen on specific interface
+
+// Start database migrator
+var dbMigrator = new Migrator();
+dbMigrator.load();
 
 // Middleware
 app.set('view engine', 'mustache');
@@ -34,8 +36,8 @@ const defaultData = {
 
 // UI Routes
 app.get(['/', '/index'], async function(req, res) {
-    var devices = await query("SELECT uuid FROM device");
-    var configs = await query("SELECT name FROM config");
+    var devices = await Device.getAll();
+    var configs = await Config.getAll();
     var data = defaultData;
     data.devices = devices.length;
     data.configs = configs.length;
@@ -284,9 +286,10 @@ app.get('/api/config/:uuid', async function(req, res) {
 });
 
 app.post('/api/config/assign/:uuid', async function(req, res) {
+	// TODO: Device.getByName and Device.assignConfig(name)
     var uuid = req.params.uuid;
     var config = req.body.config;
-    var sql = "UPDATE device SET config = ? WHERE uuid = ?";
+    var sql = "UPDATE devices SET config = ? WHERE uuid = ?";
     var args = [config, uuid];
     var result = await query(sql, args);
     if (result.affectedRows === 1) {

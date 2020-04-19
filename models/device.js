@@ -9,13 +9,13 @@ class Device {
         this.lastSeen = lastSeen;
     }
     static async getAll() {
-        var devices = await query("SELECT uuid, config, last_seen FROM device");
+        var devices = await query("SELECT uuid, config, last_seen FROM devices");
         return devices;
     }
     static async getByName(uuid) {
         var sql = `
         SELECT uuid, config, last_seen
-        FROM device
+        FROM devices
         WHERE uuid = ?`;
         var args = [uuid];
         var result = await query(sql, args);
@@ -30,21 +30,21 @@ class Device {
     }
     static async create(uuid, config = null, lastSeen = null) {
         var sql = `
-        INSERT INTO device (uuid, config, last_seen)
+        INSERT INTO devices (uuid, config, last_seen)
         VALUES (?, ?, ?)`;
         var args = [uuid, config, lastSeen];
         var result = await query(sql, args);
         return result.affectedRows === 1;
     }
     static async delete(uuid) {
-        var sql = "DELETE FROM device WHERE uuid = ?";
+        var sql = "DELETE FROM devices WHERE uuid = ?";
         var args = [uuid];
         var result = await query(sql, args);
         return result.affectedRows === 1;
     }
     async save() {
         var sql = `
-        UPDATE device
+        UPDATE devices
         SET config = ?, last_seen = ?
         WHERE uuid = ?`;
         var args = [this.config, this.lastSeen, this.uuid];
