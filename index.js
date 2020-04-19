@@ -23,9 +23,9 @@ app.use(express.static('static'));
 
 const defaultData = {
     title: config.title,
-	locale: config.locale,
-	style: config.style == "dark" ? 'dark' : '',
-	logging: config.logging
+    locale: config.locale,
+    style: config.style == "dark" ? 'dark' : '',
+    logging: config.logging
 };
 
 // UI Routes
@@ -56,17 +56,17 @@ app.get('/configs', function(req, res) {
 });
 
 app.get('/config/assign/:uuid', async function(req, res) {
-	var uuid = req.params.uuid;
-	var device = await Device.getByName(uuid);
-	var configs = await Config.getAll();
-	var data = defaultData;
+    var uuid = req.params.uuid;
+    var device = await Device.getByName(uuid);
+    var configs = await Config.getAll();
+    var data = defaultData;
     if (device.config) {
         configs.forEach(function(cfg) {
-			cfg.selected = (device.config === cfg.name);
+            cfg.selected = (device.config === cfg.name);
         });
     } else {
-		data.nothing_selected = true;
-	}
+        data.nothing_selected = true;
+    }
     data.configs = configs;
     data.device = uuid;
     res.render('config-assign', data);
@@ -77,9 +77,9 @@ app.get('/config/new', function(req, res) {
 });
 
 app.get('/config/edit/:name', async function(req, res) {
-	var name = req.params.name;
-	var c = await Config.getByName(name);
-	var data = defaultData;
+    var name = req.params.name;
+    var c = await Config.getByName(name);
+    var data = defaultData;
     data.title = config.title;
     data.old_name = name;
     data.name = c.name;
@@ -107,7 +107,7 @@ app.get('/config/edit/:name', async function(req, res) {
     data.nearby_tracker = c.nearbyTracker === 1 ? "checked" : "";
     data.auto_login = c.autoLogin === 1 ? "checked" : "";
     data.ultra_iv = c.ultraIV === 1 ? "checked" : "";
-	data.ultra_quests = c.ultraQuests === 1 ? "checked" : "";
+    data.ultra_quests = c.ultraQuests === 1 ? "checked" : "";
     data.is_default = c.isDefault === 1 ? "checked" : "";
     res.render('config-edit', data);
 });
@@ -131,7 +131,7 @@ app.get('/api/devices', async function(req, res) {
     try {
         var devices = await Device.getAll();
         devices.forEach(function(device) {
-			device.last_seen = getDateTime(device.last_seen);
+            device.last_seen = getDateTime(device.last_seen);
             device.buttons = "<a href='/config/assign/" + device.uuid + "'><button type='button' class='btn btn-primary'>Assign</button></a> \
                               <a href='/device/delete/" + device.uuid + "'><button type='button' class='btn btn-danger'>Delete</button></a>";
         });
@@ -145,20 +145,20 @@ app.get('/api/devices', async function(req, res) {
 app.post('/api/device/new', async function(req, res) {
     var uuid = req.body.uuid;
     var config = req.body.config;
-	var result = await Device.create(uuid, config || null, null)
-	if (result) {
-		// Success
-	}
+    var result = await Device.create(uuid, config || null, null)
+    if (result) {
+        // Success
+    }
     console.log("New device result:", result);
     res.redirect('/devices');
 });
 
 app.post('/api/device/delete/:uuid', async function(req, res) {
     var uuid = req.params.uuid;
-	var result = await Device.delete(uuid);
-	if (result) {
-		// Success
-	}
+    var result = await Device.delete(uuid);
+    if (result) {
+        // Success
+    }
     res.redirect('/devices');
 });
 
@@ -167,7 +167,7 @@ app.get('/api/configs', async function(req, res) {
     try {
         var configs = await Config.getAll();
         configs.forEach(function(config) {
-			config.is_default = config.is_default ? "Yes" : "No";
+            config.is_default = config.is_default ? "Yes" : "No";
             config.buttons = "<a href='/config/edit/" + config.name + "'><button type='button' class='btn btn-primary' data-toggle='modal' data-target='#editConfigModal'>Edit</button></a> \
                               <a href='/config/delete/" + config.name + "'><button type='button'class='btn btn-danger' data-toggle='modal' data-target='#deleteConfigModal'>Delete</button></a>";
         });
@@ -180,103 +180,103 @@ app.get('/api/configs', async function(req, res) {
 
 app.get('/api/config/:uuid', async function(req, res) {
     var uuid = req.params.uuid;
-	var device = await Device.getByName(uuid);
-	var noConfig = false;
+    var device = await Device.getByName(uuid);
+    var noConfig = false;
     // Check if device config is empty, if not provide it as json response
     if (device) {
-		// Device exists
-		device.lastSeen = new Date() / 1000;
-		device.save();
+        // Device exists
+        device.lastSeen = new Date() / 1000;
+        device.save();
         if (device.config) {
-			// Do something
+            // Do something
         } else {
-			console.log("Device", uuid, "not assigned a config, attempting to assign the default config if one is set...");
-			// Not assigned a config
-			var defaultConfig = await Config.getDefault();
-			if (defaultConfig !== null) {
-				console.log("Assigning device", uuid, "default config", defaultConfig.name);
+            console.log("Device", uuid, "not assigned a config, attempting to assign the default config if one is set...");
+            // Not assigned a config
+            var defaultConfig = await Config.getDefault();
+            if (defaultConfig !== null) {
+                console.log("Assigning device", uuid, "default config", defaultConfig.name);
                 device.config = defaultConfig.name;
                 device.save();
-            } else {
-				// No default config so don't give config response
-				noConfig = true;
-			}
+            } else {    
+                // No default config so don't give config response
+                noConfig = true;
+            }
         }
     } else {
-		console.log("Device doesn't exist, creating...");
+        console.log("Device doesn't exist, creating...");
         // Device doesn't exist, create db entry
         var result = await Device.create(uuid); // REVIEW: Maybe return Device object upon creation to prevent another sql call to get Device object?
         if (result) {
-			// Success, assign default config if there is one.
-			var defaultConfig = await Config.getDefault();
-			if (defaultConfig !== null) {
-				console.log("Assigning device", uuid, "default config", defaultConfig.name);
-				device = await Device.getByName(uuid);
+            // Success, assign default config if there is one.
+            var defaultConfig = await Config.getDefault();
+            if (defaultConfig !== null) {
+                console.log("Assigning device", uuid, "default config", defaultConfig.name);
+                device = await Device.getByName(uuid);
                 device.config = defaultConfig.name;
                 device.save();
             } else {
-				// No default config so don't give config response
-				noConfig = true;
-			}
-		} else {
-			// Failed to create device so don't give config response
-			noConfig = true;
-		}
-	}
+                // No default config so don't give config response
+                noConfig = true;
+            }
+        } else {
+            // Failed to create device so don't give config response
+            noConfig = true;
+        }
+    }
 
-	if (noConfig) {
-		console.error("No config assigned to device", uuid, "and no default config to assign!");
+    if (noConfig) {
+        console.error("No config assigned to device", uuid, "and no default config to assign!");
         var data = {
             status: "error",
             error: "Device not assigned to config!"
         }
         var json = JSON.stringify(data);
-		res.send(json);
-		return;
-	}
-	
-	var c = await Config.getByName(device.config);
-	if (c === null) {
-		console.error("Failed to grab config", device.config);
+        res.send(json);
+        return;
+    }
+    
+    var c = await Config.getByName(device.config);
+    if (c === null) {
+        console.error("Failed to grab config", device.config);
         var data = {
             status: "error",
             error: "Device not assigned to config!"
         }
         var json = JSON.stringify(data);
-		res.send(json);
-		return;
-	}
-	// Build json config
-	var json = buildConfig(
-		c.backendUrl,
-		c.port,
-		c.heartbeatMaxTime,
-		c.pokemonMaxTime,
-		c.raidMaxTime,
-		c.startupLat,
-		c.startupLon,
-		c.token,
-		c.jitterValue,
-		c.maxWarningTimeRaid,
-		c.encounterDelay,
-		c.minDelayLogout,
-		c.maxEmptyGmo,
-		c.maxFailedCount,
-		c.maxNoQuestCount,
-		c.loggingUrl,
-		c.loggingPort,
-		c.loggingTls,
-		c.loggingTcp,
-		c.accountManager,
-		c.deployEggs,
-		c.nearbyTracker,
-		c.autoLogin,
-		c.ultraIV,
-		c.ultraQuests,
-		c.isDefault
-	);
-	console.log("Config response:", json);
-	res.send(json);
+        res.send(json);
+        return;
+    }
+    // Build json config
+    var json = buildConfig(
+        c.backendUrl,
+        c.port,
+        c.heartbeatMaxTime,
+        c.pokemonMaxTime,
+        c.raidMaxTime,
+        c.startupLat,
+        c.startupLon,
+        c.token,
+        c.jitterValue,
+        c.maxWarningTimeRaid,
+        c.encounterDelay,
+        c.minDelayLogout,
+        c.maxEmptyGmo,
+        c.maxFailedCount,
+        c.maxNoQuestCount,
+        c.loggingUrl,
+        c.loggingPort,
+        c.loggingTls,
+        c.loggingTcp,
+        c.accountManager,
+        c.deployEggs,
+        c.nearbyTracker,
+        c.autoLogin,
+        c.ultraIV,
+        c.ultraQuests,
+        c.isDefault
+    );
+    console.log("Config response:", json);
+    res.send(json);
 });
 
 app.post('/api/config/assign/:uuid', async function(req, res) {
@@ -319,8 +319,8 @@ app.post('/api/config/new', async function(req, res) {
         data.nearby_tracker === 'on' ? 1 : 0,
         data.auto_login === 'on' ? 1 : 0,
         data.ultra_iv === 'on' ? 1 : 0,
-		data.ultra_quests === 'on' ? 1 : 0,
-		data.is_default === 'on' ? 1 : 0
+        data.ultra_quests === 'on' ? 1 : 0,
+        data.is_default === 'on' ? 1 : 0
     );
     if (result) {
         console.log("Config inserted");
@@ -331,9 +331,9 @@ app.post('/api/config/new', async function(req, res) {
 });
 
 app.post('/api/config/edit/:name', async function(req, res) {
-	var oldName = req.params.name;
-	var data = req.body;
-	var c = await Config.getByName(oldName);
+    var oldName = req.params.name;
+    var data = req.body;
+    var c = await Config.getByName(oldName);
     c.name = data.name;
     c.backendUrl = data.backend_url;
     c.port = data.port;
@@ -359,13 +359,13 @@ app.post('/api/config/edit/:name', async function(req, res) {
     c.nearbyTracker = data.nearby_tracker === 'on' ? 1 : 0;
     c.autoLogin = data.auto_login === 'on' ? 1 : 0;
     c.ultraIV = data.ultra_iv === 'on' ? 1 : 0;
-	c.ultraQuests = data.ultra_quests === 'on' ? 1 : 0;
-	c.isDefault = data.is_default === 'on' ? 1 : 0;
+    c.ultraQuests = data.ultra_quests === 'on' ? 1 : 0;
+    c.isDefault = data.is_default === 'on' ? 1 : 0;
     if (await c.save(oldName)) {
-		// Success
-		if (c.isDefault !== false) {
-			await Config.setDefault(oldName);
-		}
+        // Success
+        if (c.isDefault !== false) {
+            await Config.setDefault(oldName);
+        }
     }
     res.redirect('/configs');
 });
@@ -383,7 +383,7 @@ app.post('/api/config/delete/:name', async function(req, res) {
 // Log API requests
 app.get('/api/logs', async function(req, res) {
     try {
-		var logs = await Log.getAll();
+        var logs = await Log.getAll();
         logs.forEach(function(log) {
             log.date = getDateTime(log.timestamp); // TODO: Make ajax request for delete to prevent page reload
             log.buttons = "<a href='/api/log/delete/" + log.id + "'><button type='button'class='btn btn-danger' onclick='return confirm(\"Are you sure you want to delete log #" + log.id + "?\");'>Delete</button></a>";
@@ -396,34 +396,35 @@ app.get('/api/logs', async function(req, res) {
 });
 
 app.post('/api/log/new/:uuid', async function(req, res) {
-	if (config.logging === false) {
-		// Logs are disabled
-		return;
-	}
-	var uuid = req.params.uuid;
-	var msg = Object.keys(req.body)[0]; // Dumb hack
-	var result = await Log.create(uuid, msg);
-	if (result) {
-		// Success
-	}
+    if (config.logging === false) {
+        // Logs are disabled
+        res.send('OK');
+        return;
+    }
+    var uuid = req.params.uuid;
+    var msg = Object.keys(req.body)[0]; // Dumb hack
+    var result = await Log.create(uuid, msg);
+    if (result) {
+        // Success
+    }
     console.log("[SYSLOG]", uuid, ":", msg);
     res.send('OK');
 });
 
 app.get('/api/log/delete/:id', async function(req, res) {
-	var id = req.params.id;
-	var result = await Log.delete(id);
-	if (result) {
-		// Success
-	}
+    var id = req.params.id;
+    var result = await Log.delete(id);
+    if (result) {
+        // Success
+    }
     res.redirect('/logs');
 });
 
 app.get('/api/logs/delete_all', async function(req, res) {
-	var result = await Log.deleteAll();
-	if (result) {
-		// Success
-	}
+    var result = await Log.deleteAll();
+    if (result) {
+        // Success
+    }
     res.redirect('/logs');
 });
 
