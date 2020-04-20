@@ -14,7 +14,7 @@ module.exports = {
   {
     name: 'DeviceConfigManager',
     script: 'index.js',
-    cwd: '/home/username/DeviceConfigManager/',
+    cwd: '/home/username/DeviceConfigManager/src/',
     instances: 1,
     autorestart: true,
     watch: false,

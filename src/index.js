@@ -69,6 +69,30 @@ app.get('/device/delete/:uuid', async function(req, res) {
     res.render('device-delete', defaultData);
 });
 
+app.get('/device/manage/:uuid', async function(req, res) {
+    var uuid = req.params.uuid;
+    var device = await Device.getByName(uuid);
+    var data = defaultData;
+    data.name = uuid;
+    if (device) {
+        if (device.config) {
+            var c = await Config.getByName(device.config);
+            if (c === null) {
+                console.error("Failed to grab config", device.config);
+                return;
+            } else {
+                data.port = c.port;
+            }
+        }
+        if (device.clientip === null) {
+            console.error("Failed to get IP address.");
+        } else {
+            data.clientip = device.clientip
+        }
+    }
+    res.render('device-manage', data);
+});
+
 app.get('/configs', function(req, res) {
     res.render('configs', defaultData);
 });
@@ -148,7 +172,8 @@ app.get('/api/devices', async function(req, res) {
             device.last_seen = utils.getDateTime(device.last_seen);
             device.buttons = `<a href='/config/assign/${device.uuid}'><button type='button' class='btn btn-primary'>Assign</button></a>
 							  <a href='/device/logs/${device.uuid}'><button type='button' class='btn btn-info'>Logs</button></a>
-                              <a href='/device/delete/${device.uuid}'><button type='button' class='btn btn-danger'>Delete</button></a>`;
+                              <a href='/device/delete/${device.uuid}'><button type='button' class='btn btn-danger'>Delete</button></a>
+                              <a href='/device/manage/${device.uuid}'><button type='button' class='btn btn-success'>Manager</button></a>`;
         });
         var json = JSON.stringify({ data: { devices: devices } });
         res.send(json);
@@ -160,7 +185,8 @@ app.get('/api/devices', async function(req, res) {
 app.post('/api/device/new', async function(req, res) {
     var uuid = req.body.uuid;
     var config = req.body.config;
-    var result = await Device.create(uuid, config || null, null);
+    var clientip = req.body.clientip;
+    var result = await Device.create(uuid, config, clientip || null, null, null);
     if (result) {
         // Success
     }
@@ -198,10 +224,14 @@ app.get('/api/config/:uuid', async function(req, res) {
     var uuid = req.params.uuid;
     var device = await Device.getByName(uuid);
     var noConfig = false;
+    // Check for a proxied IP before the normal IP and set the first one at exists
+    var clientip = (req.headers['x-forwarded-for'].split(', ')[0]) || (req.connection.remoteAddress).match("[0-9]+.[0-9].+[0-9]+.[0-9]+$")[0];
+    
     // Check if device config is empty, if not provide it as json response
     if (device) {
         // Device exists
         device.lastSeen = new Date() / 1000;
+        device.clientip = clientip;
         device.save();
         if (device.config) {
             // Do something
@@ -221,7 +251,7 @@ app.get('/api/config/:uuid', async function(req, res) {
     } else {
         console.log('Device does not exist, creating...');
         // Device doesn't exist, create db entry
-        var result = await Device.create(uuid); // REVIEW: Maybe return Device object upon creation to prevent another sql call to get Device object?
+        var result = await Device.create(uuid, clientip); // REVIEW: Maybe return Device object upon creation to prevent another sql call to get Device object?
         if (result) {
             // Success, assign default config if there is one.
             var defaultConfig = await Config.getDefault();
