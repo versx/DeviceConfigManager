@@ -1,5 +1,8 @@
 'use strict';
 
+const multer = require('multer');
+const upload = multer({ dest: '../screenshots' });
+const fs = require('fs');
 const path = require('path');
 const express = require('express');
 const bodyParser = require('body-parser');
@@ -27,6 +30,7 @@ app.set('views', path.resolve(__dirname, 'views'));
 app.engine('mustache', mustacheExpress());
 app.use(bodyParser.urlencoded({ extended: false, limit: '50mb' })); // for parsing application/x-www-form-urlencoded
 app.use(express.static(path.resolve(__dirname, '../static')));
+app.use('/screenshots', express.static(path.resolve(__dirname, '../screenshots')));
 
 const defaultData = {
     title: config.title,
@@ -145,9 +149,13 @@ app.get('/api/devices', async function(req, res) {
     try {
         var devices = await Device.getAll();
         devices.forEach(function(device) {
+            var screenshot = `/screenshots/${device.uuid}.png`;
+            var exists = fs.existsSync(path.join(__dirname, `..${screenshot}`));
+            var image = exists ? screenshot : `/img/offline.png`;
+            device.image = `<a href='${image}' target='_blank'><img src='${image}' width='64' height='96'/></a>`;
             device.last_seen = utils.getDateTime(device.last_seen);
             device.buttons = `<a href='/config/assign/${device.uuid}'><button type='button' class='btn btn-primary'>Assign</button></a>
-							  <a href='/device/logs/${device.uuid}'><button type='button' class='btn btn-info'>Logs</button></a>
+                              <a href='/device/logs/${device.uuid}'><button type='button' class='btn btn-info'>Logs</button></a>
                               <a href='/device/delete/${device.uuid}'><button type='button' class='btn btn-danger'>Delete</button></a>`;
         });
         var json = JSON.stringify({ data: { devices: devices } });
@@ -166,6 +174,37 @@ app.post('/api/device/new', async function(req, res) {
     }
     console.log('New device result:', result);
     res.redirect('/devices');
+});
+
+app.post('/api/device/:uuid/screen', upload.single('file'), function(req, res) {
+    var uuid = req.params.uuid;
+    var fileName = uuid + '.png';
+    const tempPath = req.file.path;
+    const screenshotsDir = path.resolve(__dirname, '../screenshots');
+    const targetPath = path.join(screenshotsDir, fileName);
+    if (!fs.existsSync(screenshotsDir)) {
+        fs.mkdirSync(screenshotsDir);
+    }
+    //console.log("File:", req.file);
+    //console.log("Temp Path:", tempPath, "Target Path:", targetPath, "Original FileName:", req.file.originalname);
+    if (path.extname(req.file.originalname).toLowerCase() === '.png' ||
+        path.extname(req.file.originalname).toLowerCase() === '.jpg' ||
+        path.extname(req.file.originalname).toLowerCase() === '.jpeg') {
+        console.log("Moving file");
+        fs.rename(tempPath, targetPath, function(err) {
+            if (err) return handleError(err, res);
+            res.status(200)
+            .contentType('text/plain')
+            .end('OK');
+        });
+    } else {
+        fs.unlink(tmepPath, function(err) {
+            if (err) return handleError(err, res);
+            res.status(200)
+            .contentType('text/plain')
+            .end('ERROR');
+        })
+    }
 });
 
 app.post('/api/device/delete/:uuid', async function(req, res) {
@@ -380,7 +419,9 @@ app.post('/api/config/edit/:name', async function(req, res) {
     c.isDefault = data.is_default === 'on' ? 1 : 0;
     if (await c.save(oldName)) {
         // Success
-        if (c.isDefault !== false) {
+        console.log("IsDefault:", c.isDefault);
+        if (c.isDefault) {
+            console.log("Setting default for", oldName);
             await Config.setDefault(oldName);
         }
     }

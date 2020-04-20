@@ -106,4 +106,8 @@ dist
 # No main configs
 config.json
 
+# No logs
 logs
+
+# No screenshots
+screenshots

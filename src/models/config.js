@@ -152,16 +152,12 @@ class Config {
         return data;
     }
     static async setDefault(name) {
-        // TODO: Update both in one sql statement
-        var sql = 'UPDATE configs SET is_default = 0 WHERE name != ?';
+        var sql = `
+        UPDATE dcm.configs
+        SET is_default = IF(name = ?, 1, 0);`;
         var args = [name];
         var result = await query(sql, args);
-        if (result.affectedRows > 0) {
-            // Success
-        }
-        sql = 'UPDATE config SET is_default = 1 WHERE name = ?';
-        result = await query(sql, args);
-        return result.affectedRows === 1;
+        return result.affectedRows > 0;
     }
     async save(oldName) {
         var sql = `
