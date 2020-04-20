@@ -3,10 +3,10 @@
     <body>
         {{> navbar}}
         <br>
-        <h1 align="center" id="header">Device Logs</h1>
+        <h1 align="center" id="header">{{uuid}} Device Logs</h1>
         <br>
         <div style="width:90%; margin-left:calc(5%);">
-            <a href="/api/logs/delete_all" role="button" style="float: right;" class="btn btn-danger" onclick="return confirm('Are you sure you want to delete all logs?');">Delete All</a>
+            <a href="/api/log/delete/{{uuid}}" role="button" style="float: right;" class="btn btn-danger" onclick="return confirm('Are you sure you want to delete {{uuid}} logs?');">Delete All</a>
             <br><br>
             <table id="table" class="table table-{{style}} table-sm table-striped table-bordered table-hover dt-responsive nowrap" style="position: center; width:100%">
                 <thead class="thead-dark">
@@ -14,14 +14,12 @@
                     <th>Date</th>
                     <th>UUID</th>
                     <th>Message</th>
-                    <th width="5%"></th>
                 </tr>
                 </thead>
                 <tbody>
                 </tbody>
             </table>
         </div>
-        <br>
     </body>
 </html>
 
@@ -30,11 +28,12 @@
         $('body').css('background-color', 'rgb(33, 37, 41)');
         $('body').css('color', 'rgb(255, 255, 255)');
         //$('#header').css('color', 'white');
+        //$('#message').css('color', 'white');
     }
     $(document).ready(function() {
         const table = $('#table').DataTable( {
             "ajax": {
-                "url": "/api/logs",
+                "url": "/api/logs/{{uuid}}",
                 "dataSrc": "data.logs"
             },
             "paging":   true,
@@ -43,14 +42,13 @@
             "columns": [
                 { "data": "date" },
                 { "data": "uuid" },
-                { "data": "message" },
-                { "data": "buttons" }
+                { "data": "message" }
             ],
             "info":     true,
             "order": [[ 0, "desc" ]],
             "search.caseInsensitive": true,
             "columnDefs": [ {
-                "targets": [3],
+                "targets": [2],
                 "orderable": false
             }],
             "responsive": true,

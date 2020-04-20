@@ -1,4 +1,4 @@
-CREATE TABLE IF NOT EXISTS `config` (
+CREATE TABLE IF NOT EXISTS `configs` (
     `name` varchar(64) PRIMARY KEY UNIQUE NOT NULL,
     `backend_url` varchar(255) NOT NULL,
     `port` int DEFAULT 8080,
@@ -28,16 +28,9 @@ CREATE TABLE IF NOT EXISTS `config` (
     `is_default` tinyint(1) DEFAULT 0
 );
 
-CREATE TABLE IF NOT EXISTS `log` (
-    `id` int PRIMARY KEY UNIQUE AUTO_INCREMENT,
-    `uuid` varchar(128) NOT NULL,
-    `timestamp` int unsigned,
-    `message` text NOT NULL
-);
-
-CREATE TABLE IF NOT EXISTS `device` (
+CREATE TABLE IF NOT EXISTS `devices` (
     `uuid` varchar(128) PRIMARY KEY UNIQUE NOT NULL,
     `config` varchar(64) DEFAULT NULL,
     `last_seen` int DEFAULT NULL,
-    CONSTRAINT `fk_config_name` FOREIGN KEY (`config`) REFERENCES `config` (`name`) ON DELETE SET NULL ON UPDATE CASCADE
+    CONSTRAINT `fk_config_name` FOREIGN KEY (`config`) REFERENCES `configs` (`name`) ON DELETE SET NULL ON UPDATE CASCADE
 );
