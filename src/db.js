@@ -1,4 +1,4 @@
-"use strict"
+'use strict';
 
 const mysql = require('mysql');
 const config = require('./config.json');
@@ -21,7 +21,7 @@ function getConnection() {
     });
     
     conn.on('error', function(err) {
-        console.error("Mysql error:", err);
+        console.error('Mysql error:', err);
     });
     return conn;
 }
@@ -40,7 +40,7 @@ function query(sql, args) {
             resolve(rows);
             conn.end(function(err, args) {
                 if (err) {
-                    console.error("Failed to close mysql connection.");
+                    console.error('Failed to close mysql connection.');
                     return;
                 }
             });

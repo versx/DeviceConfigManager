@@ -1,4 +1,4 @@
-"use strict"
+'use strict';
 
 const path = require('path');
 const fs = require('fs');
@@ -18,10 +18,10 @@ class Migrator {
             if (query === undefined || query === null) {
                 var message = `Failed to connect to database (as root) while initializing. Try: ${count}/10`;
                 if (count === 10) {
-                    console.error("[DBController] " + message);
+                    console.error('[DBController] ' + message);
                     process.exit(-1);
                 } else {
-                    console.error("[DBController] " + message);
+                    console.error('[DBController] ' + message);
                 }
                 count++;
                 await utils.snooze(2500);
@@ -39,7 +39,7 @@ class Migrator {
         await query(createMetadataTableSQL)
             .then(x => x)
             .catch(err => {
-                console.error("[DBController] Failed to create metadata table: (" + err + ")");
+                console.error('[DBController] Failed to create metadata table: (' + err + ')');
                 process.exit(-1);
             });
         
@@ -51,7 +51,7 @@ class Migrator {
         var results = await query(getDBVersionSQL)
             .then(x => x)
             .catch(err => {
-                console.error("[DBController] Failed to get current database version: (" + err + ")");
+                console.error('[DBController] Failed to get current database version: (' + err + ')');
                 process.exit(-1);
             });
         if (results.length > 0) {
@@ -61,51 +61,56 @@ class Migrator {
         }
     
         var newestVersion = this.getNewestDbVersion();
-        console.log("[DbController] Current:", version, "Latest:", newestVersion);
+        console.log('[DbController] Current:', version, 'Latest:', newestVersion);
         this.migrate(version, newestVersion);
+    }
+    static async getEntries() {
+        var sql = 'SELECT `key`, `value` FROM metadata';
+        var results = await query(sql, []);
+        return results;
     }
     async migrate(fromVersion, toVersion) {
         if (fromVersion < toVersion) {
             // TODO: Wait 30 seconds and let user know we are about to migrate the database and for them to make a backup until we handle backups and rollbacks.
-            console.log("[DBController] MIGRATION IS ABOUT TO START IN 30 SECONDS, PLEASE MAKE SURE YOU HAVE A BACKUP!!!")
+            console.log('[DBController] MIGRATION IS ABOUT TO START IN 30 SECONDS, PLEASE MAKE SURE YOU HAVE A BACKUP!!!');
             await utils.snooze(30 * 1000);
-            console.log("[DBController] Migrating database to version " + (fromVersion + 1));
+            console.log('[DBController] Migrating database to version ' + (fromVersion + 1));
             var migrateSQL;
             try {
                 var sqlFile = `${migrationsDir}${path.sep}${fromVersion + 1}.sql`;
-                migrateSQL = readFile(sqlFile);
+                migrateSQL = utils.readFile(sqlFile);
                 migrateSQL.replace('\r', '').replace('\n', '');
             } catch (err) {
-                console.error("[DBController] Migration failed: " + err);
+                console.error('[DBController] Migration failed: ' + err);
                 process.exit(-1);
             }
+            /*
             var sqlSplit = migrateSQL.split(';');
             sqlSplit.forEach(async sql => {
                 let msql = sql.replace('&semi', ';').trim();
-                if (msql !== "") {
+                if (msql !== '') {
                     let results = await query(msql)
-                    .then(x => x)
-                    .catch(async err => {
-                        console.error("[DBController] Migration failed: " + err + "\r\nExecuting SQL statement: " + msql);
-                        if (noBackup === undefined || noBackup === null || noBackup === false) {
-                            for (let i = 0; i < 10; i++) {
-                                logger.warn(`[DBController] Rolling back migration in ${(10 - i)} seconds`);
-                                await utils.snooze(1000);
-                            }
-                            console.log("[DBController] Rolling back migration now. Do not kill RDM!");
-                            /*
+                        .then(x => x)
+                        .catch(async err => {
+                            console.error('[DBController] Migration failed: ' + err + '\r\nExecuting SQL statement: ' + msql);
+                            if (noBackup === undefined || noBackup === null || noBackup === false) {
+                                for (let i = 0; i < 10; i++) {
+                                    logger.warn(`[DBController] Rolling back migration in ${(10 - i)} seconds`);
+                                    await utils.snooze(1000);
+                                }
+                                console.log('[DBController] Rolling back migration now. Do not kill RDM!');
                             rollback(
                                 backupFileSchema.path.toString(), 
                                 backupFileTrigger.path.toString(), 
                                 backupFileData.path.toString()
                             );
-                            */
-                        }
-                        //fatalError(message);
-                        return null;
-                    });
-                }                
-            })
+                            }
+                            //fatalError(message);
+                            return null;
+                        });
+                }
+            });
+            */
             
             var updateVersionSQL = `
             INSERT INTO metadata (\`key\`, \`value\`)
@@ -114,10 +119,10 @@ class Migrator {
             await query(updateVersionSQL)
                 .then(x => x)
                 .catch(err => {
-                    console.error("[DBController] Migration failed: " + err);
+                    console.error('[DBController] Migration failed: ' + err);
                     process.exit(-1);
                 });
-            console.log("[DBController] Migration successful");
+            console.log('[DBController] Migration successful');
             this.migrate(fromVersion + 1, toVersion);
         }
     }
@@ -236,7 +241,7 @@ class Migrator {
         var results = await query(sql, args)
             .then(x => x)
             .catch(err => {
-                console.error("[DbController] Error:", err);
+                console.error('[DbController] Error:', err);
                 return null;
             });
         if (results.length === 0) {
@@ -255,10 +260,10 @@ class Migrator {
         var results = await query(sql, args)
             .then(x => x)
             .catch(err => {
-                console.error("[DbController] Error:", err);
+                console.error('[DbController] Error:', err);
                 return null;
             });
-        console.log("[DbController] SetValueForKey:", results);
+        console.log('[DbController] SetValueForKey:', results);
     }
 }
 
