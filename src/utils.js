@@ -1,4 +1,4 @@
-"use strict"
+'use strict';
 
 const fs = require('fs');
 
@@ -14,12 +14,12 @@ function snooze(ms) {
 function getDateTime(timestamp) {
     var unixTimestamp = timestamp * 1000;
     var d = new Date(unixTimestamp);
-    return d.toLocaleDateString("en-US") + " " + d.toLocaleTimeString("en-US"); // TODO: locale
+    return d.toLocaleDateString('en-US') + ' ' + d.toLocaleTimeString('en-US'); // TODO: locale
 }
 
 function buildConfig(backendUrl, port, heartbeatMaxTime, pokemonMaxTime, raidMaxTime, startupLat, startupLon, token, jitterValue,
-                     maxWarningTimeRaid, encounterDelay, minDelayLogout, maxEmptyGmo, maxFailedCount, maxNoQuestCount, loggingUrl,
-                     loggingPort, loggingTls, loggingTcp, accountManager, deployEggs, nearbyTracker, autoLogin, ultraIV, ultraQuests) {
+    maxWarningTimeRaid, encounterDelay, minDelayLogout, maxEmptyGmo, maxFailedCount, maxNoQuestCount, loggingUrl,
+    loggingPort, loggingTls, loggingTcp, accountManager, deployEggs, nearbyTracker, autoLogin, ultraIV, ultraQuests) {
     var obj = {
         'backendURL': backendUrl,
         'port': port,
