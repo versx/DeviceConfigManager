@@ -4,7 +4,7 @@ const fs = require('fs');
 const path = require('path');
 const utils = require('../utils.js');
 
-const logsDir = path.resolve(__dirname, '../logs');
+const logsDir = path.resolve(__dirname, '../../logs');
 if (!fs.existsSync(logsDir)) {
     fs.mkdirSync(logsDir);
 }

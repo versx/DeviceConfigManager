@@ -1,5 +1,6 @@
 "use strict"
 
+const path = require('path');
 const express = require('express');
 const bodyParser = require('body-parser');
 const app = express();
@@ -22,10 +23,10 @@ dbMigrator.load();
 
 // Middleware
 app.set('view engine', 'mustache');
-app.set('views', './views');
+app.set('views', path.resolve(__dirname, 'views'));
 app.engine("mustache", mustacheExpress());
 app.use(bodyParser.urlencoded({ extended: false, limit: '50mb' })); // for parsing application/x-www-form-urlencoded
-app.use(express.static('static'));
+app.use(express.static(path.resolve(__dirname, '../static')));
 
 const defaultData = {
     title: config.title,

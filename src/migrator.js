@@ -3,7 +3,7 @@
 const path = require('path');
 const fs = require('fs');
 const query = require('./db.js');
-const migrationsDir = path.resolve(__dirname, 'migrations');
+const migrationsDir = path.resolve(__dirname, '../migrations');
 const utils = require('./utils.js');
 
 // TODO: Load metadata table
