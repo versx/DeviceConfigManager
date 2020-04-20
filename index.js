@@ -15,7 +15,6 @@ const Migrator = require('./migrator.js');
 // TODO: Create route classes
 // TODO: Error checking/handling
 // TODO: Security / token auth / users (maybe?) or basic authentication
-// TODO: Listen on specific interface
 
 // Start database migrator
 var dbMigrator = new Migrator();
@@ -40,10 +39,14 @@ const defaultData = {
 // UI Routes
 app.get(['/', '/index'], async function(req, res) {
     var devices = await Device.getAll();
-    var configs = await Config.getAll();
-    var data = defaultData;
+	var configs = await Config.getAll();
+	// TODO: Make wrapper method
+	var sql = "SELECT `key`, `value` FROM metadata";
+	var result = await query(sql, []);
+	var data = defaultData;
+	data.metadata = result;
     data.devices = devices.length;
-    data.configs = configs.length;
+	data.configs = configs.length;
     res.render('index', data);
 });
 
@@ -145,7 +148,7 @@ app.get('/api/devices', async function(req, res) {
         devices.forEach(function(device) {
             device.last_seen = utils.getDateTime(device.last_seen);
 			device.buttons = `<a href='/config/assign/${device.uuid}'><button type='button' class='btn btn-primary'>Assign</button></a>
-							  <a href='/device/logs/${device.uuid}'><button type='button' class='btn btn-primary'>Logs</button></a>
+							  <a href='/device/logs/${device.uuid}'><button type='button' class='btn btn-info'>Logs</button></a>
                               <a href='/device/delete/${device.uuid}'><button type='button' class='btn btn-danger'>Delete</button></a>`;
         });
         var json = JSON.stringify({ data: { devices: devices } });

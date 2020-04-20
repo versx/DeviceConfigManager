@@ -1,5 +1,7 @@
 "use strict"
 
+const fs = require('fs');
+
 function readFile(path) {
     let data = fs.readFileSync(path);
     return data.toString('utf8');

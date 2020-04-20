@@ -6,6 +6,8 @@ const query = require('./db.js');
 const migrationsDir = path.resolve(__dirname, 'migrations');
 const utils = require('./utils.js');
 
+// TODO: Load metadata table
+
 class Migrator {
     constructor() {
     }
@@ -224,61 +226,40 @@ class Migrator {
         }
         return current;
     }
-}
-
-/*
-function readFile(path) {
-    let data = fs.readFileSync(path);
-    return data.toString('utf8');
-}
-
-function snooze(ms) {
-    return new Promise(resolve => setTimeout(resolve, ms));
-}
-*/
-
-/*
-function getValueForKey(key) {
-    let sql = `
+    static async getValueForKey(key) {
+        var sql = `
         SELECT value
         FROM metadata
         WHERE \`key\` = ?
-        LIMIT 1;
-    `;
-    let args = [key];
-    let results = await query(sql, args)
-    .then(x => x)
-    .catch(err => {
-        logger.error("[DbController] Error: " + err);
-        return null;
-    });
-    if (results) {
-        let value = "";
-        for (let i = 0; i < results.length; i++) {
-            let row = results[i];
-            value = row["value"];
+        LIMIT 1;`;
+        var args = [key];
+        var results = await query(sql, args)
+            .then(x => x)
+            .catch(err => {
+                console.error("[DbController] Error:", err);
+                return null;
+            });
+        if (results.length === 0) {
+            return null;
         }
-        return value;
+        var result = results[0];
+        return result.value;
     }
-    return null;
-}
-
-function setValueForKey(key, value) {
-    let sql = `
+    static async setValueForKey(key, value) {
+        var sql = `
         INSERT INTO metadata (\`key\`, \`value\`)
         VALUES(?, ?)
         ON DUPLICATE KEY UPDATE
-        value=VALUES(value)
-    `;
-    let args = [key, value];
-    let results = await query(sql, args)
-    .then(x => x)
-    .catch(err => {
-        logger.error("[DbController] Error: " + err);
-        return null;
-    });
-    logger.info("[DbController] SetValueForKey: " + results);
+        value=VALUES(value);`;
+        var args = [key, value];
+        var results = await query(sql, args)
+            .then(x => x)
+            .catch(err => {
+                console.error("[DbController] Error:", err);
+                return null;
+            });
+        console.log("[DbController] SetValueForKey:", results);
+    }
 }
-*/
 
 module.exports = Migrator;

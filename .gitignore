@@ -105,3 +105,5 @@ dist
 
 # No main configs
 config.json
+
+logs

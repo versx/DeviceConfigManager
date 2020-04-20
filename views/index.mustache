@@ -5,7 +5,7 @@
         <br>
         <h1 align="center" id="header">{{title}}</h1>
         <div class="card text-center p-1 m-3">
-        <div class="card-header bg-dark text-light text-center"><b>Overivew</b></div>
+            <div class="card-header bg-dark text-light text-center"><b>Overivew</b></div>
             <div class="card-body">
                 <div class="container">
                     <div class="row">
@@ -29,6 +29,31 @@
                         </div>
                     </div>
                 </div>
+            </div>
+        </div>
+        <div class="card text-center p-1 m-3">
+            <div class="card-header bg-dark text-light text-center"><b>Metadata</b></div>
+            <div class="card-body">
+        <table id="table" class="table table-{{style}} table-striped table-bordered table-hover dt-responsive nowrap" style="position: center; width:100%">
+            <thead class="thead-dark">
+            <tr>
+                <th>Name</th>
+                <th>Value</th>
+            </tr>
+            </thead>
+            <tbody>
+            {{#metadata}}
+                <tr>
+                    <td>
+                    {{key}}
+                    </td>
+                    <td>
+                    {{value}}
+                    </td>
+                </tr>
+            {{/metadata}}
+            </tbody>
+        </table>
             </div>
         </div>
     </body>
