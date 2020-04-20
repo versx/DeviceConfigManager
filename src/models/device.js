@@ -10,7 +10,7 @@ class Device {
         this.clientip = clientip;
     }
     static async getAll() {
-        var devices = await query("SELECT uuid, config, last_seen, clientip FROM devices");
+        var devices = await query('SELECT uuid, config, last_seen, clientip FROM devices');
         return devices;
     }
     static async getByName(uuid) {
