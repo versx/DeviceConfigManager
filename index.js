@@ -6,6 +6,7 @@ const app = express();
 const mustacheExpress = require('mustache-express');
 const config = require('./config.json');
 const query = require('./db.js');
+const utils = require('./utils.js');
 const Device = require('./models/device.js');
 const Config = require('./models/config.js');
 const Log = require('./models/log.js');
@@ -34,6 +35,8 @@ const defaultData = {
     logging: config.logging
 };
 
+//app.use('/', require('./routes/devices.js'));
+
 // UI Routes
 app.get(['/', '/index'], async function(req, res) {
     var devices = await Device.getAll();
@@ -50,6 +53,13 @@ app.get('/devices', function(req, res) {
 
 app.get('/device/new', async function(req, res) {
     res.render('device-new', defaultData);
+});
+
+app.get('/device/logs/:uuid', async function(req, res) {
+	var uuid = req.params.uuid;
+	var data = defaultData;
+	data.uuid = uuid;
+	res.render('device-logs', data);
 });
 
 app.get('/device/delete/:uuid', async function(req, res) {
@@ -123,23 +133,20 @@ app.get('/config/delete/:name', function(req, res) {
     res.render('config-delete', defaultData);
 });
 
-app.get('/logs', function(req, res) {
-    res.render('logs', defaultData);
-});
-
 app.get('/settings', function(req, res) {
     res.render('settings', defaultData);
 });
 
 
-// API Routes
+// Device API Routes
 app.get('/api/devices', async function(req, res) {
     try {
         var devices = await Device.getAll();
         devices.forEach(function(device) {
-            device.last_seen = getDateTime(device.last_seen);
-            device.buttons = "<a href='/config/assign/" + device.uuid + "'><button type='button' class='btn btn-primary'>Assign</button></a> \
-                              <a href='/device/delete/" + device.uuid + "'><button type='button' class='btn btn-danger'>Delete</button></a>";
+            device.last_seen = utils.getDateTime(device.last_seen);
+			device.buttons = `<a href='/config/assign/${device.uuid}'><button type='button' class='btn btn-primary'>Assign</button></a>
+							  <a href='/device/logs/${device.uuid}'><button type='button' class='btn btn-primary'>Logs</button></a>
+                              <a href='/device/delete/${device.uuid}'><button type='button' class='btn btn-danger'>Delete</button></a>`;
         });
         var json = JSON.stringify({ data: { devices: devices } });
         res.send(json);
@@ -167,6 +174,7 @@ app.post('/api/device/delete/:uuid', async function(req, res) {
     }
     res.redirect('/devices');
 });
+
 
 // Config API requests
 app.get('/api/configs', async function(req, res) {
@@ -253,7 +261,7 @@ app.get('/api/config/:uuid', async function(req, res) {
         return;
     }
     // Build json config
-    var json = buildConfig(
+    var json = utils.buildConfig(
         c.backendUrl,
         c.port,
         c.heartbeatMaxTime,
@@ -388,18 +396,15 @@ app.post('/api/config/delete/:name', async function(req, res) {
 
 
 // Log API requests
-app.get('/api/logs', async function(req, res) {
-    try {
-        var logs = await Log.getAll();
-        logs.forEach(function(log) {
-            log.date = getDateTime(log.timestamp); // TODO: Make ajax request for delete to prevent page reload
-            log.buttons = "<a href='/api/log/delete/" + log.id + "'><button type='button'class='btn btn-danger' onclick='return confirm(\"Are you sure you want to delete log #" + log.id + "?\");'>Delete</button></a>";
-        });
-        var json = JSON.stringify({ data: { logs: logs } });
-        res.send(json);
-    } catch (e) {
-        console.error("Logs error:", e);
-    }
+app.get('/api/logs/:uuid', async function(req, res) {
+	var uuid = req.params.uuid;
+	var data = defaultData;
+	data.uuid = uuid;
+	var logs = await Log.getByDevice(uuid);
+	data.data = {
+		logs: logs || []
+	};
+	res.send(data);
 });
 
 app.post('/api/log/new/:uuid', async function(req, res) {
@@ -418,13 +423,13 @@ app.post('/api/log/new/:uuid', async function(req, res) {
     res.send('OK');
 });
 
-app.get('/api/log/delete/:id', async function(req, res) {
-    var id = req.params.id;
-    var result = await Log.delete(id);
+app.get('/api/log/delete/:uuid', async function(req, res) {
+    var uuid = req.params.uuid;
+    var result = await Log.delete(uuid);
     if (result) {
         // Success
     }
-    res.redirect('/logs');
+    res.redirect('/device/logs/' + uuid);
 });
 
 app.get('/api/logs/delete_all', async function(req, res) {
@@ -435,44 +440,4 @@ app.get('/api/logs/delete_all', async function(req, res) {
     res.redirect('/logs');
 });
 
-app.listen(config.port, () => console.log(`Listening on port ${config.port}...`));
-
-function getDateTime(timestamp) {
-    var unixTimestamp = timestamp * 1000;
-    var d = new Date(unixTimestamp);
-    return d.toLocaleDateString("en-US") + " " + d.toLocaleTimeString("en-US"); // TODO: locale
-}
-
-function buildConfig(backendUrl, port, heartbeatMaxTime, pokemonMaxTime, raidMaxTime, startupLat, startupLon, token, jitterValue,
-                     maxWarningTimeRaid, encounterDelay, minDelayLogout, maxEmptyGmo, maxFailedCount, maxNoQuestCount, loggingUrl,
-                     loggingPort, loggingTls, loggingTcp, accountManager, deployEggs, nearbyTracker, autoLogin, ultraIV, ultraQuests) {
-    var obj = {
-        'backendURL': backendUrl,
-        'port': port,
-        'heartbeatMaxTime': heartbeatMaxTime,
-        'pokemonMaxTime': pokemonMaxTime,
-        'raidMaxTime': raidMaxTime,
-        'startupLat': startupLat,
-        'startupLon': startupLon,
-        'token': token,
-        'jitterValue': jitterValue,//5.0e-05,
-        'maxWarningTimeRaid': maxWarningTimeRaid,
-        'encounterDelay': encounterDelay,
-        'minDelayLogout': minDelayLogout,
-        'maxEmptyGMO': maxEmptyGmo,
-        'maxFailedCount': maxFailedCount,
-        'maxNoQuestCount': maxNoQuestCount,
-        'loggingURL': loggingUrl,
-        'loggingPort': loggingPort,
-        'loggingTLS': loggingTls,
-        'loggingTCP': loggingTcp,
-        'accountManager': accountManager,
-        'deployEggs': deployEggs,
-        'nearbyTracker': nearbyTracker,
-        'autoLogin': autoLogin,
-        'ultraIV': ultraIV,
-        'ultraQuests': ultraQuests
-    };
-    var json = JSON.stringify(obj, null, 2);
-    return json;
-}
+app.listen(config.port, config.interface, () => console.log(`Listening on port ${config.port}...`));

@@ -4,6 +4,7 @@ const path = require('path');
 const fs = require('fs');
 const query = require('./db.js');
 const migrationsDir = path.resolve(__dirname, 'migrations');
+const utils = require('./utils.js');
 
 class Migrator {
     constructor() {
@@ -21,7 +22,7 @@ class Migrator {
                     console.error("[DBController] " + message);
                 }
                 count++;
-                await snooze(2500);
+                await utils.snooze(2500);
                 continue;
             }
             done = true;
@@ -65,7 +66,7 @@ class Migrator {
         if (fromVersion < toVersion) {
             // TODO: Wait 30 seconds and let user know we are about to migrate the database and for them to make a backup until we handle backups and rollbacks.
             console.log("[DBController] MIGRATION IS ABOUT TO START IN 30 SECONDS, PLEASE MAKE SURE YOU HAVE A BACKUP!!!")
-            await snooze(30 * 1000);
+            await utils.snooze(30 * 1000);
             console.log("[DBController] Migrating database to version " + (fromVersion + 1));
             var migrateSQL;
             try {
@@ -87,7 +88,7 @@ class Migrator {
                         if (noBackup === undefined || noBackup === null || noBackup === false) {
                             for (let i = 0; i < 10; i++) {
                                 logger.warn(`[DBController] Rolling back migration in ${(10 - i)} seconds`);
-                                await snooze(1000);
+                                await utils.snooze(1000);
                             }
                             console.log("[DBController] Rolling back migration now. Do not kill RDM!");
                             /*
@@ -225,6 +226,7 @@ class Migrator {
     }
 }
 
+/*
 function readFile(path) {
     let data = fs.readFileSync(path);
     return data.toString('utf8');
@@ -233,6 +235,7 @@ function readFile(path) {
 function snooze(ms) {
     return new Promise(resolve => setTimeout(resolve, ms));
 }
+*/
 
 /*
 function getValueForKey(key) {
