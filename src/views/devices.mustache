@@ -11,6 +11,7 @@
             <table id="table" class="table table-{{style}} table-striped table-bordered table-hover dt-responsive nowrap" style="position: center; width:100%">
                 <thead class="thead-dark">
                 <tr>
+                    <th>Preview</th>
                     <th>UUID</th>
                     <th>Config</th>
                     <th>Last Seen</th>
@@ -40,16 +41,17 @@
             "paging":   true,
             "lengthMenu": [[25, 50, 100, -1], [25, 50, 100, "All"]],
             "columns": [
+                { "data": "image" },
                 { "data": "uuid" },
                 { "data": "config" },
                 { "data": "last_seen" },
                 { "data": "buttons" },
             ],
             "info": true,
-            "order": [[ 0, "asc" ]],
+            "order": [[ 1, "asc" ]],
             "search.caseInsensitive": true,
             "columnDefs": [ {
-                "targets": [3],
+                "targets": [4],
                 "orderable": false
             }],
             "responsive": true

@@ -18,10 +18,10 @@ class Migrator {
             if (query === undefined || query === null) {
                 var message = `Failed to connect to database (as root) while initializing. Try: ${count}/10`;
                 if (count === 10) {
-                    console.error('[DBController] ' + message);
+                    console.error('[DBController]', message);
                     process.exit(-1);
                 } else {
-                    console.error('[DBController] ' + message);
+                    console.error('[DBController]', message);
                 }
                 count++;
                 await utils.snooze(2500);
@@ -39,7 +39,7 @@ class Migrator {
         await query(createMetadataTableSQL)
             .then(x => x)
             .catch(err => {
-                console.error('[DBController] Failed to create metadata table: (' + err + ')');
+                console.error(`[DBController] Failed to create metadata table: (${err})`);
                 process.exit(-1);
             });
         
@@ -51,7 +51,7 @@ class Migrator {
         var results = await query(getDBVersionSQL)
             .then(x => x)
             .catch(err => {
-                console.error('[DBController] Failed to get current database version: (' + err + ')');
+                console.error(`[DBController] Failed to get current database version: (${err})`);
                 process.exit(-1);
             });
         if (results.length > 0) {
@@ -74,14 +74,14 @@ class Migrator {
             // Wait 30 seconds and let user know we are about to migrate the database and for them to make a backup until we handle backups and rollbacks.
             console.log('[DBController] MIGRATION IS ABOUT TO START IN 30 SECONDS, PLEASE MAKE SURE YOU HAVE A BACKUP!!!');
             await utils.snooze(30 * 1000);
-            console.log('[DBController] Migrating database to version ' + (fromVersion + 1));
+            console.log(`[DBController] Migrating database to version ${(fromVersion + 1)}`);
             var migrateSQL;
             try {
                 var sqlFile = `${migrationsDir}${path.sep}${fromVersion + 1}.sql`;
                 migrateSQL = utils.readFile(sqlFile);
                 migrateSQL.replace('\r', '').replace('\n', '');
             } catch (err) {
-                console.error('[DBController] Migration failed: ' + err);
+                console.error('[DBController] Migration failed:', err);
                 process.exit(-1);
             }
             var sqlSplit = migrateSQL.split(';');
@@ -119,7 +119,7 @@ class Migrator {
             await query(updateVersionSQL)
                 .then(x => x)
                 .catch(err => {
-                    console.error('[DBController] Migration failed: ' + err);
+                    console.error('[DBController] Migration failed:', err);
                     process.exit(-1);
                 });
             console.log('[DBController] Migration successful');
