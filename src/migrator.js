@@ -71,6 +71,7 @@ class Migrator {
     }
     async migrate(fromVersion, toVersion) {
         if (fromVersion < toVersion) {
+            // Wait 30 seconds and let user know we are about to migrate the database and for them to make a backup until we handle backups and rollbacks.
             console.log('[DBController] MIGRATION IS ABOUT TO START IN 30 SECONDS, PLEASE MAKE SURE YOU HAVE A BACKUP!!!');
             await utils.snooze(30 * 1000);
             console.log(`[DBController] Migrating database to version ${(fromVersion + 1)}`);
@@ -83,7 +84,6 @@ class Migrator {
                 console.error('[DBController] Migration failed:', err);
                 process.exit(-1);
             }
-            /*
             var sqlSplit = migrateSQL.split(';');
             sqlSplit.forEach(async sql => {
                 let msql = sql.replace('&semi', ';').trim();
@@ -92,6 +92,7 @@ class Migrator {
                         .then(x => x)
                         .catch(async err => {
                             console.error('[DBController] Migration failed: ' + err + '\r\nExecuting SQL statement: ' + msql);
+                            /*
                             if (noBackup === undefined || noBackup === null || noBackup === false) {
                                 for (let i = 0; i < 10; i++) {
                                     logger.warn(`[DBController] Rolling back migration in ${(10 - i)} seconds`);
@@ -106,10 +107,10 @@ class Migrator {
                             }
                             //fatalError(message);
                             return null;
+                            */
                         });
                 }
             });
-            */
             
             var updateVersionSQL = `
             INSERT INTO metadata (\`key\`, \`value\`)
