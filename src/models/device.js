@@ -30,7 +30,7 @@ class Device {
             result[0].clientip
         );
     }
-    static async create(uuid, config = null, lastSeen = null, clientip) {
+    static async create(uuid, config = null, lastSeen = null, clientip = null) {
         var sql = `
         INSERT INTO devices (uuid, config, last_seen, clientip)
         VALUES (?, ?, ?, ?)`;

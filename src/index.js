@@ -297,7 +297,7 @@ app.get('/api/config/:uuid', async function(req, res) {
     } else {
         console.log('Device does not exist, creating...');
         // Device doesn't exist, create db entry
-        var result = await Device.create(uuid, clientip); // REVIEW: Maybe return Device object upon creation to prevent another sql call to get Device object?
+        var result = await Device.create(uuid, null, new Date() / 1000, clientip); // REVIEW: Maybe return Device object upon creation to prevent another sql call to get Device object?
         if (result) {
             // Success, assign default config if there is one.
             var defaultConfig = await Config.getDefault();
