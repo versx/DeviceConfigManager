@@ -5,6 +5,7 @@ const path = require('path');
 const express = require('express');
 const router = express.Router();
 const multer = require('multer');
+const config = require('../config.json');
 const query = require('../db.js');
 const utils = require('../utils.js');
 const upload = multer({ dest: '../../screenshots' });
@@ -21,7 +22,7 @@ router.get('/devices', async function(req, res) {
         devices.forEach(function(device) {
             var screenshot = `/screenshots/${device.uuid}.png`;
             var exists = fs.existsSync(path.join(__dirname, `..${screenshot}`));
-            var image = exists ? screenshot : `/img/offline.png`;
+            var image = exists ? screenshot : '/img/offline.png';
             device.image = `<a href='${image}' target='_blank'><img src='${image}' width='64' height='96'/></a>`;
             device.last_seen = utils.getDateTime(device.last_seen);
             device.buttons = `
@@ -69,20 +70,27 @@ router.post('/device/:uuid/screen', upload.single('file'), function(req, res) {
     if (path.extname(req.file.originalname).toLowerCase() === '.png' ||
         path.extname(req.file.originalname).toLowerCase() === '.jpg' ||
         path.extname(req.file.originalname).toLowerCase() === '.jpeg') {
-        console.log("Moving file");
         fs.rename(tempPath, targetPath, function(err) {
-            if (err) return handleError(err, res);
+            if (err) {
+                console.error(err);
+                res.status(500)
+                    .contentType('text/plain')
+                    .end('ERROR');
+                return;
+            }
             res.status(200)
-            .contentType('text/plain')
-            .end('OK');
+                .contentType('text/plain')
+                .end('OK');
         });
     } else {
-        fs.unlink(tmepPath, function(err) {
-            if (err) return handleError(err, res);
+        fs.unlink(tempPath, function(err) {
+            if (err) {
+                console.error(err);
+            }
             res.status(200)
-            .contentType('text/plain')
-            .end('ERROR');
-        })
+                .contentType('text/plain')
+                .end('ERROR');
+        });
     }
 });
 
@@ -302,9 +310,7 @@ router.post('/config/edit/:name', async function(req, res) {
     c.isDefault = data.is_default === 'on' ? 1 : 0;
     if (await c.save(oldName)) {
         // Success
-        console.log("IsDefault:", c.isDefault);
         if (c.isDefault) {
-            console.log("Setting default for", oldName);
             await Config.setDefault(oldName);
         }
     }

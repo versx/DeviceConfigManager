@@ -1,19 +1,13 @@
 'use strict';
 
-const multer = require('multer');
-const upload = multer({ dest: '../screenshots' });
-const fs = require('fs');
 const path = require('path');
 const express = require('express');
 const bodyParser = require('body-parser');
 const app = express();
 const mustacheExpress = require('mustache-express');
 const config = require('./config.json');
-const query = require('./db.js');
-const utils = require('./utils.js');
 const Device = require('./models/device.js');
 const Config = require('./models/config.js');
-const Log = require('./models/log.js');
 const Migrator = require('./migrator.js');
 const apiRoutes = require('./routes/api.js');
 
