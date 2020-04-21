@@ -58,7 +58,7 @@
                         <th>
                             <form action="http://{{clientip}}:{{port}}/pixel" method="post">
                                 <div class="form-group">
-                                    <input type="text" class="form-control" name="pixel_text" placeholder="{}">
+                                    <input type="text" class="form-control" name="pixel_text" placeholder="{ 'x': 320, 'y': 320 }">
                                 </div>
                                 <button type='submit' class='btn btn-danger'>SEND</button>
                             </form>
@@ -69,7 +69,7 @@
                         <th>
                             <form action="http://{{clientip}}:{{port}}/touch" method="post">
                                 <div class="form-group">
-                                    <input type="text" class="form-control" name="touch_text" placeholder="{}">
+                                    <input type="text" class="form-control" name="touch_text" placeholder="{ 'x': 160, 'y': 160 }">
                                 </div>
                                 <button type='submit' class='btn btn-danger'>SEND</button>
                             </form>
@@ -80,7 +80,7 @@
                         <th>
                             <form action="http://{{clientip}}:{{port}}/type" method="post">
                                 <div class="form-group">
-                                    <input type="text" class="form-control" name="type_text" placeholder="{}">
+                                    <input type="text" class="form-control" name="type_text" placeholder="{ 'text': 'User123' }">
                                 </div>
                                 <button type='submit' class='btn btn-danger'>SEND</button>
                             </form>
