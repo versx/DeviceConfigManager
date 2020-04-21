@@ -170,10 +170,17 @@ app.get('/api/devices', async function(req, res) {
         var devices = await Device.getAll();
         devices.forEach(function(device) {
             device.last_seen = utils.getDateTime(device.last_seen);
-            device.buttons = `<a href='/config/assign/${device.uuid}'><button type='button' class='btn btn-primary'>Assign</button></a>
-							  <a href='/device/logs/${device.uuid}'><button type='button' class='btn btn-info'>Logs</button></a>
-                              <a href='/device/delete/${device.uuid}'><button type='button' class='btn btn-danger'>Delete</button></a>
-                              <a href='/device/manage/${device.uuid}'><button type='button' class='btn btn-success'>Manager</button></a>`;
+            device.buttons = `
+            <div class='btn-group'>
+                <button type='button' class='btn btn-primary dropdown-toggle' data-toggle='dropdown'>Action</button>
+                <div class='dropdown-menu'>
+                    <a href='/device/manage/${device.uuid}' class='dropdown-item btn-success'>Manage</a>
+                    <a href='/config/assign/${device.uuid}' class='dropdown-item btn-secondary'>Assign</a>
+                    <a href='/device/logs/${device.uuid}' class='dropdown-item btn-secondary'>View Logs</a>
+                    <div class='dropdown-divider'></div>
+                    <a href='/device/delete/${device.uuid}' class='dropdown-item btn-danger'>Delete</a>
+                </div>
+            </div>`;
         });
         var json = JSON.stringify({ data: { devices: devices } });
         res.send(json);
