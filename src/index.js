@@ -199,9 +199,9 @@ app.get('/api/devices', async function(req, res) {
 
 app.post('/api/device/new', async function(req, res) {
     var uuid = req.body.uuid;
-    var config = req.body.config;
-    var clientip = req.body.clientip;
-    var result = await Device.create(uuid, config, clientip || null, null, null);
+    var config = req.body.config || null;
+    var clientip = req.body.clientip || null;
+    var result = await Device.create(uuid, config, null, clientip);
     if (result) {
         // Success
     }
