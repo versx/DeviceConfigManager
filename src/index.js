@@ -78,16 +78,16 @@ app.get('/device/manage/:uuid', async function(req, res) {
         if (device.config) {
             var c = await Config.getByName(device.config);
             if (c === null) {
-                console.error("Failed to grab config", device.config);
+                console.error('Failed to grab config', device.config);
                 return;
             } else {
                 data.port = c.port;
             }
         }
         if (device.clientip === null) {
-            console.error("Failed to get IP address.");
+            console.error('Failed to get IP address.');
         } else {
-            data.clientip = device.clientip
+            data.clientip = device.clientip;
         }
     }
     res.render('device-manage', data);
@@ -225,7 +225,7 @@ app.get('/api/config/:uuid', async function(req, res) {
     var device = await Device.getByName(uuid);
     var noConfig = false;
     // Check for a proxied IP before the normal IP and set the first one at exists
-    var clientip = ((req.headers['x-forwarded-for'] || '').split(', ')[0]) || (req.connection.remoteAddress).match("[0-9]+.[0-9].+[0-9]+.[0-9]+$")[0];
+    var clientip = ((req.headers['x-forwarded-for'] || '').split(', ')[0]) || (req.connection.remoteAddress).match('[0-9]+.[0-9].+[0-9]+.[0-9]+$')[0];
     
     // Check if device config is empty, if not provide it as json response
     if (device) {
