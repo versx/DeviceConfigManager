@@ -91,7 +91,7 @@ class Migrator {
                     let results = await query(msql)
                         .then(x => x)
                         .catch(async err => {
-                            console.error('[DBController] Migration failed: ' + err + '\r\nExecuting SQL statement: ' + msql);
+                            console.error('[DBController] Migration failed:', err, '\r\nExecuting SQL statement:', msql);
                             /*
                             if (noBackup === undefined || noBackup === null || noBackup === false) {
                                 for (let i = 0; i < 10; i++) {
@@ -112,10 +112,11 @@ class Migrator {
                 }
             });
             
+            var newVersion = fromVersion + 1;
             var updateVersionSQL = `
             INSERT INTO metadata (\`key\`, \`value\`)
-            VALUES("DB_VERSION", ${fromVersion + 1})
-            ON DUPLICATE KEY UPDATE \`value\` = ${fromVersion + 1};`;
+            VALUES("DB_VERSION", ${newVersion})
+            ON DUPLICATE KEY UPDATE \`value\` = ${newVersion};`;
             await query(updateVersionSQL)
                 .then(x => x)
                 .catch(err => {
@@ -123,7 +124,7 @@ class Migrator {
                     process.exit(-1);
                 });
             console.log('[DBController] Migration successful');
-            this.migrate(fromVersion + 1, toVersion);
+            this.migrate(newVersion, toVersion);
         }
     }
     backup() {

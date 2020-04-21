@@ -183,7 +183,7 @@ app.get('/api/devices', async function(req, res) {
                 <button type='button' class='btn btn-primary dropdown-toggle' data-toggle='dropdown'>Action</button>
                 <div class='dropdown-menu'>
                     <a href='/device/manage/${device.uuid}' class='dropdown-item btn-success'>Manage</a>
-                    <a href='/config/assign/${device.uuid}' class='dropdown-item btn-secondary'>Assign</a>
+                    <a href='/config/assign/${device.uuid}' class='dropdown-item btn-secondary'>Assign Config</a>
                     <a href='/device/logs/${device.uuid}' class='dropdown-item btn-secondary'>View Logs</a>
                     <div class='dropdown-divider'></div>
                     <a href='/device/delete/${device.uuid}' class='dropdown-item btn-danger'>Delete</a>
