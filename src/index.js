@@ -1,5 +1,8 @@
 'use strict';
 
+const multer = require('multer');
+const upload = multer({ dest: '../screenshots' });
+const fs = require('fs');
 const path = require('path');
 const express = require('express');
 const bodyParser = require('body-parser');
@@ -27,6 +30,7 @@ app.set('views', path.resolve(__dirname, 'views'));
 app.engine('mustache', mustacheExpress());
 app.use(bodyParser.urlencoded({ extended: false, limit: '50mb' })); // for parsing application/x-www-form-urlencoded
 app.use(express.static(path.resolve(__dirname, '../static')));
+app.use('/screenshots', express.static(path.resolve(__dirname, '../screenshots')));
 
 const defaultData = {
     title: config.title,
@@ -78,16 +82,16 @@ app.get('/device/manage/:uuid', async function(req, res) {
         if (device.config) {
             var c = await Config.getByName(device.config);
             if (c === null) {
-                console.error("Failed to grab config", device.config);
+                console.error('Failed to grab config', device.config);
                 return;
             } else {
                 data.port = c.port;
             }
         }
         if (device.clientip === null) {
-            console.error("Failed to get IP address.");
+            console.error('Failed to get IP address.');
         } else {
-            data.clientip = device.clientip
+            data.clientip = device.clientip;
         }
     }
     res.render('device-manage', data);
@@ -169,11 +173,22 @@ app.get('/api/devices', async function(req, res) {
     try {
         var devices = await Device.getAll();
         devices.forEach(function(device) {
+            var screenshot = `/screenshots/${device.uuid}.png`;
+            var exists = fs.existsSync(path.join(__dirname, `..${screenshot}`));
+            var image = exists ? screenshot : `/img/offline.png`;
+            device.image = `<a href='${image}' target='_blank'><img src='${image}' width='64' height='96'/></a>`;
             device.last_seen = utils.getDateTime(device.last_seen);
-            device.buttons = `<a href='/config/assign/${device.uuid}'><button type='button' class='btn btn-primary'>Assign</button></a>
-							  <a href='/device/logs/${device.uuid}'><button type='button' class='btn btn-info'>Logs</button></a>
-                              <a href='/device/delete/${device.uuid}'><button type='button' class='btn btn-danger'>Delete</button></a>
-                              <a href='/device/manage/${device.uuid}'><button type='button' class='btn btn-success'>Manager</button></a>`;
+            device.buttons = `
+            <div class='btn-group'>
+                <button type='button' class='btn btn-primary dropdown-toggle' data-toggle='dropdown'>Action</button>
+                <div class='dropdown-menu'>
+                    <a href='/device/manage/${device.uuid}' class='dropdown-item btn-success'>Manage</a>
+                    <a href='/config/assign/${device.uuid}' class='dropdown-item btn-secondary'>Assign Config</a>
+                    <a href='/device/logs/${device.uuid}' class='dropdown-item btn-secondary'>View Logs</a>
+                    <div class='dropdown-divider'></div>
+                    <a href='/device/delete/${device.uuid}' class='dropdown-item btn-danger'>Delete</a>
+                </div>
+            </div>`;
         });
         var json = JSON.stringify({ data: { devices: devices } });
         res.send(json);
@@ -184,14 +199,45 @@ app.get('/api/devices', async function(req, res) {
 
 app.post('/api/device/new', async function(req, res) {
     var uuid = req.body.uuid;
-    var config = req.body.config;
-    var clientip = req.body.clientip;
-    var result = await Device.create(uuid, config, clientip || null, null, null);
+    var config = req.body.config || null;
+    var clientip = req.body.clientip || null;
+    var result = await Device.create(uuid, config, null, clientip);
     if (result) {
         // Success
     }
     console.log('New device result:', result);
     res.redirect('/devices');
+});
+
+app.post('/api/device/:uuid/screen', upload.single('file'), function(req, res) {
+    var uuid = req.params.uuid;
+    var fileName = uuid + '.png';
+    const tempPath = req.file.path;
+    const screenshotsDir = path.resolve(__dirname, '../screenshots');
+    const targetPath = path.join(screenshotsDir, fileName);
+    if (!fs.existsSync(screenshotsDir)) {
+        fs.mkdirSync(screenshotsDir);
+    }
+    //console.log("File:", req.file);
+    //console.log("Temp Path:", tempPath, "Target Path:", targetPath, "Original FileName:", req.file.originalname);
+    if (path.extname(req.file.originalname).toLowerCase() === '.png' ||
+        path.extname(req.file.originalname).toLowerCase() === '.jpg' ||
+        path.extname(req.file.originalname).toLowerCase() === '.jpeg') {
+        console.log("Moving file");
+        fs.rename(tempPath, targetPath, function(err) {
+            if (err) return handleError(err, res);
+            res.status(200)
+            .contentType('text/plain')
+            .end('OK');
+        });
+    } else {
+        fs.unlink(tmepPath, function(err) {
+            if (err) return handleError(err, res);
+            res.status(200)
+            .contentType('text/plain')
+            .end('ERROR');
+        })
+    }
 });
 
 app.post('/api/device/delete/:uuid', async function(req, res) {
@@ -225,7 +271,7 @@ app.get('/api/config/:uuid', async function(req, res) {
     var device = await Device.getByName(uuid);
     var noConfig = false;
     // Check for a proxied IP before the normal IP and set the first one at exists
-    var clientip = (req.headers['x-forwarded-for'].split(', ')[0]) || (req.connection.remoteAddress).match("[0-9]+.[0-9].+[0-9]+.[0-9]+$")[0];
+    var clientip = ((req.headers['x-forwarded-for'] || '').split(', ')[0]) || (req.connection.remoteAddress).match('[0-9]+.[0-9].+[0-9]+.[0-9]+$')[0];
     
     // Check if device config is empty, if not provide it as json response
     if (device) {
@@ -410,7 +456,9 @@ app.post('/api/config/edit/:name', async function(req, res) {
     c.isDefault = data.is_default === 'on' ? 1 : 0;
     if (await c.save(oldName)) {
         // Success
-        if (c.isDefault !== false) {
+        console.log("IsDefault:", c.isDefault);
+        if (c.isDefault) {
+            console.log("Setting default for", oldName);
             await Config.setDefault(oldName);
         }
     }
