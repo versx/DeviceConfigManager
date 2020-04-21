@@ -225,7 +225,7 @@ app.get('/api/config/:uuid', async function(req, res) {
     var device = await Device.getByName(uuid);
     var noConfig = false;
     // Check for a proxied IP before the normal IP and set the first one at exists
-    var clientip = (req.headers['x-forwarded-for'].split(', ')[0]) || (req.connection.remoteAddress).match("[0-9]+.[0-9].+[0-9]+.[0-9]+$")[0];
+    var clientip = ((req.headers['x-forwarded-for'] || '').split(', ')[0]) || (req.connection.remoteAddress).match("[0-9]+.[0-9].+[0-9]+.[0-9]+$")[0];
     
     // Check if device config is empty, if not provide it as json response
     if (device) {
