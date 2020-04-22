@@ -8,7 +8,9 @@ const multer = require('multer');
 const config = require('../config.json');
 const query = require('../db.js');
 const utils = require('../utils.js');
-const upload = multer({ dest: '../../screenshots' });
+
+const screenshotsDir = path.resolve(__dirname, '../../screenshots');
+const upload = multer({ dest: screenshotsDir });
 
 const Config = require('../models/config.js');
 const Device = require('../models/device.js');
@@ -20,9 +22,8 @@ router.get('/devices', async function(req, res) {
     try {
         var devices = await Device.getAll();
         devices.forEach(function(device) {
-            var screenshot = `/screenshots/${device.uuid}.png`;
-            var exists = fs.existsSync(path.join(__dirname, `..${screenshot}`));
-            var image = exists ? screenshot : '/img/offline.png';
+            var exists = fs.existsSync(path.join(screenshotsDir, device.uuid + '.png'));
+            var image = exists ? `/screenshots/${device.uuid}.png` : '/img/offline.png';
             device.image = `<a href='${image}' target='_blank'><img src='${image}' width='64' height='96'/></a>`;
             device.last_seen = utils.getDateTime(device.last_seen);
             device.buttons = `
@@ -60,7 +61,6 @@ router.post('/device/:uuid/screen', upload.single('file'), function(req, res) {
     var uuid = req.params.uuid;
     var fileName = uuid + '.png';
     const tempPath = req.file.path;
-    const screenshotsDir = path.resolve(__dirname, '../screenshots');
     const targetPath = path.join(screenshotsDir, fileName);
     if (!fs.existsSync(screenshotsDir)) {
         fs.mkdirSync(screenshotsDir);
