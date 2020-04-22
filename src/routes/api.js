@@ -22,9 +22,8 @@ router.get('/devices', async function(req, res) {
     try {
         var devices = await Device.getAll();
         devices.forEach(function(device) {
-            var screenshot = `/screenshots/${device.uuid}.png`;
-            var exists = fs.existsSync(path.join(__dirname, `..${screenshot}`));
-            var image = exists ? screenshot : '/img/offline.png';
+            var exists = fs.existsSync(path.join(screenshotsDir, device.uuid + '.png'));
+            var image = exists ? `/screenshots/${device.uuid}.png` : '/img/offline.png';
             device.image = `<a href='${image}' target='_blank'><img src='${image}' width='64' height='96'/></a>`;
             device.last_seen = utils.getDateTime(device.last_seen);
             device.buttons = `
