@@ -8,7 +8,9 @@ const multer = require('multer');
 const config = require('../config.json');
 const query = require('../db.js');
 const utils = require('../utils.js');
-const upload = multer({ dest: '../../screenshots' });
+
+const screenshotsDir = path.resolve(__dirname, '../../screenshots');
+const upload = multer({ dest: screenshotsDir });
 
 const Config = require('../models/config.js');
 const Device = require('../models/device.js');
@@ -60,7 +62,6 @@ router.post('/device/:uuid/screen', upload.single('file'), function(req, res) {
     var uuid = req.params.uuid;
     var fileName = uuid + '.png';
     const tempPath = req.file.path;
-    const screenshotsDir = path.resolve(__dirname, '../../screenshots');
     const targetPath = path.join(screenshotsDir, fileName);
     if (!fs.existsSync(screenshotsDir)) {
         fs.mkdirSync(screenshotsDir);
