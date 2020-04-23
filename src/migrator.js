@@ -87,6 +87,7 @@ class Migrator {
             sqlSplit.forEach(async sql => {
                 let msql = sql.replace('&semi', ';').trim();
                 if (msql !== '') {
+                    console.log('[DBController] Executing:', msql);
                     let results = await query(msql)
                         .then(x => x)
                         .catch(async err => {
