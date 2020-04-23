@@ -8,12 +8,66 @@ const multer = require('multer');
 const config = require('../config.json');
 const query = require('../db.js');
 const utils = require('../utils.js');
-const upload = multer({ dest: '../../screenshots' });
 
+const screenshotsDir = path.resolve(__dirname, '../../screenshots');
+const upload = multer({ dest: screenshotsDir });
+
+const Account = require('../models/account.js');
 const Config = require('../models/config.js');
 const Device = require('../models/device.js');
 const Log = require('../models/log.js');
 const ScheduleManager = require('../models/schedule-manager.js');
+
+
+// Authentication API Route
+router.post('/login', async function(req, res) {
+    var username = req.body.username;
+    var password = req.body.password;
+    if (username && password) {
+        var result = await Account.getAccount(username, password);
+        if (result) {
+            req.session.loggedin = true;
+            req.session.username = username;
+            res.redirect('/');
+            return;
+        } else {
+            console.log('Incorrect Username and/or Password!');
+        }			
+    } else {
+        console.log('Username or password is empty!');
+    }
+    res.redirect('/login');
+});
+
+router.post('/account/change_password/:username', async function(req, res) {
+    var username = req.params.username;
+    var oldPassword = req.body.old_password;
+    var password = req.body.password;
+    var password2 = req.body.password2;
+    //console.log('Username:', username, 'Old Password:', oldPassword, 'New Password:', password, 'Confirm Password:', password2);
+    // TODO: show error
+    if (password !== password2) {
+        console.error('Passwords do not match');
+        res.redirect('/account');
+        return;
+    }
+    var exists = await Account.getAccount(username, oldPassword);
+    if (exists) {
+        // TODO: Update account in database
+        var result = await Account.changePassword(username, oldPassword, password);
+        if (result) {
+            // Success
+            console.log(`Successfully changed password for user ${username} from ${oldPassword} to ${password}.`);
+        } else {
+            // Failed
+            console.log(`Unexpected error occurred trying to change password for user ${username}`);
+        }
+    } else {
+        // Failed
+        console.log(`Account with username ${username} does not exist`);
+    }
+    res.redirect('/account');
+});
 
 
 // Device API Routes
@@ -21,9 +75,8 @@ router.get('/devices', async function(req, res) {
     try {
         var devices = await Device.getAll();
         devices.forEach(function(device) {
-            var screenshot = `/screenshots/${device.uuid}.png`;
-            var exists = fs.existsSync(path.join(__dirname, `..${screenshot}`));
-            var image = exists ? screenshot : '/img/offline.png';
+            var exists = fs.existsSync(path.join(screenshotsDir, device.uuid + '.png'));
+            var image = exists ? `/screenshots/${device.uuid}.png` : '/img/offline.png';
             device.image = `<a href='${image}' target='_blank'><img src='${image}' width='64' height='96'/></a>`;
             device.last_seen = utils.getDateTime(device.last_seen);
             device.buttons = `
@@ -61,7 +114,6 @@ router.post('/device/:uuid/screen', upload.single('file'), function(req, res) {
     var uuid = req.params.uuid;
     var fileName = uuid + '.png';
     const tempPath = req.file.path;
-    const screenshotsDir = path.resolve(__dirname, '../../screenshots');
     const targetPath = path.join(screenshotsDir, fileName);
     if (!fs.existsSync(screenshotsDir)) {
         fs.mkdirSync(screenshotsDir);

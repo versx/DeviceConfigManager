@@ -84,6 +84,7 @@ class Migrator {
             sqlSplit.forEach(async sql => {
                 let msql = sql.replace('&semi', ';').trim();
                 if (msql !== '') {
+                    console.log('[DBController] Executing:', msql);
                     var result = await query(msql)
                         .then(x => x)
                         .catch(async err => {
@@ -118,7 +119,7 @@ class Migrator {
                 .then(x => x)
                 .catch(err => {
                     console.error('[DBController] Migration failed:', err);
-                    process.exit(-1);
+                    process.exit(
                 });
             console.log('[DBController] Migration successful');
             if (newVersion === toVersion) {
