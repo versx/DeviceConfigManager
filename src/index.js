@@ -2,18 +2,28 @@
 
 const path = require('path');
 const express = require('express');
+const session = require('express-session');
 const bodyParser = require('body-parser');
 const app = express();
 const mustacheExpress = require('mustache-express');
+
 const config = require('./config.json');
 const Device = require('./models/device.js');
 const Config = require('./models/config.js');
 const Migrator = require('./migrator.js');
 const apiRoutes = require('./routes/api.js');
 
+const secretToken = 'verytopsecretkeytokenthingyyouknow'; // TODO: Make config option or generate random tokens
+
 // TODO: Create route classes
 // TODO: Error checking/handling
-// TODO: Security / token auth / users (maybe?) or basic authentication
+
+const defaultData = {
+    title: config.title,
+    locale: config.locale,
+    style: config.style == 'dark' ? 'dark' : '',
+    logging: config.logging
+};
 
 // Start database migrator
 var dbMigrator = new Migrator();
@@ -27,26 +37,63 @@ app.use(bodyParser.urlencoded({ extended: false, limit: '50mb' })); // for parsi
 app.use(express.static(path.resolve(__dirname, '../static')));
 app.use('/screenshots', express.static(path.resolve(__dirname, '../screenshots')));
 
-const defaultData = {
-    title: config.title,
-    locale: config.locale,
-    style: config.style == 'dark' ? 'dark' : '',
-    logging: config.logging
-};
+// Sessions middleware
+app.use(session({
+    secret: secretToken,
+    resave: true,
+    saveUninitialized: true
+}));
+
+// Login middleware
+app.use(function(req, res, next) {
+    if (req.path === '/api/login' || req.path === '/login') {
+        return next();
+    }
+    if (req.session.loggedin) {
+        defaultData.logged_in = true;
+        next();
+        return;
+    }
+    res.redirect('/login');
+});
 
 // API Route
 app.use('/api', apiRoutes);
 
 // UI Routes
 app.get(['/', '/index'], async function(req, res) {
-    var devices = await Device.getAll();
-    var configs = await Config.getAll();
-    var metadata = await Migrator.getEntries();
+    if (req.session.loggedin) {
+        var username = req.session.username;
+        var devices = await Device.getAll();
+        var configs = await Config.getAll();
+        var metadata = await Migrator.getEntries();
+        var data = defaultData;
+        data.metadata = metadata;
+        data.devices = devices.length;
+        data.configs = configs.length;
+        data.username = username;
+        res.render('index', data);
+    }
+});
+
+app.get('/login', function(req, res) {
+    res.render('login', defaultData);
+});
+
+app.get('/logout', function(req, res) {
+    // TODO: Fix logout showing navbar
+    req.session.destroy();
+    //req.session.loggedin = false;
+    //req.session.username = null;
+    //req.session = null;
+    //delete req.session;
+    res.redirect('/login');
+});
+
+app.get('/account', function(req, res) {
     var data = defaultData;
-    data.metadata = metadata;
-    data.devices = devices.length;
-    data.configs = configs.length;
-    res.render('index', data);
+    data.username = req.session.username;
+    res.render('account', data);
 });
 
 // Device UI Routes

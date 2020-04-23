@@ -18,6 +18,7 @@ You can also pre-create devices and assign configs yourself if needed.
 3.) Copy config `cp src/config.example.json src/config.json`  
 4.) Fill out config `vi src/config.json`  
 5.) Run `npm run start`  
+6.) Access via http://machineip:port/ using username: `admin` and password `pass123!`  
 
 ## PM2 (recommended)
 Once everything is setup and running appropriately, you can add this to PM2 ecosystem.config.js file so it is automatically started:  
