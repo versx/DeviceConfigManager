@@ -1,0 +1,77 @@
+<!DOCTYPE html="{{locale}}">
+    {{> header}}
+    <body>
+        {{> navbar}}
+        <br>
+        <h1 align="center" id="header">New Device Config Schedule</h1>
+        <br>
+        <div class="w-75" style="float: none; margin: 0 auto;">
+            <form action="/api/schedule/new" method="post">
+                <div class="form-group">
+                    Name
+                    <input type="text" class="form-control" name="name" value="" placeholder="Leveling schedule" required>
+                </div>
+                <div class="form-group">
+                    Select Config
+                    <select class="form-control" name="config" required>
+                        <option value="" selected disabled hidden>Choose a Config</option>
+                        {{#configs}}
+                            <option value="{{name}}">{{name}}</option>
+                        {{/configs}}
+                    </select>
+                </div>
+                <div class="form-group">
+                    Select Device(s)
+                    <select class="form-control" name="devices" size="20" multiple required>
+                        <option value="" selected disabled hidden>Choose Device(s)</option>
+                        {{#devices}}
+                            <option value="{{uuid}}">{{uuid}}</option>
+                        {{/devices}}
+                    </select>
+                </div>
+                <div class="form-group">
+                    Start Time
+                    <input type="text" class="form-control" name="start_time" value="" placeholder="23:00:00" required>
+                </div>
+                <div class="form-group">
+                    End Time
+                    <input type="text" class="form-control" name="end_time" value="" placeholder="02:00:00" required>
+                </div>
+                <div class="form-group">
+                    Time Zone
+                    <select class="form-control" name="timezone" required>
+                        <option value="" selected disabled hidden>Choose Timezone</option>
+                        {{#timezones}}
+                            <option value="{{value}}">{{name}}</option>
+                        {{/timezones}}
+                    </select>
+                </div>
+                <div class="form-group">
+                    Select On Complete Config
+                    <select class="form-control" name="next_config" required>
+                        <option value="" selected disabled hidden>Choose a Config</option>
+                        {{#configs}}
+                            <option value="{{name}}">{{name}}</option>
+                        {{/configs}}
+                    </select>
+                </div>
+                <div class="form-check">
+                    <input type="checkbox" class="form-check-input" name="enabled" checked>
+                    <label class="form-check-label" for="enabled">Enabled</label>
+                </div>
+                <br>
+                <button type="submit" class="btn btn-primary">Create</button>
+                <br>
+            </form>
+        </div>
+        <br>    
+    </body>
+</html>
+
+<script>
+    if ("{{style}}" === 'dark') {
+        $('body').css('background-color', 'rgb(33, 37, 41)');
+        $('body').css('color', 'rgb(255, 255, 255)');
+        //$('#header').css('color', 'white');
+    }
+</script>

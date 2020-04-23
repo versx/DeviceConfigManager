@@ -5,11 +5,15 @@ const express = require('express');
 const bodyParser = require('body-parser');
 const app = express();
 const mustacheExpress = require('mustache-express');
+
 const config = require('./config.json');
 const Device = require('./models/device.js');
 const Config = require('./models/config.js');
 const Migrator = require('./migrator.js');
+const ScheduleManager = require('./models/schedule-manager.js');
 const apiRoutes = require('./routes/api.js');
+
+const timezones = require('../static/data/timezones.json');
 
 // TODO: Create route classes
 // TODO: Error checking/handling
@@ -24,6 +28,7 @@ app.set('view engine', 'mustache');
 app.set('views', path.resolve(__dirname, 'views'));
 app.engine('mustache', mustacheExpress());
 app.use(bodyParser.urlencoded({ extended: false, limit: '50mb' })); // for parsing application/x-www-form-urlencoded
+//app.use(bodyParser.raw({ type: 'application/x-www-form-urlencoded' }));
 app.use(express.static(path.resolve(__dirname, '../static')));
 app.use('/screenshots', express.static(path.resolve(__dirname, '../screenshots')));
 
@@ -41,11 +46,13 @@ app.use('/api', apiRoutes);
 app.get(['/', '/index'], async function(req, res) {
     var devices = await Device.getAll();
     var configs = await Config.getAll();
+    var schedules = ScheduleManager.getAll();
     var metadata = await Migrator.getEntries();
     var data = defaultData;
     data.metadata = metadata;
     data.devices = devices.length;
     data.configs = configs.length;
+    data.schedules = Object.keys(schedules).length;
     res.render('index', data);
 });
 
@@ -161,6 +168,60 @@ app.get('/config/delete/:name', function(req, res) {
     var data = defaultData;
     data.name = req.params.name;
     res.render('config-delete', data);
+});
+
+// Schedule UI Routes
+app.get('/schedules', function(req, res) {
+    res.render('schedules', defaultData);
+});
+
+app.get('/schedule/new', async function(req, res) {
+    var data = defaultData;
+    var configs = await Config.getAll();
+    var devices = await Device.getAll();
+    data.configs = configs;
+    data.devices = devices;
+    data.timezones = timezones;
+    res.render('schedule-new', data);
+});
+
+app.get('/schedule/edit/:name', async function(req, res) {
+    var name = req.params.name;
+    var data = defaultData;
+    var configs = await Config.getAll();
+    var devices = await Device.getAll();
+    var schedule = ScheduleManager.getByName(name);
+    if (configs) {
+        configs.forEach(function(cfg) {
+            cfg.selected = cfg.name === schedule.config;
+            cfg.next_config_selected = cfg.name === schedule.next_config;
+        });
+    }
+    if (devices) {
+        devices.forEach(function(device) {
+            device.selected = schedule.uuids.includes(device.uuid);
+        });
+    }
+    data.old_name = name;
+    data.name = schedule.name;
+    data.configs = configs;
+    data.devices = devices;
+    data.start_time = schedule.start_time;
+    data.end_time = schedule.end_time;
+    data.timezone = schedule.timezone;
+    data.next_config = schedule.next_config;
+    data.enabled = schedule.enabled === 1 ? 'checked' : '';
+    timezones.forEach(function(timezone) {
+        timezone.selected = timezone.value === schedule.timezone;
+    });
+    data.timezones = timezones;
+    res.render('schedule-edit', data);
+});
+
+app.get('/schedule/delete/:name', function(req, res) {
+    var data = defaultData;
+    data.name = req.params.name;
+    res.render('schedule-delete', data);
 });
 
 // Settings UI Routes

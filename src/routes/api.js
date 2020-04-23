@@ -13,6 +13,7 @@ const upload = multer({ dest: '../../screenshots' });
 const Config = require('../models/config.js');
 const Device = require('../models/device.js');
 const Log = require('../models/log.js');
+const ScheduleManager = require('../models/schedule-manager.js');
 
 
 // Device API Routes
@@ -60,7 +61,7 @@ router.post('/device/:uuid/screen', upload.single('file'), function(req, res) {
     var uuid = req.params.uuid;
     var fileName = uuid + '.png';
     const tempPath = req.file.path;
-    const screenshotsDir = path.resolve(__dirname, '../screenshots');
+    const screenshotsDir = path.resolve(__dirname, '../../screenshots');
     const targetPath = path.join(screenshotsDir, fileName);
     if (!fs.existsSync(screenshotsDir)) {
         fs.mkdirSync(screenshotsDir);
@@ -126,7 +127,8 @@ router.get('/config/:uuid', async function(req, res) {
     var noConfig = false;
     // Check for a proxied IP before the normal IP and set the first one at exists
     var clientip = ((req.headers['x-forwarded-for'] || '').split(', ')[0]) || (req.connection.remoteAddress).match('[0-9]+.[0-9].+[0-9]+.[0-9]+$')[0];
-    
+    console.log("[" + new Date().toLocaleString() + "]", "Client", uuid, "at", clientip, "is requesting a config.");
+
     // Check if device config is empty, if not provide it as json response
     if (device) {
         // Device exists
@@ -324,6 +326,80 @@ router.post('/config/delete/:name', async function(req, res) {
         // Success
     }
     res.redirect('/configs');
+});
+
+
+// Schedule API requests
+router.get('/schedules', async function(req, res) {
+    var schedules = ScheduleManager.getAll();
+    var list = Object.values(schedules);
+    if (list) {
+        list.forEach(function(schedule) {
+            schedule.buttons = `<a href='/schedule/edit/${schedule.name}'><button type='button' class='btn btn-primary'>Edit</button></a>
+                                <a href='/schedule/delete/${schedule.name}'><button type='button'class='btn btn-danger'>Delete</button></a>`;
+            schedule.enabled ? 'Yes' : 'No'; // TODO: Fix yes/no doesn't get set
+        });
+    }
+    res.send({ data: { schedules: list } });
+});
+
+router.post('/schedule/new', function(req, res) {
+    var data = req.body;
+    var result = ScheduleManager.create(
+        data.name,
+        data.config,
+        data.devices,
+        data.start_time,
+        data.end_time,
+        data.timezone,
+        data.next_config,
+        data.enabled === 'on' ? 1 : 0
+    );
+    if (result) {
+        console.log('Schedule inserted');
+    } else {
+        console.error('Failed to create new schedule');
+    }
+    res.redirect('/schedules');
+});
+
+router.post('/schedule/edit/:name', function(req, res) {
+    var data = req.body;
+    var oldName = req.params.name;
+    var name = data.name;
+    var config = data.config;
+    var uuids = data.devices;
+    var startTime = data.start_time;
+    var endTime = data.end_time;
+    var timezone = data.timezone;
+    var nextConfig = data.next_config;
+    var enabled = data.enabled === 'on' ? 1 : 0;
+    var result = ScheduleManager.update(oldName, name, config, uuids, startTime, endTime, timezone, nextConfig, enabled);
+    if (result) {
+        console.log('Schedule', name, 'updated');
+    } else {
+        console.error('Failed to update schedule', oldName);
+    }
+    res.redirect('/schedules');
+});
+
+router.post('/schedule/delete/:name', function(req, res) {
+    var name = req.params.name;
+    var result = ScheduleManager.delete(name);
+    if (result) {
+        // Success
+        console.log("Schedule", name, "deleted");
+    }
+    res.redirect('/schedules');
+});
+
+router.get('/schedule/delete_all', function(req, res) {
+    var result = ScheduleManager.deleteAll();
+    if (result) {
+        // Success
+        console.log("All schedules deleted");
+    }
+    res.redirect('/schedules');
 });
 
 
