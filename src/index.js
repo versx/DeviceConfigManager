@@ -37,7 +37,7 @@ app.use('/screenshots', express.static(path.resolve(__dirname, '../screenshots')
 
 // Sessions middleware
 app.use(session({
-    secret: config.token, // REVIEW: Randomize?
+    secret: config.secret, // REVIEW: Randomize?
     resave: true,
     saveUninitialized: true
 }));
@@ -80,12 +80,14 @@ app.get('/login', function(req, res) {
 
 app.get('/logout', function(req, res) {
     // TODO: Fix logout showing navbar
-    req.session.destroy();
+    req.session.destroy(function(err) {
+        if (err) throw err;
+        res.redirect('/login');
+    });
     //req.session.loggedin = false;
     //req.session.username = null;
     //req.session = null;
     //delete req.session;
-    res.redirect('/login');
 });
 
 app.get('/account', function(req, res) {
