@@ -31,7 +31,9 @@ function query(sql, args) {
         // The Promise constructor should catch any errors thrown on
         // this tick. Alternately, try/catch and reject(err) on catch.
         var conn = getConnection();
+        /* eslint-disable no-unused-vars */
         conn.query(sql, args, function(err, rows, fields) {
+        /* eslint-enable no-unused-vars */
             // Call reject on error states,
             // call resolve with results
             if (err) {
@@ -40,7 +42,7 @@ function query(sql, args) {
             resolve(rows);
             conn.end(function(err, args) {
                 if (err) {
-                    console.error('Failed to close mysql connection.');
+                    console.error('Failed to close mysql connection:', args);
                     return;
                 }
             });

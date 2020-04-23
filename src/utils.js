@@ -3,7 +3,7 @@
 const fs = require('fs');
 
 function readFile(path) {
-    let data = fs.readFileSync(path);
+    var data = fs.readFileSync(path);
     return data.toString('utf8');
 }
 

@@ -4,6 +4,7 @@ const fs = require('fs');
 const path = require('path');
 const moment = require('moment');
 
+const Device = require('./device.js');
 const utils = require('../utils.js');
 
 const schedulesFile = path.resolve(__dirname, '../schedules.json');
@@ -61,14 +62,14 @@ class ScheduleManager {
         try {
             var json = JSON.stringify(schedules, null, 2);
             fs.writeFileSync(schedulesFile, json);
-            console.log("Schedules list updated");
+            console.log('Schedules list updated');
             return true;
         } catch (e) {
-            console.error("save:", e);
+            console.error('save:', e);
         }
         return false;
     }
-    static checkSchedules() {
+    static async checkSchedules() {
         var now = todaySeconds();
         if (lastUpdate === -2) {
             utils.snooze(5000);
@@ -80,22 +81,24 @@ class ScheduleManager {
     
         var schedules = ScheduleManager.getAll();
         var values = Object.values(schedules);
-        values.forEach(function(schedule) {
+        values.forEach(async function(schedule) {
             var startTimeSeconds = timeToSeconds(schedule.start_time);
             var endTimeSeconds = timeToSeconds(schedule.end_time);
-            console.log("Now:", now, "Last Update:", lastUpdate, "Start:", startTimeSeconds, "End:", endTimeSeconds);
-            console.log("Triggering schedule", schedule.name, "in", startTimeSeconds - now, "seconds");
+            console.log('Now:', now, 'Last Update:', lastUpdate, 'Start:', startTimeSeconds, 'End:', endTimeSeconds);
+            console.log('Triggering schedule', schedule.name, 'in', startTimeSeconds - now, 'seconds');
             if (schedule.enabled) {
-                if (startTimeSeconds != 0 &&
+                if (startTimeSeconds !== 0 &&
+                    endTimeSeconds !== 0 &&
                     now >= startTimeSeconds &&
                     now <= endTimeSeconds &&
                     lastUpdate < startTimeSeconds) {
-                    ScheduleManager.triggerSchedule(schedule);
-                } else if (endTimeSeconds != 0 &&
+                    await ScheduleManager.triggerSchedule(schedule, schedule.config);
+                } else if (startTimeSeconds !== 0 &&
+                    endTimeSeconds !== 0 &&
                     now < startTimeSeconds &&
                     now > endTimeSeconds && 
                     lastUpdate < endTimeSeconds) {
-                    ScheduleManager.onScheduleComplete(schedule);
+                    await ScheduleManager.triggerSchedule(schedule, schedule.next_config);
                 }
             }
         });
@@ -103,39 +106,21 @@ class ScheduleManager {
         utils.snooze(5000);
         lastUpdate = parseInt(now);
     }
-    static triggerSchedule(schedule) {
-        console.log("Running schedule for", schedule);
+    static async triggerSchedule(schedule, config) {
+        console.log('Running schedule for', schedule, 'to assign config', config);
         var uuids = schedule.uuids.split(',');
         if (uuids) {
-            uuids.forEach(function(uuid) {
-                var device = Device.getByName(uuid);
-                if (device.config !== schedule.config) {
-                    device.config = schedule.config;
-                    var result = device.save();
+            uuids.forEach(async function(uuid) {
+                var device = await Device.getByName(uuid);
+                // Check if the device config is not already set to the scheduled config to assign.
+                if (device.config !== config) {
+                    device.config = config;
+                    var result = await device.save();
                     if (result) {
                         // Success
-                        console.log("Device", uuid, "assigned config", device.config, "successfully");
+                        console.log('Device', uuid, 'assigned config', config, 'successfully');
                     } else {
-                        console.error("Failed to assign device", uuid, "config", schedule.config);
-                    }
-                }
-            });
-        }
-    }
-    static onScheduleComplete(schedule) {
-        console.log("On schedule complete for", schedule);
-        var uuids = schedule.uuids.split(',');
-        if (uuids) {
-            uuids.forEach(function(uuid) {
-                var device = Device.getByName(uuid);
-                if (device.config !== schedule.next_config) {
-                    device.config = schedule.next_config;
-                    var result = device.save();
-                    if (result) {
-                        // Success
-                        console.log("Device", uuid, "assigned config", device.config, "successfully");
-                    } else {
-                        console.error("Failed to assign device", uuid, "config", schedule.next_config);
+                        console.error('Failed to assign device', uuid, 'config', config);
                     }
                 }
             });
@@ -155,10 +140,6 @@ function timeToSeconds(time) {
         }
     }
     return 0;
-}
-
-function secondsToTime(value) {
-    return `${value / 3600}:${(value % 3600) / 60}:${(value % 3600) % 60}`;
 }
 
 function todaySeconds() {

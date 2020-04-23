@@ -66,8 +66,8 @@ router.post('/device/:uuid/screen', upload.single('file'), function(req, res) {
     if (!fs.existsSync(screenshotsDir)) {
         fs.mkdirSync(screenshotsDir);
     }
-    //console.log("File:", req.file);
-    //console.log("Temp Path:", tempPath, "Target Path:", targetPath, "Original FileName:", req.file.originalname);
+    //console.log('File:', req.file);
+    //console.log('Temp Path:', tempPath, 'Target Path:', targetPath, 'Original FileName:', req.file.originalname);
     if (path.extname(req.file.originalname).toLowerCase() === '.png' ||
         path.extname(req.file.originalname).toLowerCase() === '.jpg' ||
         path.extname(req.file.originalname).toLowerCase() === '.jpeg') {
@@ -125,9 +125,10 @@ router.get('/config/:uuid', async function(req, res) {
     var uuid = req.params.uuid;
     var device = await Device.getByName(uuid);
     var noConfig = false;
+    var assignDefault = false;
     // Check for a proxied IP before the normal IP and set the first one at exists
     var clientip = ((req.headers['x-forwarded-for'] || '').split(', ')[0]) || (req.connection.remoteAddress).match('[0-9]+.[0-9].+[0-9]+.[0-9]+$')[0];
-    console.log("[" + new Date().toLocaleString() + "]", "Client", uuid, "at", clientip, "is requesting a config.");
+    console.log('[' + new Date().toLocaleString() + ']', 'Client', uuid, 'at', clientip, 'is requesting a config.');
 
     // Check if device config is empty, if not provide it as json response
     if (device) {
@@ -136,19 +137,11 @@ router.get('/config/:uuid', async function(req, res) {
         device.clientip = clientip;
         device.save();
         if (device.config) {
-            // Do something
+            // Nothing to do besides respond with config
         } else {
             console.log('Device', uuid, 'not assigned a config, attempting to assign the default config if one is set...');
             // Not assigned a config
-            var defaultConfig = await Config.getDefault();
-            if (defaultConfig !== null) {
-                console.log('Assigning device', uuid, 'default config', defaultConfig.name);
-                device.config = defaultConfig.name;
-                device.save();
-            } else {    
-                // No default config so don't give config response
-                noConfig = true;
-            }
+            assignDefault = true;
         }
     } else {
         console.log('Device does not exist, creating...');
@@ -156,30 +149,32 @@ router.get('/config/:uuid', async function(req, res) {
         var result = await Device.create(uuid, null, new Date() / 1000, clientip); // REVIEW: Maybe return Device object upon creation to prevent another sql call to get Device object?
         if (result) {
             // Success, assign default config if there is one.
-            var defaultConfig = await Config.getDefault();
-            if (defaultConfig !== null) {
-                console.log('Assigning device', uuid, 'default config', defaultConfig.name);
-                device = await Device.getByName(uuid);
-                device.config = defaultConfig.name;
-                device.save();
-            } else {
-                // No default config so don't give config response
-                noConfig = true;
-            }
+            assignDefault = true;
         } else {
             // Failed to create device so don't give config response
             noConfig = true;
         }
     }
 
+    if (assignDefault) {
+        var defaultConfig = await Config.getDefault();
+        if (defaultConfig !== null) {
+            console.log('Assigning device', uuid, 'default config', defaultConfig.name);
+            device.config = defaultConfig.name;
+            device.save();
+        } else {    
+            // No default config so don't give config response
+            noConfig = true;
+        }
+    }
+
     if (noConfig) {
         console.error('No config assigned to device', uuid, 'and no default config to assign!');
-        var data = {
+        var noConfigData = {
             status: 'error',
             error: 'Device not assigned to config!'
         };
-        var json = JSON.stringify(data);
-        res.send(json);
+        res.send(JSON.stringify(noConfigData));
         return;
     }
     
@@ -190,8 +185,7 @@ router.get('/config/:uuid', async function(req, res) {
             status: 'error',
             error: 'Device not assigned to config!'
         };
-        var json = JSON.stringify(data);
-        res.send(json);
+        res.send(JSON.stringify(data));
         return;
     }
     // Build json config
@@ -223,7 +217,7 @@ router.get('/config/:uuid', async function(req, res) {
         c.ultraQuests,
         c.isDefault
     );
-    console.log('Config response:', json);
+    console.log(uuid, 'config response:', json);
     res.send(json);
 });
 
@@ -388,7 +382,7 @@ router.post('/schedule/delete/:name', function(req, res) {
     var result = ScheduleManager.delete(name);
     if (result) {
         // Success
-        console.log("Schedule", name, "deleted");
+        console.log('Schedule', name, 'deleted');
     }
     res.redirect('/schedules');
 });
@@ -397,7 +391,7 @@ router.get('/schedule/delete_all', function(req, res) {
     var result = ScheduleManager.deleteAll();
     if (result) {
         // Success
-        console.log("All schedules deleted");
+        console.log('All schedules deleted');
     }
     res.redirect('/schedules');
 });
