@@ -10,7 +10,7 @@ class Account {
         var sql = `
         SELECT username
         FROM users
-        WHERE username = ? AND password = ?`;
+        WHERE username = ? AND password = SHA1(?)`;
         var args = [username, password];
         var results = await query(sql, args);
         return results && results.length > 0;
@@ -18,8 +18,8 @@ class Account {
     static async changePassword(username, password, newPassword) {
         var sql = `
         UPDATE users
-        SET password = ?
-        WHERE username = ? AND password = ?`;
+        SET password = SHA1(?)
+        WHERE username = ? AND password = SHA1(?)`;
         var args = [newPassword, username, password];
         var result = await query(sql, args);
         return result.affectedRows === 1;
