@@ -15,7 +15,6 @@ const apiRoutes = require('./routes/api.js');
 
 // TODO: Create route classes
 // TODO: Error checking/handling
-// TODO: Secure password
 
 const defaultData = {
     title: config.title,
@@ -77,6 +76,7 @@ app.get(['/', '/index'], async function(req, res) {
 
 app.get('/login', function(req, res) {
     var data = defaultData;
+    data.logged_in = false;
     data.username = null;
     res.render('login', data);
 });
