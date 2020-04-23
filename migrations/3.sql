@@ -3,4 +3,4 @@ CREATE TABLE IF NOT EXISTS `users` (
   `password` varchar(255) NOT NULL
 );
 
-INSERT INTO `users` (`username`, `password`) VALUES ('admin', SHA1('pass123!'));
+INSERT INTO `users` (`username`, `password`) VALUES ('root', SHA1('pass123!'));
