@@ -104,12 +104,42 @@ class ScheduleManager {
         lastUpdate = parseInt(now);
     }
     static triggerSchedule(schedule) {
-        // TODO: Update device's to config name
         console.log("Running schedule for", schedule);
+        var uuids = schedule.uuids.split(',');
+        if (uuids) {
+            uuids.forEach(function(uuid) {
+                var device = Device.getByName(uuid);
+                if (device.config !== schedule.config) {
+                    device.config = schedule.config;
+                    var result = device.save();
+                    if (result) {
+                        // Success
+                        console.log("Device", uuid, "assigned config", device.config, "successfully");
+                    } else {
+                        console.error("Failed to assign device", uuid, "config", schedule.config);
+                    }
+                }
+            });
+        }
     }
     static onScheduleComplete(schedule) {
-        // TODO: Assign devices to next_config
         console.log("On schedule complete for", schedule);
+        var uuids = schedule.uuids.split(',');
+        if (uuids) {
+            uuids.forEach(function(uuid) {
+                var device = Device.getByName(uuid);
+                if (device.config !== schedule.next_config) {
+                    device.config = schedule.next_config;
+                    var result = device.save();
+                    if (result) {
+                        // Success
+                        console.log("Device", uuid, "assigned config", device.config, "successfully");
+                    } else {
+                        console.error("Failed to assign device", uuid, "config", schedule.next_config);
+                    }
+                }
+            });
+        }
     }
 }
 
