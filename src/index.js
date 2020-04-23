@@ -68,11 +68,13 @@ app.get(['/', '/index'], async function(req, res) {
         var username = req.session.username;
         var devices = await Device.getAll();
         var configs = await Config.getAll();
+        var schedules = ScheduleManager.getAll();
         var metadata = await Migrator.getEntries();
         var data = defaultData;
         data.metadata = metadata;
         data.devices = devices.length;
         data.configs = configs.length;
+        data.schedules = Object.keys(schedules).length;
         data.username = username;
         res.render('index', data);
     }

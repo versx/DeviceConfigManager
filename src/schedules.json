@@ -1,17 +1,2 @@
 {
-  "Leveling schedule": {
-    "name": "Leveling schedule",
-    "config": "Leveling",
-    "uuids": [
-      "iPhone10SE",
-      "iPhone11SE",
-      "iPhone12SE",
-      "iPhone13SE"
-    ],
-    "start_time": "23:00:00",
-    "end_time": "02:00:00",
-    "timezone": -8,
-    "next_config": "Main",
-    "enabled": 1
-  }
 }

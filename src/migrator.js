@@ -119,7 +119,7 @@ class Migrator {
                 .then(x => x)
                 .catch(err => {
                     console.error('[DBController] Migration failed:', err);
-                    process.exit(
+                    process.exit(-1);
                 });
             console.log('[DBController] Migration successful');
             if (newVersion === toVersion) {
