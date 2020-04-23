@@ -12,6 +12,10 @@ const scheduleCheckInterval = 60 * 1000;
 
 var lastUpdate = -2;
 
+if (!fs.existsSync(schedulesFile)) {
+    fs.writeFileSync(schedulesFile, '{}');
+}
+
 class ScheduleManager {
     static getAll() {
         var json = fs.readFileSync(schedulesFile);
