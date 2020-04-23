@@ -9,7 +9,7 @@
     <span class="navbar-toggler-icon"></span>
   </button>
   <div class="collapse navbar-collapse" id="navbar">
-    {{#logged_in}}
+    {{#username}}
     <ul class="navbar-nav mr-auto">
       <li class="nav-item">
         <a class="nav-link" href="/"><i class="fa fa-fw fa-tachometer" aria-hidden="true"></i>&nbsp;Home <span class="sr-only"></span></a>
@@ -22,21 +22,19 @@
       </li>
     </ul>
     <ul class="navbar-nav ml-auto">
-      {{#username}}
       <li class="nav-item dropdown">
         <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
           {{username}}
         </a>
         <div class="dropdown-menu" aria-labelledby="navbarDropdown">
           <a class="dropdown-item" href="/account">Profile</a>
-          <a class="dropdown-item" href="/settings"></i>Settings</a>
+          <a class="dropdown-item" href="/settings">Settings</a>
           <div class="dropdown-divider"></div>
           <a class="dropdown-item" href="/logout">Logout</a>
         </div>
       </li>
-      {{/username}}
     </ul>
-    {{/logged_in}}
+    {{/username}}
   </div>
 </nav>
 <br>

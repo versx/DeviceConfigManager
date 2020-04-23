@@ -15,6 +15,7 @@ const apiRoutes = require('./routes/api.js');
 
 // TODO: Create route classes
 // TODO: Error checking/handling
+// TODO: Secure password
 
 const defaultData = {
     title: config.title,
@@ -75,19 +76,16 @@ app.get(['/', '/index'], async function(req, res) {
 });
 
 app.get('/login', function(req, res) {
-    res.render('login', defaultData);
+    var data = defaultData;
+    data.username = null;
+    res.render('login', data);
 });
 
 app.get('/logout', function(req, res) {
-    // TODO: Fix logout showing navbar
     req.session.destroy(function(err) {
         if (err) throw err;
         res.redirect('/login');
     });
-    //req.session.loggedin = false;
-    //req.session.username = null;
-    //req.session = null;
-    //delete req.session;
 });
 
 app.get('/account', function(req, res) {
