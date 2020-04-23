@@ -5,6 +5,7 @@
     "locale": "en",
     "style": "dark",
     "logging": true,
+    "secret": "sup3rr4nd0m70p53cr3t70k3ny0u5h0u1dch4ng3!/-",
     "db": {
         "host": "127.0.0.1",
         "port": 3306,

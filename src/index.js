@@ -13,8 +13,6 @@ const Config = require('./models/config.js');
 const Migrator = require('./migrator.js');
 const apiRoutes = require('./routes/api.js');
 
-const secretToken = 'verytopsecretkeytokenthingyyouknow'; // TODO: Make config option or generate random tokens
-
 // TODO: Create route classes
 // TODO: Error checking/handling
 
@@ -39,7 +37,7 @@ app.use('/screenshots', express.static(path.resolve(__dirname, '../screenshots')
 
 // Sessions middleware
 app.use(session({
-    secret: secretToken,
+    secret: config.token, // REVIEW: Randomize?
     resave: true,
     saveUninitialized: true
 }));
