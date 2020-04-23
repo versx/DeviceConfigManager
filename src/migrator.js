@@ -88,7 +88,7 @@ class Migrator {
                     var result = await query(msql)
                         .then(x => x)
                         .catch(async err => {
-                            console.error('[DBController] Migration failed:', err, '\r\nExecuting SQL statement:', msql);
+                            console.error('[DBController] Migration failed:', err);
                             /*
                             if (noBackup === undefined || noBackup === null || noBackup === false) {
                                 for (let i = 0; i < 10; i++) {
@@ -107,6 +107,7 @@ class Migrator {
                             */
                         });
                     console.log('[DBController] Migration execution result:', result);
+                    await utils.snooze(2000);
                 }
             });
             

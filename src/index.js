@@ -46,9 +46,12 @@ app.use(session({
     saveUninitialized: true
 }));
 
+// API Route
+app.use('/api', apiRoutes);
+
 // Login middleware
 app.use(function(req, res, next) {
-    if (req.path === '/api/login' || req.path === '/login') {
+    if (req.path === '/api/login' || req.path === '/login' || req.path.includes('/api/config/')) {
         return next();
     }
     if (req.session.loggedin) {
@@ -58,9 +61,6 @@ app.use(function(req, res, next) {
     }
     res.redirect('/login');
 });
-
-// API Route
-app.use('/api', apiRoutes);
 
 // UI Routes
 app.get(['/', '/index'], async function(req, res) {
