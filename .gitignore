@@ -111,3 +111,6 @@ logs
 
 # No screenshots
 screenshots
+
+# No schedules
+schedules.json

@@ -15,12 +15,9 @@ class Migrator {
         var done = false;
         while (!done) {
             if (query === undefined || query === null) {
-                var message = `Failed to connect to database (as root) while initializing. Try: ${count}/10`;
+                console.error(`[DBController] Failed to connect to database (as root) while initializing. Try: ${count}/10`);
                 if (count === 10) {
-                    console.error('[DBController]', message);
                     process.exit(-1);
-                } else {
-                    console.error('[DBController]', message);
                 }
                 count++;
                 await utils.snooze(2500);
@@ -88,7 +85,7 @@ class Migrator {
                 let msql = sql.replace('&semi', ';').trim();
                 if (msql !== '') {
                     console.log('[DBController] Executing:', msql);
-                    let results = await query(msql)
+                    var result = await query(msql)
                         .then(x => x)
                         .catch(async err => {
                             console.error('[DBController] Migration failed:', err, '\r\nExecuting SQL statement:', msql);
@@ -109,6 +106,7 @@ class Migrator {
                             return null;
                             */
                         });
+                    console.log('[DBController] Migration execution result:', result);
                 }
             });
             
@@ -121,9 +119,12 @@ class Migrator {
                 .then(x => x)
                 .catch(err => {
                     console.error('[DBController] Migration failed:', err);
-                    process.exit(-1);
+                    process.exit(
                 });
             console.log('[DBController] Migration successful');
+            if (newVersion === toVersion) {
+                console.log('[DBController] Migration done');
+            }
             this.migrate(newVersion, toVersion);
         }
     }
