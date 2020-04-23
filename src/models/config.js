@@ -52,7 +52,6 @@ class Config {
         if (result.length === 0) {
             return null;
         }
-        // TODO: Error checking
         var c = result[0];
         var data = new Config(
             name,

@@ -6,11 +6,11 @@ Central repository for macless client configurations without having to keep trac
 You can also pre-create devices and assign configs yourself if needed.  
 
 ## Features  
-- Custom config assignments
-- Screenshot preview
-- Device logging
-- Device endpoint tooling
-- and more...
+- Custom config assignments  
+- Screenshot preview  
+- Device logging  
+- Device endpoint tooling  
+- and more...  
 
 ## Installation
 1.) Clone repository `git clone https://github.com/versx/DeviceConfigManager`  
@@ -18,6 +18,10 @@ You can also pre-create devices and assign configs yourself if needed.
 3.) Copy config `cp src/config.example.json src/config.json`  
 4.) Fill out config `vi src/config.json`  
 5.) Run `npm run start`  
+6.) Access via http://machineip:port/ using username: `root` and password `pass123!`  
+
+## Notes  
+If you use HAProxy, make sure to set `option forwardfor` in your haproxy.cfg if you are not passing the x-forward-for header so the correct IP addresses are saved.  
 
 ## PM2 (recommended)
 Once everything is setup and running appropriately, you can add this to PM2 ecosystem.config.js file so it is automatically started:  

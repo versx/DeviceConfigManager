@@ -2,18 +2,29 @@
 
 const path = require('path');
 const express = require('express');
+const session = require('express-session');
 const bodyParser = require('body-parser');
 const app = express();
 const mustacheExpress = require('mustache-express');
+
 const config = require('./config.json');
 const Device = require('./models/device.js');
 const Config = require('./models/config.js');
 const Migrator = require('./migrator.js');
+const ScheduleManager = require('./models/schedule-manager.js');
 const apiRoutes = require('./routes/api.js');
+
+const timezones = require('../static/data/timezones.json');
 
 // TODO: Create route classes
 // TODO: Error checking/handling
-// TODO: Security / token auth / users (maybe?) or basic authentication
+
+const defaultData = {
+    title: config.title,
+    locale: config.locale,
+    style: config.style == 'dark' ? 'dark' : '',
+    logging: config.logging
+};
 
 // Start database migrator
 var dbMigrator = new Migrator();
@@ -24,29 +35,69 @@ app.set('view engine', 'mustache');
 app.set('views', path.resolve(__dirname, 'views'));
 app.engine('mustache', mustacheExpress());
 app.use(bodyParser.urlencoded({ extended: false, limit: '50mb' })); // for parsing application/x-www-form-urlencoded
+//app.use(bodyParser.raw({ type: 'application/x-www-form-urlencoded' }));
 app.use(express.static(path.resolve(__dirname, '../static')));
 app.use('/screenshots', express.static(path.resolve(__dirname, '../screenshots')));
 
-const defaultData = {
-    title: config.title,
-    locale: config.locale,
-    style: config.style == 'dark' ? 'dark' : '',
-    logging: config.logging
-};
+// Sessions middleware
+app.use(session({
+    secret: config.secret, // REVIEW: Randomize?
+    resave: true,
+    saveUninitialized: true
+}));
+
+// Login middleware
+app.use(function(req, res, next) {
+    if (req.path === '/api/login' || req.path === '/login') {
+        return next();
+    }
+    if (req.session.loggedin) {
+        defaultData.logged_in = true;
+        next();
+        return;
+    }
+    res.redirect('/login');
+});
 
 // API Route
 app.use('/api', apiRoutes);
 
 // UI Routes
 app.get(['/', '/index'], async function(req, res) {
-    var devices = await Device.getAll();
-    var configs = await Config.getAll();
-    var metadata = await Migrator.getEntries();
+    if (req.session.loggedin) {
+        var username = req.session.username;
+        var devices = await Device.getAll();
+        var configs = await Config.getAll();
+        var schedules = ScheduleManager.getAll();
+        var metadata = await Migrator.getEntries();
+        var data = defaultData;
+        data.metadata = metadata;
+        data.devices = devices.length;
+        data.configs = configs.length;
+        data.schedules = Object.keys(schedules).length;
+        data.username = username;
+        res.render('index', data);
+    }
+});
+
+app.get('/login', function(req, res) {
     var data = defaultData;
-    data.metadata = metadata;
-    data.devices = devices.length;
-    data.configs = configs.length;
-    res.render('index', data);
+    data.logged_in = false;
+    data.username = null;
+    res.render('login', data);
+});
+
+app.get('/logout', function(req, res) {
+    req.session.destroy(function(err) {
+        if (err) throw err;
+        res.redirect('/login');
+    });
+});
+
+app.get('/account', function(req, res) {
+    var data = defaultData;
+    data.username = req.session.username;
+    res.render('account', data);
 });
 
 // Device UI Routes
@@ -161,6 +212,60 @@ app.get('/config/delete/:name', function(req, res) {
     var data = defaultData;
     data.name = req.params.name;
     res.render('config-delete', data);
+});
+
+// Schedule UI Routes
+app.get('/schedules', function(req, res) {
+    res.render('schedules', defaultData);
+});
+
+app.get('/schedule/new', async function(req, res) {
+    var data = defaultData;
+    var configs = await Config.getAll();
+    var devices = await Device.getAll();
+    data.configs = configs;
+    data.devices = devices;
+    data.timezones = timezones;
+    res.render('schedule-new', data);
+});
+
+app.get('/schedule/edit/:name', async function(req, res) {
+    var name = req.params.name;
+    var data = defaultData;
+    var configs = await Config.getAll();
+    var devices = await Device.getAll();
+    var schedule = ScheduleManager.getByName(name);
+    if (configs) {
+        configs.forEach(function(cfg) {
+            cfg.selected = cfg.name === schedule.config;
+            cfg.next_config_selected = cfg.name === schedule.next_config;
+        });
+    }
+    if (devices) {
+        devices.forEach(function(device) {
+            device.selected = schedule.uuids.includes(device.uuid);
+        });
+    }
+    data.old_name = name;
+    data.name = schedule.name;
+    data.configs = configs;
+    data.devices = devices;
+    data.start_time = schedule.start_time;
+    data.end_time = schedule.end_time;
+    data.timezone = schedule.timezone;
+    data.next_config = schedule.next_config;
+    data.enabled = schedule.enabled === 1 ? 'checked' : '';
+    timezones.forEach(function(timezone) {
+        timezone.selected = timezone.value === schedule.timezone;
+    });
+    data.timezones = timezones;
+    res.render('schedule-edit', data);
+});
+
+app.get('/schedule/delete/:name', function(req, res) {
+    var data = defaultData;
+    data.name = req.params.name;
+    res.render('schedule-delete', data);
 });
 
 // Settings UI Routes
