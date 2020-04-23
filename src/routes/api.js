@@ -208,7 +208,7 @@ router.get('/config/:uuid', async function(req, res) {
         }
     }
 
-    if (device && assignDefault) {
+    if (assignDefault) {
         var defaultConfig = await Config.getDefault();
         if (defaultConfig !== null) {
             console.log('Assigning device', uuid, 'default config', defaultConfig.name);
