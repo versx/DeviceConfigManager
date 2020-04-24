@@ -274,14 +274,15 @@ router.get('/config/:uuid', async function(req, res) {
 });
 
 router.post('/config/assign/:uuid', async function(req, res) {
-    // TODO: Device.getByName and Device.assignConfig(name)
     var uuid = req.params.uuid;
     var config = req.body.config;
-    var sql = 'UPDATE devices SET config = ? WHERE uuid = ?';
-    var args = [config, uuid];
-    var result = await query(sql, args);
-    if (result.affectedRows === 1) {
-        // Success
+    var device = await Device.getByName(uuid);
+    if (device) {
+        device.config = config;
+        var result = await device.save();
+        if (result) {
+            // Success
+        }
     }
     res.redirect('/devices');
 });
