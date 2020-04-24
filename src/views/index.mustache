@@ -4,65 +4,64 @@
         {{> navbar}}
         <br>
         <h1 align="center" id="header">{{title}}</h1>
-        <div class="card text-center p-1 m-3">
-            <div class="card-header bg-dark text-light text-center"><b>Overivew</b></div>
-            <div class="card-body">
-                <div class="container">
-                    <div class="row">
-                        <div class="col-md-4">
-                            <div class="list-group">
-                                <a class="list-group-item">
-                                    <h3 class="pull-right"><img src="./img/device.png" width="64" height="64"/></h3>
-                                    <h4 class="list-group-item-heading">{{devices}}</h4>
-                                    <p class="list-group-item-text">Devices</p>
-                                </a>
+        <br>
+        <div class="w-75" style="float: none; margin: 0 auto;">
+            <div class="card text-center p-1 m-3">
+                <div class="card-header bg-dark text-light text-center"><b>Overivew</b></div>
+                <div class="card-body">
+                    <div class="container">
+                        <div class="row">
+                            <div class="col-md-4">
+                                <div class="list-group">
+                                    <a class="list-group-item">
+                                        <h3 class="pull-right"><img src="./img/device.png" width="64" height="64"/></h3>
+                                        <h4 class="list-group-item-heading">{{devices}}</h4>
+                                        <p class="list-group-item-text">Devices</p>
+                                    </a>
+                                </div>
                             </div>
-                        </div>
-                        <div class="col-md-4">
-                            <div class="list-group">
-                                <a class="list-group-item">
-                                    <h3 class="pull-right"><img src="./img/config.png" width="64" height="64"/></h3>
-                                    <h4 class="list-group-item-heading">{{configs}}</h4>
-                                    <p class="list-group-item-text">Configs</p>
-                                </a>
+                            <div class="col-md-4">
+                                <div class="list-group">
+                                    <a class="list-group-item">
+                                        <h3 class="pull-right"><img src="./img/config.png" width="64" height="64"/></h3>
+                                        <h4 class="list-group-item-heading">{{configs}}</h4>
+                                        <p class="list-group-item-text">Configs</p>
+                                    </a>
+                                </div>
                             </div>
-                        </div>
-                        <div class="col-md-4">
-                            <div class="list-group">
-                                <a class="list-group-item">
-                                    <h3 class="pull-right"><img src="./img/schedule.png" width="64" height="64"/></h3>
-                                    <h4 class="list-group-item-heading">{{schedules}}</h4>
-                                    <p class="list-group-item-text">Schedules</p>
-                                </a>
+                            <div class="col-md-4">
+                                <div class="list-group">
+                                    <a class="list-group-item">
+                                        <h3 class="pull-right"><img src="./img/schedule.png" width="64" height="64"/></h3>
+                                        <h4 class="list-group-item-heading">{{schedules}}</h4>
+                                        <p class="list-group-item-text">Schedules</p>
+                                    </a>
+                                </div>
                             </div>
                         </div>
                     </div>
                 </div>
             </div>
-        </div>
-        <div class="card text-center p-1 m-3">
-            <div class="card-header bg-dark text-light text-center"><b>Metadata</b></div>
-            <div class="card-body">
-        <table id="table" class="table table-{{style}} table-striped table-bordered table-hover dt-responsive nowrap" style="position: center; width:100%">
-            <thead class="thead-dark">
-            <tr>
-                <th>Name</th>
-                <th>Value</th>
-            </tr>
-            </thead>
-            <tbody>
-            {{#metadata}}
-                <tr>
-                    <td>
-                    {{key}}
-                    </td>
-                    <td>
-                    {{value}}
-                    </td>
-                </tr>
-            {{/metadata}}
-            </tbody>
-        </table>
+            <div class="card text-center p-1 m-3">
+                <div class="card-header bg-dark text-light text-center"><b>Metadata</b></div>
+                <div class="card-body">
+                    <table id="table" class="table table-{{style}} table-striped table-bordered table-hover dt-responsive nowrap" style="position: center; width:100%">
+                        <thead class="thead-dark">
+                        <tr>
+                            <th>Name</th>
+                            <th>Value</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        {{#metadata}}
+                            <tr>
+                                <td>{{key}}</td>
+                                <td>{{value}}</td>
+                            </tr>
+                        {{/metadata}}
+                        </tbody>
+                    </table>
+                </div>
             </div>
         </div>
     </body>
