@@ -54,7 +54,7 @@ class Config {
         var sql = `
         INSERT INTO configs (name, backend_url, token, heartbeat_max_time, min_delay_logout,
                             account_manager, deploy_eggs, nearby_tracker, auto_login, is_default)
-        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`;
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`;
         var args = [name, backendUrl, dataEndpoints, token, heartbeatMaxTime, minDelayLogout,
                     accountManager, deployEggs, nearbyTracker, autoLogin, isDefault];
         var result = await query(sql, args);
