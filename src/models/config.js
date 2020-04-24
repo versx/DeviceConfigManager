@@ -52,9 +52,9 @@ class Config {
     static async create(name, backendUrl, dataEndpoints, token, heartbeatMaxTime, minDelayLogout,
                         accountManager, deployEggs, nearbyTracker, autoLogin, isDefault) {
         var sql = `
-        INSERT INTO configs (name, backend_url, token, heartbeat_max_time, min_delay_logout,
+        INSERT INTO configs (name, backend_url, data_endpoints, token, heartbeat_max_time, min_delay_logout,
                             account_manager, deploy_eggs, nearby_tracker, auto_login, is_default)
-        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`;
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`;
         var args = [name, backendUrl, dataEndpoints, token, heartbeatMaxTime, minDelayLogout,
                     accountManager, deployEggs, nearbyTracker, autoLogin, isDefault];
         var result = await query(sql, args);
@@ -69,8 +69,7 @@ class Config {
     static async getDefault() {
         var sql = `
         SELECT name, backend_url, data_endpoints, token, heartbeat_max_time, min_delay_logout,
-               account_manager, deploy_eggs, nearby_tracker, auto_login,
-               is_default
+               account_manager, deploy_eggs, nearby_tracker, auto_login, is_default
         FROM configs
         WHERE is_default = 1
         LIMIT 1`;
