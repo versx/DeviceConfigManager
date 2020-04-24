@@ -4,7 +4,7 @@ ALTER TABLE `configs` DROP COLUMN `raid_max_time`;
 ALTER TABLE `configs` DROP COLUMN `startup_lat`;
 ALTER TABLE `configs` DROP COLUMN `startup_lon`;
 ALTER TABLE `configs` DROP COLUMN `jitter_value`;
-ALTER TABLE `configs` DROP COLUMN `max_warning_raid_time`;
+ALTER TABLE `configs` DROP COLUMN `max_warning_time_raid`;
 ALTER TABLE `configs` DROP COLUMN `encounter_delay`;
 ALTER TABLE `configs` DROP COLUMN `max_empty_gmo`;
 ALTER TABLE `configs` DROP COLUMN `max_failed_count`;
