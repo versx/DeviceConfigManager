@@ -17,6 +17,9 @@ const apiRoutes = require('./routes/api.js');
 const timezones = require('../static/data/timezones.json');
 
 // TODO: Create route classes
+// TODO: iOS and IPA version
+// TODO: Fix devices scroll with DataTables
+// TODO: Fix dropdown closes when table freshes
 
 const defaultData = {
     title: config.title,
