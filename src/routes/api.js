@@ -242,30 +242,14 @@ router.get('/config/:uuid', async function(req, res) {
     // Build json config
     var json = utils.buildConfig(
         c.backendUrl,
-        c.port,
-        c.heartbeatMaxTime,
-        c.pokemonMaxTime,
-        c.raidMaxTime,
-        c.startupLat,
-        c.startupLon,
+        c.dataEndpoints,
         c.token,
-        c.jitterValue,
-        c.maxWarningTimeRaid,
-        c.encounterDelay,
+        c.heartbeatMaxTime,
         c.minDelayLogout,
-        c.maxEmptyGmo,
-        c.maxFailedCount,
-        c.maxNoQuestCount,
-        c.loggingUrl,
-        c.loggingPort,
-        c.loggingTls,
-        c.loggingTcp,
         c.accountManager,
         c.deployEggs,
         c.nearbyTracker,
         c.autoLogin,
-        c.ultraIV,
-        c.ultraQuests,
         c.isDefault
     );
     console.log(uuid, 'config response:', json);
@@ -291,30 +275,14 @@ router.post('/config/new', async function(req, res) {
     var result = await Config.create(
         data.name,
         data.backend_url,
-        data.port,
-        data.heartbeat_max_time,
-        data.pokemon_max_time,
-        data.raid_max_time,
-        data.startup_lat,
-        data.startup_lon,
+        data.data_endpoints,
         data.token,
-        data.jitter_value,
-        data.max_warning_time_raid,
-        data.encounter_delay,
+        data.heartbeat_max_time,
         data.min_delay_logout,
-        data.max_empty_gmo,
-        data.max_failed_count,
-        data.max_no_quest_count,
-        data.logging_url,
-        data.logging_port,
-        data.logging_tls === 'on' ? 1 : 0,
-        data.logging_tcp === 'on' ? 1 : 0,
         data.account_manager === 'on' ? 1 : 0,
         data.deploy_eggs === 'on' ? 1 : 0,
         data.nearby_tracker === 'on' ? 1 : 0,
         data.auto_login === 'on' ? 1 : 0,
-        data.ultra_iv === 'on' ? 1 : 0,
-        data.ultra_quests === 'on' ? 1 : 0,
         data.is_default === 'on' ? 1 : 0
     );
     if (result) {
@@ -331,30 +299,14 @@ router.post('/config/edit/:name', async function(req, res) {
     var c = await Config.getByName(oldName);
     c.name = data.name;
     c.backendUrl = data.backend_url;
-    c.port = data.port;
-    c.heartbeatMaxTime = data.heartbeat_max_time;
-    c.pokemonMaxTime = data.pokemon_max_time;
-    c.raidMaxTime = data.raid_max_time;
-    c.startupLat = data.startup_lat;
-    c.startupLon = data.startup_lon;
+    c.dataEndpoints = data.data_endpoints;
     c.token = data.token;
-    c.jitterValue = data.jitter_value;
-    c.maxWarningTimeRaid = data.max_warning_time_raid;
-    c.encounterDelay = data.encounter_delay;
+    c.heartbeatMaxTime = data.heartbeat_max_time;
     c.minDelayLogout = data.min_delay_logout;
-    c.maxEmptyGmo = data.max_empty_gmo;
-    c.maxFailedCount = data.max_failed_count;
-    c.maxNoQuestCount = data.max_no_quest_count;
-    c.loggingUrl = data.logging_url;
-    c.loggingPort = data.logging_port;
-    c.loggingTls = data.logging_tls === 'on' ? 1 : 0;
-    c.loggingTcp = data.logging_tcp === 'on' ? 1 : 0;
     c.accountManager = data.account_manager === 'on' ? 1 : 0;
     c.deployEggs = data.deploy_eggs === 'on' ? 1 : 0;
     c.nearbyTracker = data.nearby_tracker === 'on' ? 1 : 0;
     c.autoLogin = data.auto_login === 'on' ? 1 : 0;
-    c.ultraIV = data.ultra_iv === 'on' ? 1 : 0;
-    c.ultraQuests = data.ultra_quests === 'on' ? 1 : 0;
     c.isDefault = data.is_default === 'on' ? 1 : 0;
     if (await c.save(oldName)) {
         // Success
