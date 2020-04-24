@@ -21,7 +21,7 @@ function buildConfig(backendUrl, dataEndpoints, token, heartbeatMaxTime, minDela
                      accountManager, deployEggs, nearbyTracker, autoLogin) {
     var obj = {
         'backend_url': backendUrl,
-        'data_endpoints': (dataEndpoints || []).split(','),
+        'data_endpoints': (dataEndpoints || '').split(',') || [],
         'backend_secret_token': token,
         'heartbeat_max_time': heartbeatMaxTime,
         'min_delay_logout': minDelayLogout,
