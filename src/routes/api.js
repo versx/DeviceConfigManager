@@ -6,7 +6,6 @@ const express = require('express');
 const router = express.Router();
 const multer = require('multer');
 const config = require('../config.json');
-const query = require('../db.js');
 const utils = require('../utils.js');
 
 const screenshotsDir = path.resolve(__dirname, '../../screenshots');

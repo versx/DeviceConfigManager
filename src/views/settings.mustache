@@ -3,7 +3,62 @@
     <body>
         {{> navbar}}
         <br>
-        <h1 align="center" id="header">Settings</h1>
+        <h1 align="center" id="header">Settings (NOT WORKING YET)</h1>
+        <br>
+        <div class="w-75" style="float: none; margin: 0 auto;">
+            <div class="card bg-dark p-1 m-3">
+                <div class="card-header text-center bg-dark"><b>Appearance</b></div>
+                <div class="card-body">
+                    <div class="container">
+                        <form action="/api/account/change_password/{{username}}" method="post">
+                            <div class="form-group">
+                                Theme
+                                <select class="form-control" name="config">
+                                    <option value="" selected disabled hidden>Choose a Theme</option>
+                                    <option value="dark">Dark</option>
+                                    <option value="light">Light</option>
+                                </select>
+                            </div>
+                            <br>
+                            <button type="submit" class="btn btn-primary">Save</button>
+                            <br>
+                        </form>
+                    </div>
+                </div>
+            </div>
+            <div class="card bg-dark p-1 m-3">
+                <div class="card-header text-center bg-dark"><b>Database</b></div>
+                <div class="card-body">
+                    <div class="container">
+                        <form action="/api/settings/change_password/{{username}}" method="post">
+                            <div class="form-group">
+                                Host
+                                <input type="text" class="form-control" name="host" value="" placeholder="" required>
+                            </div>
+                            <div class="form-group">
+                                Port
+                                <input type="text" class="form-control" name="port" value="" placeholder="" required>
+                            </div>
+                            <div class="form-group">
+                                Username
+                                <input type="text" class="form-control" name="username" value="" placeholder="" required>
+                            </div>
+                            <div class="form-group">
+                                Password
+                                <input type="password" class="form-control" name="password" value="" placeholder="" required>
+                            </div>
+                            <div class="form-group">
+                                Database
+                                <input type="text" class="form-control" name="database" value="" placeholder="" required>
+                            </div>
+                            <br>
+                            <button type="submit" class="btn btn-primary">Save</button>
+                            <br>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
     </body>
 </html>
 

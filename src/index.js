@@ -17,7 +17,6 @@ const apiRoutes = require('./routes/api.js');
 const timezones = require('../static/data/timezones.json');
 
 // TODO: Create route classes
-// TODO: Error checking/handling
 
 const defaultData = {
     title: config.title,
@@ -137,10 +136,10 @@ app.get('/device/manage/:uuid', async function(req, res) {
                 data.port = c.port;
             }
         }
-        if (device.clientip === null) {
-            console.error('Failed to get IP address.');
-        } else {
+        if (device.clientip) {
             data.clientip = device.clientip;
+        } else {
+            console.error('Failed to get IP address.');
         }
     }
     res.render('device-manage', data);
