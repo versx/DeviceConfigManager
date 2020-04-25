@@ -116,13 +116,23 @@
     }
 
     function get(url, id) {
+        if (url.includes('/screen')) {
+            
+        }
+        var isScreen = url.includes('/screen');
         $.ajax({
             url: url,
             type: 'GET',
-            dataType: 'json',
+            dataType: isScreen ? 'image/jpeg' : 'json',
             success: function (data) {
                 console.log("Ajax response:", data);
-                $('#' + id).text(JSON.stringify(data, null, 2));
+                if (isScreen) {
+                    img = new Image();
+                    img.src = data;
+                    $('#' + id).append(img);
+                } else {
+                    $('#' + id).text(JSON.stringify(data, null, 2));
+                }
             },
             error: function (error) {
                 console.log("Error:", error);
