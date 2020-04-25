@@ -75,7 +75,10 @@ router.get('/devices', async function(req, res) {
         var devices = await Device.getAll();
         devices.forEach(function(device) {
             var exists = fs.existsSync(path.join(screenshotsDir, device.uuid + '.png'));
-            var image = exists ? `/screenshots/${device.uuid}.png` : '/img/offline.png';
+            // Device received a config last 15 minutes
+            var delta = 15 * 60;
+            var isOffline = device.last_seen > (Math.round((new Date()).getTime() / 1000) - delta) ? 0 : 1;
+            var image = exists ? `/screenshots/${device.uuid}.png` : (isOffline ? '/img/offline.png' : '/img/online.png');
             device.image = `<a href='${image}' target='_blank'><img src='${image}' width='64' height='96'/></a>`;
             device.last_seen = utils.getDateTime(device.last_seen);
             device.buttons = `
