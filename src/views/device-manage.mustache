@@ -10,85 +10,97 @@
                 <thead class="thead-dark">
                     <tr>
                         <th width="40%">Description</th>
-                        <th width="40%"></th>
+                        <th width="40%">Action</th>
+                        <th width="40%">Response</th>
                     </tr>
                 </thead>
                 <tbody>
                     <tr>
                         <th>Get Screenshot</th>
-                        <th><a href='http://{{clientip}}:{{port}}/screen'><button type='button' class='btn btn-success'>GET</button></a></th>
+                        <th><button type='button' class='btn btn-success' onclick='get("http://{{clientip}}:8080/screen", "screenshot")'>GET</button></th>
+                        <th><div id='screenshot'></div></th>
                     </tr>
                     <tr>
                         <th>Get Current Location</th>
-                        <th><a href='http://{{clientip}}:{{port}}/loc'><button type='button' class='btn btn-success'>GET</button></a></th>
-                    </tr>
-                    <tr>
-                        <th>Clear Current Config</th>
-                        <th><a href='http://{{clientip}}:{{port}}/clear'><button type='button' class='btn btn-danger'>CLEAR</button></a></th>
+                        <th><button type='button' class='btn btn-success' onclick='get("http://{{clientip}}:8080/loc", "location")'>GET</button></th>
+                        <th><div id='location'></div></th>
                     </tr>
                     <tr>
                         <th>Get Current Config Data</th>
-                        <th><a href='http://{{clientip}}:{{port}}/config'><button type='button' class='btn btn-success'>GET</button></a></th>
+                        <th><button type='button' class='btn btn-success' onclick='get("http://{{clientip}}:8080/config", "config")'>GET</button></th>
+                        <th><div id='config'></div></th>
                     </tr>
                     <tr>
                         <th>Get Current Account Data</th>
-                        <th><a href='http://{{clientip}}:{{port}}/account'><button type='button' class='btn btn-success'>GET</button></a></th>
+                        <th><button type='button' class='btn btn-success' onclick='get("http://{{clientip}}:8080/account", "account")'>GET</button></th>
+                        <th><div id='account'></div></th>
                     </tr>
                     <tr>
                         <th>Get System Information Data</th>
-                        <th><a href='http://{{clientip}}:{{port}}/system_info'><button type='button' class='btn btn-success'>GET</button></a></th>
+                        <th><button type='button' class='btn btn-success' onclick='get("http://{{clientip}}:8080/system_info", "system_info")'>GET</button></th>
+                        <th><div id='system_info'></div></th>
                     </tr>
                     <tr>
                         <th>Restart Game</th>
-                        <th><a href='http://{{clientip}}:{{port}}/restart'><button type='button' class='btn btn-danger'>RESTART</button></a></th>
+                        <th><button type='button' class='btn btn-success' onclick='get("http://{{clientip}}:8080/restart", "restart")'>RESTART</button></th>
+                        <th><div id='restart'></div></th>
                     </tr>
                     <tr>
                         <th>Reboot Device (WIP currently restarts the game)</th>
-                        <th><a href='http://{{clientip}}:{{port}}/reboot'><button type='button' class='btn btn-danger'>REBOOT</button></a></th>
+                        <th><button type='button' class='btn btn-success' onclick='get("http://{{clientip}}:8080/reboot", "reboot")'>REBOOT</button></th>
+                        <th><div id='reboot'></div></th>
                     </tr>
                     <tr>
                         <th>Send Data for Testing (WIP)</th>
                         <th>
-                            <form action="http://{{clientip}}:{{port}}/data" method="post">
+                            <form action="http://{{clientip}}:8080/data" method="post">
                                 <div class="form-group">
                                     <input type="text" class="form-control" name="data_text" placeholder="{}">
                                 </div>
                                 <button type='submit' class='btn btn-danger'>SEND</button>
                             </form>
                         </th>
+                        <th><div id='data'></div></th>
                     </tr>
                     <tr>
                         <th>Send Pixel Check Location (WIP)</th>
                         <th>
-                            <form action="http://{{clientip}}:{{port}}/pixel" method="post">
+                            <form action="http://{{clientip}}:8080/pixel" method="post">
                                 <div class="form-group">
                                     <input type="text" class="form-control" name="pixel_text" placeholder="{ 'x': 320, 'y': 320 }">
                                 </div>
                                 <button type='submit' class='btn btn-danger'>SEND</button>
                             </form>
                         </th>
+                        <th><div id='pixel'></div></th>
                     </tr>
                     <tr>
                         <th>Send Touch Location (WIP)</th>
                         <th>
-                            <form action="http://{{clientip}}:{{port}}/touch" method="post">
+                            <form action="http://{{clientip}}:8080/touch" method="post">
                                 <div class="form-group">
                                     <input type="text" class="form-control" name="touch_text" placeholder="{ 'x': 160, 'y': 160 }">
                                 </div>
                                 <button type='submit' class='btn btn-danger'>SEND</button>
                             </form>
                         </th>
+                        <th><div id='touch'></div></th>
                     </tr>
                     <tr>
                         <th>Send Typing Data (WIP)</th>
                         <th>
-                            <form action="http://{{clientip}}:{{port}}/type" method="post">
+                            <form action="http://{{clientip}}:8080/type" method="post">
                                 <div class="form-group">
                                     <input type="text" class="form-control" name="type_text" placeholder="{ 'text': 'User123' }">
                                 </div>
                                 <button type='submit' class='btn btn-danger'>SEND</button>
                             </form>
                         </th>
+                        <th><div id='type'></div></th>
+                    </tr>
+                    <tr>
+                        <th>Delete Device</th>
+                        <th><button type='button' class='btn btn-danger'><a href='/device/delete/{{name}}'>DELETE</a></button></th>
                     </tr>
                 </tbody>
             </table>
@@ -101,5 +113,20 @@
         $('body').css('background-color', 'rgb(33, 37, 41)');
         $('body').css('color', 'rgb(255, 255, 255)');
         //$('#header').css('color', 'white');
+    }
+
+    function get(url, id) {
+        $.ajax({
+            url: url,
+            type: 'GET',
+            dataType: 'json',
+            success: function (data) {
+                console.log("Ajax response:", data);
+                $('#' + id).text(JSON.stringify(data, null, 2));
+            },
+            error: function (error) {
+                console.log("Error:", error);
+            }
+        });
     }
 </script>

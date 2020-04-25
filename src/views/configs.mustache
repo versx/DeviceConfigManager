@@ -13,6 +13,8 @@
                 <tr>
                     <th>Name</th>
                     <th>Backend</th>
+                    <th>Data Endpoints</th>
+                    <th>Token</th>
                     <th>Is Default</th>
                     <th width="5%"></th>
                 </tr>
@@ -43,6 +45,8 @@
             "columns": [
                 { "data": "name" },
                 { "data": "backend_url" },
+                { "data": "data_endpoints" },
+                { "data": "token" },
                 { "data": "is_default" },
                 { "data": "buttons" }
             ],
@@ -50,7 +54,7 @@
             "order": [[ 0, "asc" ]],
             "search.caseInsensitive": true,
             "columnDefs": [ {
-                "targets": [3],
+                "targets": [5],
                 "orderable": false
             }],
             "responsive": true

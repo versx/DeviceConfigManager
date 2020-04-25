@@ -1,0 +1,18 @@
+ALTER TABLE `configs` DROP COLUMN `port`;
+ALTER TABLE `configs` DROP COLUMN `pokemon_max_time`;
+ALTER TABLE `configs` DROP COLUMN `raid_max_time`;
+ALTER TABLE `configs` DROP COLUMN `startup_lat`;
+ALTER TABLE `configs` DROP COLUMN `startup_lon`;
+ALTER TABLE `configs` DROP COLUMN `jitter_value`;
+ALTER TABLE `configs` DROP COLUMN `max_warning_time_raid`;
+ALTER TABLE `configs` DROP COLUMN `encounter_delay`;
+ALTER TABLE `configs` DROP COLUMN `max_empty_gmo`;
+ALTER TABLE `configs` DROP COLUMN `max_failed_count`;
+ALTER TABLE `configs` DROP COLUMN `max_no_quest_count`;
+ALTER TABLE `configs` DROP COLUMN `logging_url`;
+ALTER TABLE `configs` DROP COLUMN `logging_port`;
+ALTER TABLE `configs` DROP COLUMN `logging_tls`;
+ALTER TABLE `configs` DROP COLUMN `logging_tcp`;
+ALTER TABLE `configs` DROP COLUMN `ultra_iv`;
+ALTER TABLE `configs` DROP COLUMN `ultra_quests`;
+ALTER TABLE `configs` ADD COLUMN `data_endpoints` varchar(255) NOT NULL AFTER `backend_url`;

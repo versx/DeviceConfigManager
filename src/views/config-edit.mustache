@@ -13,81 +13,23 @@
                 </div>
                 <div class="form-group">
                     Backend Url
-                    <input type="text" class="form-control" name="backend_url" value="{{backend_url}}" placeholder="http://10.0.1.100:9001" required>
+                    <input type="text" class="form-control" name="backend_url" value="{{backend_url}}" placeholder="http://10.0.1.100:9001/controler" required>
                 </div>
                 <div class="form-group">
-                    Port
-                    <input type="number" class="form-control" name="port" value="{{port}}" step=1 min="1" max="65535" required>
-                </div>
-                <div class="form-group">
-                    Heartbeat Max Time
-                    <input type="number" class="form-control" name="heartbeat_max_time" value="{{heartbeat_max_time}}" step=1 min="1" max="999" required>
-                </div>
-                <div class="form-group">
-                    Pokemon Max Time
-                    <input type="number" class="form-control" name="pokemon_max_time" value="{{pokemon_max_time}}" step=1 min="1" max="300" required>
-                </div>
-                <div class="form-group">
-                    Raid Max Time
-                    <input type="number" class="form-control" name="raid_max_time" value="{{raid_max_time}}" step=1 min="1" max="300" required>
-                </div>
-                <div class="form-group">
-                    Startup Latitude
-                    <input type="number" class="form-control" name="startup_lat" value="{{startup_lat}}" placeholder="0.0" step=any required>
-                </div>
-                <div class="form-group">
-                    Startup Longitude
-                    <input type="number" class="form-control" name="startup_lon" value="{{startup_lon}}" placeholder="0.0" step=any required>
+                    Data Endpoints (Separated by a `,`)
+                    <input type="text" class="form-control" name="data_endpoints" value="{{data_endpoints}}" placeholder="http://10.0.1.100:9001/raw,http://10.0.1.99:9002/raw" required>
                 </div>
                 <div class="form-group">
                     Backend Token
                     <input type="text" class="form-control" name="token" value="{{token}}">
                 </div>
                 <div class="form-group">
-                    Jitter Value
-                    <input type="number" class="form-control" name="jitter_value" value="{{jitter_value}}" step=1 min="0.00005" max="0.00005" required>
-                </div>
-                <div class="form-group">
-                    Max Warning Time Raid
-                    <input type="number" class="form-control" name="max_warning_time_raid" value="{{max_warning_time_raid}}" step=1 min="0" max="5000000" required>
-                </div>
-                <div class="form-group">
-                    Encounter Delay
-                    <input type="number" class="form-control" name="encounter_delay" value="{{encounter_delay}}" step=1 min="0" max="99999" required>
+                    Heartbeat Max Time
+                    <input type="number" class="form-control" name="heartbeat_max_time" value="{{heartbeat_max_time}}" step=1 min="1" max="999" required>
                 </div>
                 <div class="form-group">
                     Minimum Delay Logout
-                    <input type="number" class="form-control" name="min_delay_logout" value="{{min_delay_logout}}" step=1 min="0" max="99999" required>
-                </div>
-
-                <div class="form-group">
-                    Maximum Empty GMO
-                    <input type="number" class="form-control" name="max_empty_gmo" value="{{max_empty_gmo}}" step=1 min="0" max="999" required>
-                </div>
-                <div class="form-group">
-                    Maximum Failed Count
-                    <input type="number" class="form-control" name="max_failed_count" value="{{max_failed_count}}" step=1 min="0" max="999" required>
-                </div>
-                <div class="form-group">
-                    Maximum No Quests Count
-                    <input type="number" class="form-control" name="max_no_quest_count" value="{{max_no_quest_count}}" step=1 min="0" max="999" required>
-                </div>
-
-                <div class="form-group">
-                    System Logging URL
-                    <input type="text" class="form-control" name="logging_url" value="{{logging_url}}">
-                </div>
-                <div class="form-group">
-                    System Logging Port
-                    <input type="number" class="form-control" name="logging_port" value="{{logging_port}}" step=1 min="0" max="65535" required>
-                </div>
-                <div class="form-check">
-                    <input type="checkbox" class="form-check-input" name="logging_tls" {{logging_tls}}>
-                    <label class="form-check-label" for="logging_tls">System Logging uses TLS</label>
-                </div>
-                <div class="form-check">
-                    <input type="checkbox" class="form-check-input" name="logging_tcp" {{logging_tcp}}>
-                    <label class="form-check-label" for="logging_tcp">System Logging uses TCP</label>
+                    <input type="number" class="form-control" name="min_delay_logout" value="{{min_delay_logout}}" step=1 min="1" max="999" required>
                 </div>
 
                 <div class="form-check">
@@ -105,14 +47,6 @@
                 <div class="form-check">
                     <input type="checkbox" class="form-check-input" name="auto_login" {{auto_login}}>
                     <label class="form-check-label" for="auto_login">Auto-Login</label>
-                </div>
-                <div class="form-check">
-                    <input type="checkbox" class="form-check-input" name="ultra_iv" {{ultra_iv}}>
-                    <label class="form-check-label" for="ultra_iv">Ultra IV</label>
-                </div>
-                <div class="form-check">
-                    <input type="checkbox" class="form-check-input" name="ultra_quests" {{ultra_quests}}>
-                    <label class="form-check-label" for="ultra_quests">Ultra Quests</label>
                 </div>
 
                 <div class="form-check">
