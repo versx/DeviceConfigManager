@@ -9,6 +9,7 @@ const migrationsDir = path.resolve(__dirname, '../migrations');
 
 class Migrator {
     constructor() {
+        this.done = false;
     }
     async load() {
         var count = 1;
@@ -123,10 +124,11 @@ class Migrator {
                     process.exit(-1);
                 });
             console.log('[DBController] Migration successful');
-            if (newVersion === toVersion) {
-                console.log('[DBController] Migration done');
-            }
             this.migrate(newVersion, toVersion);
+        }
+        if (fromVersion === toVersion) {
+            console.log('[DBController] Migration done');
+            this.done = true;
         }
     }
     backup() {

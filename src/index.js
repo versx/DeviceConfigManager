@@ -8,6 +8,7 @@ const app = express();
 const mustacheExpress = require('mustache-express');
 
 const config = require('./config.json');
+const utils = require('./utils.js');
 const Device = require('./models/device.js');
 const Config = require('./models/config.js');
 const Migrator = require('./migrator.js');
@@ -29,9 +30,17 @@ const defaultData = {
     logging: config.logging
 };
 
-// Start database migrator
-var dbMigrator = new Migrator();
-dbMigrator.load();
+run();
+
+async function run() {
+    // Start database migrator
+    var dbMigrator = new Migrator();
+    dbMigrator.load();
+    while (dbMigrator.done === false) {
+        await utils.snooze(1000);
+    }
+    app.listen(config.port, config.interface, () => console.log(`Listening on port ${config.port}...`));
+}
 
 // Middleware
 app.set('view engine', 'mustache');
@@ -284,5 +293,3 @@ app.get('/settings', function(req, res) {
     console.log('Settings:', data);
     res.render('settings', data);
 });
-
-app.listen(config.port, config.interface, () => console.log(`Listening on port ${config.port}...`));
