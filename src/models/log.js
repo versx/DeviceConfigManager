@@ -38,6 +38,11 @@ class Log {
     static create(uuid, message) {
         var name = uuid + '.log';
         var logFile = path.resolve(logsDir, name);
+        var size = fs.statSync(name).size || 0;
+        var maxSize = (config.logging.max_size || 5) * 1024 * 1024;
+        if (size >= maxSize) {
+            this.delete(uuid);
+        }
         var msg = {
             message: message,
             timestamp: new Date() / 1000,

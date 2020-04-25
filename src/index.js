@@ -19,7 +19,9 @@ const timezones = require('../static/data/timezones.json');
 
 // TODO: Create route classes
 // TODO: Fix devices scroll with DataTables
-// TODO: Secure /api/config/:uuid endpoint with token
+// TODO: Add screenshot to manage page response
+// TODO: Delete all logs button
+// TODO: Secure /api/config endpoint with token
 // TODO: Provider option to show/hide config options
 // TODO: Accomodate for # in uuid name
 
@@ -27,7 +29,7 @@ const defaultData = {
     title: config.title,
     locale: config.locale,
     style: config.style == 'dark' ? 'dark' : '',
-    logging: config.logging
+    logging: config.logging.enabled
 };
 
 run();
@@ -289,7 +291,8 @@ app.get('/settings', function(req, res) {
     data.languages.forEach(function(locale) {
         locale.selected = locale.name === config.locale;
     });
-    data.logging = config.logging ? 'checked' : '';
+    data.logging = config.logging.enabled ? 'checked' : '';
+    data.max_size = config.logging.max_size;
     console.log('Settings:', data);
     res.render('settings', data);
 });
