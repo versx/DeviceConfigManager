@@ -38,9 +38,9 @@ dbMigrator.load();
 app.set('view engine', 'mustache');
 app.set('views', path.resolve(__dirname, 'views'));
 app.engine('mustache', mustacheExpress());
+app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false, limit: '50mb' })); // for parsing application/x-www-form-urlencoded
 //app.use(bodyParser.raw({ type: 'application/x-www-form-urlencoded' }));
-app.use(bodyParser.json());
 app.use(express.static(path.resolve(__dirname, '../static')));
 app.use('/screenshots', express.static(path.resolve(__dirname, '../screenshots')));
 
