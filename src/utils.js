@@ -18,7 +18,7 @@ function getDateTime(timestamp) {
 }
 
 function buildConfig(backendUrl, dataEndpoints, token, heartbeatMaxTime, minDelayLogout,
-                     accountManager, deployEggs, nearbyTracker, autoLogin) {
+    accountManager, deployEggs, nearbyTracker, autoLogin) {
     var obj = {
         'backend_url': backendUrl,
         'data_endpoints': (dataEndpoints || '').split(',') || [],

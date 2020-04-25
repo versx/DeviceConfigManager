@@ -17,9 +17,10 @@ const apiRoutes = require('./routes/api.js');
 const timezones = require('../static/data/timezones.json');
 
 // TODO: Create route classes
-// TODO: iOS and IPA version
 // TODO: Fix devices scroll with DataTables
-// TODO: Fix dropdown closes when table freshes
+// TODO: Secure /api/config/:uuid endpoint with token
+// TODO: Provider option to show/hide config options
+// TODO: Accomodate for # in uuid name
 
 const defaultData = {
     title: config.title,
@@ -36,6 +37,7 @@ dbMigrator.load();
 app.set('view engine', 'mustache');
 app.set('views', path.resolve(__dirname, 'views'));
 app.engine('mustache', mustacheExpress());
+app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false, limit: '50mb' })); // for parsing application/x-www-form-urlencoded
 //app.use(bodyParser.raw({ type: 'application/x-www-form-urlencoded' }));
 app.use(express.static(path.resolve(__dirname, '../static')));
@@ -53,7 +55,7 @@ app.use('/api', apiRoutes);
 
 // Login middleware
 app.use(function(req, res, next) {
-    if (req.path === '/api/login' || req.path === '/login' || req.path.includes('/api/config/')) {
+    if (req.path === '/api/login' || req.path === '/login' || req.path.includes('/api/config')) {
         return next();
     }
     if (req.session.loggedin) {
@@ -256,7 +258,31 @@ app.get('/schedule/delete/:name', function(req, res) {
 
 // Settings UI Routes
 app.get('/settings', function(req, res) {
-    res.render('settings', defaultData);
+    var data = defaultData;
+    data.title = config.title;
+    data.host = config.db.host;
+    data.port = config.db.port;
+    data.username = config.db.username;
+    data.password = config.db.password;
+    data.database = config.db.database;
+    data.charset = config.db.charset;
+    data.styles = [
+        { 'name': 'dark' },
+        { 'name': 'light' }
+    ];
+    data.styles.forEach(function(style) {
+        style.selected = style.name === config.style;
+    });
+    data.languages = [
+        { 'name': 'en' },
+        { 'name': 'es' }
+    ];
+    data.languages.forEach(function(locale) {
+        locale.selected = locale.name === config.locale;
+    });
+    data.logging = config.logging ? 'checked' : '';
+    console.log('Settings:', data);
+    res.render('settings', data);
 });
 
 app.listen(config.port, config.interface, () => console.log(`Listening on port ${config.port}...`));

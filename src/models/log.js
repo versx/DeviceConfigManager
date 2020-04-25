@@ -15,7 +15,7 @@ class Log {
         this.timestamp = timestamp;
         this.message = message;
     }
-    static async getByDevice(uuid) {
+    static getByDevice(uuid) {
         var name = uuid + '.log';
         var logFile = path.resolve(logsDir, name);
         if (!fs.existsSync(logFile)) {
@@ -35,7 +35,7 @@ class Log {
         });
         return logs;
     }
-    static async create(uuid, message) {
+    static create(uuid, message) {
         var name = uuid + '.log';
         var logFile = path.resolve(logsDir, name);
         var msg = {
@@ -47,7 +47,7 @@ class Log {
             if (err) throw err;
         });
     }
-    static async delete(uuid) {
+    static delete(uuid) {
         var name = uuid + '.log';
         var logFile = path.resolve(logsDir, name);
         if (fs.existsSync(logFile)) {
@@ -56,7 +56,7 @@ class Log {
         }
         return false;
     }
-    static async deleteAll() {
+    static deleteAll() {
         fs.readdir(logsDir, function(err, files) {
             if (err) throw err;
             files.forEach(function(file) {

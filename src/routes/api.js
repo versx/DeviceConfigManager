@@ -69,14 +69,43 @@ router.post('/account/change_password/:username', async function(req, res) {
 });
 
 
+// Settings API Routes
+router.post('/settings/change_ui', function(req, res) {
+    var data = req.body;
+    var newConfig = config;
+    newConfig.title = data.title;
+    newConfig.locale = data.locale;
+    newConfig.style = data.style;
+    newConfig.logging = data.logging === 'on' ? 1 : 0;
+    fs.writeFileSync(path.resolve(__dirname, '../config.json'), JSON.stringify(newConfig, null, 2));
+    res.redirect('/settings');
+});
+
+router.post('/settings/change_db', function(req, res) {
+    var data = req.body;
+    var newConfig = config;
+    newConfig.db.host = data.host;
+    newConfig.db.port = data.port;
+    newConfig.db.username = data.username;
+    newConfig.db.password = data.password;
+    newConfig.db.database = data.database;
+    newConfig.db.charset = data.charset;
+    fs.writeFileSync(path.resolve(__dirname, '../config.json'), JSON.stringify(newConfig, null, 2));
+    res.redirect('/settings');
+});
+
+
 // Device API Routes
 router.get('/devices', async function(req, res) {
     try {
         var devices = await Device.getAll();
         devices.forEach(function(device) {
             var exists = fs.existsSync(path.join(screenshotsDir, device.uuid + '.png'));
-            var image = exists ? `/screenshots/${device.uuid}.png` : '/img/offline.png';
-            device.image = `<a href='${image}' target='_blank'><img src='${image}' width='64' height='96'/></a>`;
+            // Device received a config last 15 minutes
+            var delta = 15 * 60;
+            var isOffline = device.last_seen > (Math.round((new Date()).getTime() / 1000) - delta) ? 0 : 1;
+            var image = exists ? `/screenshots/${device.uuid}.png` : (isOffline ? '/img/offline.png' : '/img/online.png');
+            device.image = `<a href='${image}' target='_blank'><img src='${image}' width='72' height='96'/></a>`;
             device.last_seen = utils.getDateTime(device.last_seen);
             device.buttons = `
             <div class='btn-group' role='group'>
@@ -167,12 +196,15 @@ router.get('/configs', async function(req, res) {
     }
 });
 
-router.get('/config/:uuid', async function(req, res) {
-    var uuid = req.params.uuid;
+router.post('/config', async function(req, res) {
+    var data = req.body;
+    var uuid = data.uuid;
+    var iosVersion = data.ios_version;
+    var ipaVersion = data.ipa_version;
     var device = await Device.getByName(uuid);
     var noConfig = false;
     var assignDefault = false;
-    // Check for a proxied IP before the normal IP and set the first one at exists
+    // Check for a proxied IP before the normal IP and set the first one that exists
     var clientip = ((req.headers['x-forwarded-for'] || '').split(', ')[0]) || (req.connection.remoteAddress).match('[0-9]+.[0-9].+[0-9]+.[0-9]+$')[0];
     console.log('[' + new Date().toLocaleString() + ']', 'Client', uuid, 'at', clientip, 'is requesting a config.');
 
@@ -181,6 +213,8 @@ router.get('/config/:uuid', async function(req, res) {
         // Device exists
         device.lastSeen = new Date() / 1000;
         device.clientip = clientip;
+        device.iosVersion = iosVersion;
+        device.ipaVersion = ipaVersion;
         device.save();
         if (device.config) {
             // Nothing to do besides respond with config
@@ -192,7 +226,8 @@ router.get('/config/:uuid', async function(req, res) {
     } else {
         console.log('Device does not exist, creating...');
         // Device doesn't exist, create db entry
-        device = await Device.create(uuid, null, new Date() / 1000, clientip); // REVIEW: Maybe return Device object upon creation to prevent another sql call to get Device object?
+        var ts = new Date() / 1000;
+        device = await Device.create(uuid, null, ts, clientip, iosVersion, ipaVersion);
         if (device) {
             // Success, assign default config if there is one.
             assignDefault = true;
@@ -227,11 +262,11 @@ router.get('/config/:uuid', async function(req, res) {
     var c = await Config.getByName(device.config);
     if (c === null) {
         console.error('Failed to grab config', device.config);
-        var data = {
+        var noConfigData2 = {
             status: 'error',
             error: 'Device not assigned to config!'
         };
-        res.send(JSON.stringify(data));
+        res.send(JSON.stringify(noConfigData2));
         return;
     }
     // Build json config
@@ -397,9 +432,9 @@ router.get('/schedule/delete_all', function(req, res) {
 
 
 // Logging API requests
-router.get('/logs/:uuid', async function(req, res) {
+router.get('/logs/:uuid', function(req, res) {
     var uuid = req.params.uuid;
-    var logs = await Log.getByDevice(uuid);
+    var logs = Log.getByDevice(uuid);
     res.send({
         uuid: uuid,
         data: {
@@ -408,33 +443,37 @@ router.get('/logs/:uuid', async function(req, res) {
     });
 });
 
-router.post('/log/new/:uuid', async function(req, res) {
+router.post('/log/new', function(req, res) {
     if (config.logging === false) {
         // Logs are disabled
         res.send('OK');
         return;
     }
-    var uuid = req.params.uuid;
-    var msg = Object.keys(req.body)[0]; // Dumb hack
-    var result = await Log.create(uuid, msg);
-    if (result) {
-        // Success
+    var uuid = req.body.uuid;
+    var messages = req.body.messages;
+    if (messages) {
+        messages.forEach(function(message) {
+            var result = Log.create(uuid, message);
+            if (result) {
+                // Success
+            }
+            console.log('[SYSLOG]', uuid, ':', message);
+        });
     }
-    console.log('[SYSLOG]', uuid, ':', msg);
     res.send('OK');
 });
 
-router.get('/log/delete/:uuid', async function(req, res) {
+router.get('/log/delete/:uuid', function(req, res) {
     var uuid = req.params.uuid;
-    var result = await Log.delete(uuid);
+    var result = Log.delete(uuid);
     if (result) {
         // Success
     }
     res.redirect('/device/logs/' + uuid);
 });
 
-router.get('/logs/delete_all', async function(req, res) {
-    var result = await Log.deleteAll();
+router.get('/logs/delete_all', function(req, res) {
+    var result = Log.deleteAll();
     if (result) {
         // Success
     }
