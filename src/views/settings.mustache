@@ -13,22 +13,24 @@
                         <form action="/api/settings/change_ui" method="post">
                             <div class="form-group">
                                 Title
-                                <input type="text" class="form-control" name="title" value="" placeholder="Device Config Manager" required>
+                                <input type="text" class="form-control" name="title" value="{{title}}" placeholder="Device Config Manager" required>
                             </div>
                             <div class="form-group">
                                 Locale
                                 <select class="form-control" name="locale">
-                                    <option value="" selected disabled hidden>Choose a Locale</option>
-                                    <option value="en">en</option>
-                                    <option value="es">es</option>
+                                    <option value="" {{#nothing_selected}}selected{{/nothing_selected}} disabled hidden>Choose a Locale</option>
+                                    {{#languages}}
+                                    <option value="{{name}}" {{#selected}}selected{{/selected}}>{{name}}</option>
+                                    {{/languages}}
                                 </select>
                             </div>
                             <div class="form-group">
                                 Theme
-                                <select class="form-control" name="config">
-                                    <option value="" selected disabled hidden>Choose a Theme</option>
-                                    <option value="dark">Dark</option>
-                                    <option value="light">Light</option>
+                                <select class="form-control" name="style">
+                                    <option value="" {{#nothing_selected}}selected{{/nothing_selected}} disabled hidden>Choose a Theme</option>
+                                    {{#styles}}
+                                    <option value="{{name}}" {{#selected}}selected{{/selected}}>{{name}}</option>
+                                    {{/styles}}
                                 </select>
                             </div>
                             <div class="form-check">
@@ -49,27 +51,27 @@
                         <form action="/api/settings/change_db" method="post">
                             <div class="form-group">
                                 Host
-                                <input type="text" class="form-control" name="host" value="" placeholder="127.0.0.1" required>
+                                <input type="text" class="form-control" name="host" value="{{host}}" placeholder="127.0.0.1" required>
                             </div>
                             <div class="form-group">
                                 Port
-                                <input type="text" class="form-control" name="port" value="" placeholder="3306" required>
+                                <input type="text" class="form-control" name="port" value="{{port}}" placeholder="3306" required>
                             </div>
                             <div class="form-group">
                                 Username
-                                <input type="text" class="form-control" name="username" value="" placeholder="" required>
+                                <input type="text" class="form-control" name="username" value="{{username}}" placeholder="" required>
                             </div>
                             <div class="form-group">
                                 Password
-                                <input type="password" class="form-control" name="password" value="" placeholder="" required>
+                                <input type="password" class="form-control" name="password" value="{{password}}" placeholder="" required>
                             </div>
                             <div class="form-group">
                                 Database
-                                <input type="text" class="form-control" name="database" value="" placeholder="dcm" required>
+                                <input type="text" class="form-control" name="database" value="{{database}}" placeholder="dcm" required>
                             </div>
                             <div class="form-group">
                                 Character Set
-                                <input type="text" class="form-control" name="database" value="" placeholder="utf8mb4" required>
+                                <input type="text" class="form-control" name="charset" value="{{charset}}" placeholder="utf8mb4" required>
                             </div>
                             <br>
                             <button type="submit" class="btn btn-primary">Save</button>

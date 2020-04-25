@@ -69,6 +69,32 @@ router.post('/account/change_password/:username', async function(req, res) {
 });
 
 
+// Settings API Routes
+router.post('/settings/change_ui', function(req, res) {
+    var data = req.body;
+    var newConfig = config;
+    newConfig.title = data.title;
+    newConfig.locale = data.locale;
+    newConfig.style = data.style;
+    newConfig.logging = data.logging === 'on' ? 1 : 0;
+    fs.writeFileSync(path.resolve(__dirname, '../config.json'), JSON.stringify(newConfig, null, 2));
+    res.redirect('/settings');
+});
+
+router.post('/settings/change_db', function(req, res) {
+    var data = req.body;
+    var newConfig = config;
+    newConfig.db.host = data.host;
+    newConfig.db.port = data.port;
+    newConfig.db.username = data.username;
+    newConfig.db.password = data.password;
+    newConfig.db.database = data.database;
+    newConfig.db.charset = data.charset;
+    fs.writeFileSync(path.resolve(__dirname, '../config.json'), JSON.stringify(newConfig, null, 2));
+    res.redirect('/settings');
+});
+
+
 // Device API Routes
 router.get('/devices', async function(req, res) {
     try {
@@ -79,7 +105,7 @@ router.get('/devices', async function(req, res) {
             var delta = 15 * 60;
             var isOffline = device.last_seen > (Math.round((new Date()).getTime() / 1000) - delta) ? 0 : 1;
             var image = exists ? `/screenshots/${device.uuid}.png` : (isOffline ? '/img/offline.png' : '/img/online.png');
-            device.image = `<a href='${image}' target='_blank'><img src='${image}' width='64' height='96'/></a>`;
+            device.image = `<a href='${image}' target='_blank'><img src='${image}' width='72' height='96'/></a>`;
             device.last_seen = utils.getDateTime(device.last_seen);
             device.buttons = `
             <div class='btn-group' role='group'>
