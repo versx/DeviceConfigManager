@@ -205,7 +205,7 @@ router.post('/config', async function(req, res) {
     var device = await Device.getByName(uuid);
     var noConfig = false;
     var assignDefault = false;
-    // Check for a proxied IP before the normal IP and set the first one at exists
+    // Check for a proxied IP before the normal IP and set the first one that exists
     var clientip = ((req.headers['x-forwarded-for'] || '').split(', ')[0]) || (req.connection.remoteAddress).match('[0-9]+.[0-9].+[0-9]+.[0-9]+$')[0];
     console.log('[' + new Date().toLocaleString() + ']', 'Client', uuid, 'at', clientip, 'is requesting a config.');
 
@@ -444,20 +444,24 @@ router.get('/logs/:uuid', async function(req, res) {
     });
 });
 
-router.post('/log/new/:uuid', async function(req, res) {
-    console.log("Log:", req.body);
+router.post('/log/new', async function(req, res) {
+    //console.log("Log:", req.body);
     if (config.logging === false) {
         // Logs are disabled
         res.send('OK');
         return;
     }
-    var uuid = req.params.uuid;
-    var msg = Object.keys(req.body)[0]; // Dumb hack
-    var result = await Log.create(uuid, msg);
-    if (result) {
-        // Success
+    var uuid = req.body.uuid;
+    var messages = req.body.messages;
+    if (messages) {
+        messages.forEach(function(message) {
+            var result = await Log.create(uuid, message);
+            if (result) {
+                // Success
+            }
+            console.log('[SYSLOG]', uuid, ':', message);
+        });
     }
-    console.log('[SYSLOG]', uuid, ':', msg);
     res.send('OK');
 });
 
