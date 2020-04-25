@@ -4,7 +4,7 @@ const query = require('../db.js');
 
 class Config {
     constructor(name, backendUrl, dataEndpoints, token, heartbeatMaxTime, minDelayLogout,
-                accountManager, deployEggs, nearbyTracker, autoLogin, isDefault) {
+        accountManager, deployEggs, nearbyTracker, autoLogin, isDefault) {
         this.name = name;
         this.backendUrl = backendUrl;
         this.dataEndpoints = dataEndpoints;
@@ -50,13 +50,13 @@ class Config {
         return data;
     }
     static async create(name, backendUrl, dataEndpoints, token, heartbeatMaxTime, minDelayLogout,
-                        accountManager, deployEggs, nearbyTracker, autoLogin, isDefault) {
+        accountManager, deployEggs, nearbyTracker, autoLogin, isDefault) {
         var sql = `
         INSERT INTO configs (name, backend_url, data_endpoints, token, heartbeat_max_time, min_delay_logout,
                             account_manager, deploy_eggs, nearby_tracker, auto_login, is_default)
         VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`;
         var args = [name, backendUrl, dataEndpoints, token, heartbeatMaxTime, minDelayLogout,
-                    accountManager, deployEggs, nearbyTracker, autoLogin, isDefault];
+            accountManager, deployEggs, nearbyTracker, autoLogin, isDefault];
         var result = await query(sql, args);
         return result.affectedRows === 1;
     }

@@ -14,6 +14,8 @@
                     <th>Preview</th>
                     <th>UUID</th>
                     <th>Config</th>
+                    <th>iOS Version</th>
+                    <th>IPA Version</th>
                     <th>Last Seen</th>
                     <th width="5%"></th>
                 </tr>
@@ -44,6 +46,8 @@
                 { "data": "image" },
                 { "data": "uuid" },
                 { "data": "config" },
+                { "data": "ios_version" },
+                { "data": "ipa_version" },
                 { "data": "last_seen" },
                 { "data": "buttons" },
             ],
@@ -51,7 +55,7 @@
             "order": [[ 1, "asc" ]],
             "search.caseInsensitive": true,
             "columnDefs": [ {
-                "targets": [4],
+                "targets": [6],
                 "orderable": false
             }],
             "responsive": true
