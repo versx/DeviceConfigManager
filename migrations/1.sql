@@ -1,5 +1,5 @@
 CREATE TABLE IF NOT EXISTS `configs` (
-    `name` varchar(64) PRIMARY KEY UNIQUE NOT NULL,
+    `name` varchar(64) PRIMARY KEY NOT NULL,
     `backend_url` varchar(255) NOT NULL,
     `port` int DEFAULT 8080,
     `heartbeat_max_time` int DEFAULT 120.0,
@@ -29,8 +29,12 @@ CREATE TABLE IF NOT EXISTS `configs` (
 );
 
 CREATE TABLE IF NOT EXISTS `devices` (
-    `uuid` varchar(128) PRIMARY KEY UNIQUE NOT NULL,
+    `uuid` varchar(128) PRIMARY KEY NOT NULL,
     `config` varchar(64) DEFAULT NULL,
     `last_seen` int DEFAULT NULL,
-    CONSTRAINT `fk_config_name` FOREIGN KEY (`config`) REFERENCES `configs` (`name`) ON DELETE SET NULL ON UPDATE CASCADE
+    CONSTRAINT `fk_config_name`
+      FOREIGN KEY (`config`)
+      REFERENCES `configs` (`name`)
+      ON DELETE SET NULL
+      ON UPDATE CASCADE
 );

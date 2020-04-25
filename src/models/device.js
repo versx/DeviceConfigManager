@@ -36,7 +36,15 @@ class Device {
         VALUES (?, ?, ?, ?)`;
         var args = [uuid, config, lastSeen, clientip];
         var result = await query(sql, args);
-        return result.affectedRows === 1;
+        if (result.affectedRows === 1) {
+            return new Device(
+                uuid,
+                config,
+                lastSeen,
+                clientip
+            );
+        }
+        return null;
     }
     static async delete(uuid) {
         var sql = 'DELETE FROM devices WHERE uuid = ?';

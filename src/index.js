@@ -17,7 +17,9 @@ const apiRoutes = require('./routes/api.js');
 const timezones = require('../static/data/timezones.json');
 
 // TODO: Create route classes
-// TODO: Error checking/handling
+// TODO: iOS and IPA version
+// TODO: Fix devices scroll with DataTables
+// TODO: Fix dropdown closes when table freshes
 
 const defaultData = {
     title: config.title,
@@ -46,9 +48,12 @@ app.use(session({
     saveUninitialized: true
 }));
 
+// API Route
+app.use('/api', apiRoutes);
+
 // Login middleware
 app.use(function(req, res, next) {
-    if (req.path === '/api/login' || req.path === '/login') {
+    if (req.path === '/api/login' || req.path === '/login' || req.path.includes('/api/config/')) {
         return next();
     }
     if (req.session.loggedin) {
@@ -58,9 +63,6 @@ app.use(function(req, res, next) {
     }
     res.redirect('/login');
 });
-
-// API Route
-app.use('/api', apiRoutes);
 
 // UI Routes
 app.get(['/', '/index'], async function(req, res) {
@@ -137,10 +139,10 @@ app.get('/device/manage/:uuid', async function(req, res) {
                 data.port = c.port;
             }
         }
-        if (device.clientip === null) {
-            console.error('Failed to get IP address.');
-        } else {
+        if (device.clientip) {
             data.clientip = device.clientip;
+        } else {
+            console.error('Failed to get IP address.');
         }
     }
     res.render('device-manage', data);
@@ -180,30 +182,14 @@ app.get('/config/edit/:name', async function(req, res) {
     data.old_name = name;
     data.name = c.name;
     data.backend_url = c.backendUrl;
-    data.port = c.port;
-    data.heartbeat_max_time = c.heartbeatMaxTime;
-    data.pokemon_max_time = c.pokemonMaxTime;
-    data.raid_max_time = c.raidMaxTime;
-    data.startup_lat = c.startupLat;
-    data.startup_lon = c.startupLon;
+    data.data_endpoints = c.dataEndpoints;
     data.token = c.token;
-    data.jitter_value = c.jitterValue;
-    data.max_warning_time_raid = c.maxWarningTimeRaid;
-    data.encounter_delay = c.encounterDelay;
+    data.heartbeat_max_time = c.heartbeatMaxTime;
     data.min_delay_logout = c.minDelayLogout;
-    data.max_empty_gmo = c.maxEmptyGmo;
-    data.max_failed_count = c.maxFailedCount;
-    data.max_no_quest_count = c.maxNoQuestCount;
-    data.logging_url = c.loggingUrl;
-    data.logging_port = c.loggingPort;
-    data.logging_tls = c.loggingTls === 1 ? 'checked' : '';
-    data.logging_tcp = c.loggingTcp === 1 ? 'checked' : '';
     data.account_manager = c.accountManager === 1 ? 'checked' : '';
     data.deploy_eggs = c.deployEggs === 1 ? 'checked' : '';
     data.nearby_tracker = c.nearbyTracker === 1 ? 'checked' : '';
     data.auto_login = c.autoLogin === 1 ? 'checked' : '';
-    data.ultra_iv = c.ultraIV === 1 ? 'checked' : '';
-    data.ultra_quests = c.ultraQuests === 1 ? 'checked' : '';
     data.is_default = c.isDefault === 1 ? 'checked' : '';
     res.render('config-edit', data);
 });

@@ -17,35 +17,18 @@ function getDateTime(timestamp) {
     return d.toLocaleDateString('en-US') + ' ' + d.toLocaleTimeString('en-US'); // TODO: locale
 }
 
-function buildConfig(backendUrl, port, heartbeatMaxTime, pokemonMaxTime, raidMaxTime, startupLat, startupLon, token, jitterValue,
-    maxWarningTimeRaid, encounterDelay, minDelayLogout, maxEmptyGmo, maxFailedCount, maxNoQuestCount, loggingUrl,
-    loggingPort, loggingTls, loggingTcp, accountManager, deployEggs, nearbyTracker, autoLogin, ultraIV, ultraQuests) {
+function buildConfig(backendUrl, dataEndpoints, token, heartbeatMaxTime, minDelayLogout,
+                     accountManager, deployEggs, nearbyTracker, autoLogin) {
     var obj = {
-        'backendURL': backendUrl,
-        'port': port,
-        'heartbeatMaxTime': heartbeatMaxTime,
-        'pokemonMaxTime': pokemonMaxTime,
-        'raidMaxTime': raidMaxTime,
-        'startupLat': startupLat,
-        'startupLon': startupLon,
-        'token': token,
-        'jitterValue': jitterValue,//5.0e-05,
-        'maxWarningTimeRaid': maxWarningTimeRaid,
-        'encounterDelay': encounterDelay,
-        'minDelayLogout': minDelayLogout,
-        'maxEmptyGMO': maxEmptyGmo,
-        'maxFailedCount': maxFailedCount,
-        'maxNoQuestCount': maxNoQuestCount,
-        'loggingURL': loggingUrl,
-        'loggingPort': loggingPort,
-        'loggingTLS': loggingTls,
-        'loggingTCP': loggingTcp,
-        'accountManager': accountManager,
-        'deployEggs': deployEggs,
-        'nearbyTracker': nearbyTracker,
-        'autoLogin': autoLogin,
-        'ultraIV': ultraIV,
-        'ultraQuests': ultraQuests
+        'backend_url': backendUrl,
+        'data_endpoints': (dataEndpoints || '').split(',') || [],
+        'backend_secret_token': token,
+        'heartbeat_max_time': heartbeatMaxTime,
+        'min_delay_logout': minDelayLogout,
+        'account_manager': accountManager,
+        'deploy_eggs': deployEggs,
+        'nearby_tracker': nearbyTracker,
+        'auto_login': autoLogin
     };
     var json = JSON.stringify(obj, null, 2);
     return json;
