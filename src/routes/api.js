@@ -79,15 +79,10 @@ router.get('/devices', async function(req, res) {
             device.image = `<a href='${image}' target='_blank'><img src='${image}' width='64' height='96'/></a>`;
             device.last_seen = utils.getDateTime(device.last_seen);
             device.buttons = `
-            <div class='btn-group'>
-                <button type='button' class='btn btn-primary dropdown-toggle' data-toggle='dropdown'>Action</button>
-                <div class='dropdown-menu'>
-                    <a href='/device/manage/${device.uuid}' class='dropdown-item btn-success'>Manage</a>
-                    <a href='/config/assign/${device.uuid}' class='dropdown-item btn-secondary'>Assign Config</a>
-                    <a href='/device/logs/${device.uuid}' class='dropdown-item btn-secondary'>View Logs</a>
-                    <div class='dropdown-divider'></div>
-                    <a href='/device/delete/${device.uuid}' class='dropdown-item btn-danger'>Delete</a>
-                </div>
+            <div class='btn-group' role='group'>
+                <a href='/device/manage/${device.uuid}' class='btn btn-success'>Manage</a>
+                <a href='/config/assign/${device.uuid}' class='btn btn-primary'>Assign</a>
+                <a href='/device/logs/${device.uuid}' class='btn btn-secondary'>Logs</a>
             </div>`;
         });
         var json = JSON.stringify({ data: { devices: devices } });
