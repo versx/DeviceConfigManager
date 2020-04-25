@@ -95,7 +95,7 @@ class Config {
     }
     static async setDefault(name) {
         var sql = `
-        UPDATE dcm.configs
+        UPDATE configs
         SET is_default = IF(name = ?, 1, 0);`;
         var args = [name];
         var result = await query(sql, args);

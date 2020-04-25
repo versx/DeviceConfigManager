@@ -302,7 +302,7 @@ router.post('/config/assign/:uuid', async function(req, res) {
 
 router.post('/config/new', async function(req, res) {
     var data = req.body;
-    var result = await Config.create(
+    var cfg = await Config.create(
         data.name,
         data.backend_url,
         data.data_endpoints,
@@ -315,8 +315,12 @@ router.post('/config/new', async function(req, res) {
         data.auto_login === 'on' ? 1 : 0,
         data.is_default === 'on' ? 1 : 0
     );
-    if (result) {
+    if (cfg) {
         console.log('Config inserted');
+        if (cfg.isDefault) {
+            console.log('Setting default config:', data.name);
+            await Config.setDefault(data.name);
+        }
     } else {
         console.error('Failed to create new config');
     }
@@ -339,9 +343,11 @@ router.post('/config/edit/:name', async function(req, res) {
     c.autoLogin = data.auto_login === 'on' ? 1 : 0;
     c.isDefault = data.is_default === 'on' ? 1 : 0;
     if (await c.save(oldName)) {
+        console.log('Config saved');
         // Success
         if (c.isDefault) {
-            await Config.setDefault(oldName);
+            console.log('Setting default config:', c.name);
+            await Config.setDefault(c.name);
         }
     }
     res.redirect('/configs');
