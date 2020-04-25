@@ -25,7 +25,6 @@ class Log {
         var logs = [];
         data.forEach(function(log) {
             if (log) {
-                console.log("Logggg:", log);
                 var l = JSON.parse(log);
                 logs.push({
                     message: l.message,
