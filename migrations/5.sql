@@ -1,0 +1,2 @@
+ALTER TABLE `devices` ADD COLUMN `ios_version` VARCHAR(64) DEFAULT NULL;
+ALTER TABLE `devices` ADD COLUMN `ipa_version` VARCHAR(64) DEFAULT NULL;

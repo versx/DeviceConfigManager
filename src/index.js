@@ -21,6 +21,7 @@ const timezones = require('../static/data/timezones.json');
 // TODO: Fix devices scroll with DataTables
 // TODO: Secure /api/config/:uuid endpoint with token
 // TODO: Provider option to show/hide config options
+// TODO: Accomodate for # in uuid name
 
 const defaultData = {
     title: config.title,
@@ -39,6 +40,7 @@ app.set('views', path.resolve(__dirname, 'views'));
 app.engine('mustache', mustacheExpress());
 app.use(bodyParser.urlencoded({ extended: false, limit: '50mb' })); // for parsing application/x-www-form-urlencoded
 //app.use(bodyParser.raw({ type: 'application/x-www-form-urlencoded' }));
+app.use(bodyParser.json());
 app.use(express.static(path.resolve(__dirname, '../static')));
 app.use('/screenshots', express.static(path.resolve(__dirname, '../screenshots')));
 
@@ -54,7 +56,7 @@ app.use('/api', apiRoutes);
 
 // Login middleware
 app.use(function(req, res, next) {
-    if (req.path === '/api/login' || req.path === '/login' || req.path.includes('/api/config/')) {
+    if (req.path === '/api/login' || req.path === '/login' || req.path.includes('/api/config')) {
         return next();
     }
     if (req.session.loggedin) {

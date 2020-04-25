@@ -196,8 +196,12 @@ router.get('/configs', async function(req, res) {
     }
 });
 
-router.get('/config/:uuid', async function(req, res) {
-    var uuid = req.params.uuid;
+router.post('/config', async function(req, res) {
+    console.log("Config:", req.body);
+    var data = req.body;
+    var uuid = data.uuid;
+    var iosVersion = data.ios_version;
+    var ipaVersion = data.ipa_version;
     var device = await Device.getByName(uuid);
     var noConfig = false;
     var assignDefault = false;
@@ -210,6 +214,8 @@ router.get('/config/:uuid', async function(req, res) {
         // Device exists
         device.lastSeen = new Date() / 1000;
         device.clientip = clientip;
+        device.iosVersion = iosVersion;
+        device.ipaVersion = ipaVersion;
         device.save();
         if (device.config) {
             // Nothing to do besides respond with config
@@ -221,7 +227,8 @@ router.get('/config/:uuid', async function(req, res) {
     } else {
         console.log('Device does not exist, creating...');
         // Device doesn't exist, create db entry
-        device = await Device.create(uuid, null, new Date() / 1000, clientip); // REVIEW: Maybe return Device object upon creation to prevent another sql call to get Device object?
+        var ts = new Date() / 1000;
+        device = await Device.create(uuid, null, ts, clientip, iosVersion, ipaVersion);
         if (device) {
             // Success, assign default config if there is one.
             assignDefault = true;
@@ -438,6 +445,7 @@ router.get('/logs/:uuid', async function(req, res) {
 });
 
 router.post('/log/new/:uuid', async function(req, res) {
+    console.log("Log:", req.body);
     if (config.logging === false) {
         // Logs are disabled
         res.send('OK');
