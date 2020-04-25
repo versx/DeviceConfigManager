@@ -17,7 +17,6 @@ const apiRoutes = require('./routes/api.js');
 const timezones = require('../static/data/timezones.json');
 
 // TODO: Create route classes
-// TODO: iOS and IPA version
 // TODO: Fix devices scroll with DataTables
 // TODO: Secure /api/config/:uuid endpoint with token
 // TODO: Provider option to show/hide config options
@@ -272,17 +271,17 @@ app.get('/settings', function(req, res) {
         { 'name': 'light' }
     ];
     data.styles.forEach(function(style) {
-        style.selected = style.name === config.style
+        style.selected = style.name === config.style;
     });
     data.languages = [
         { 'name': 'en' },
         { 'name': 'es' }
     ];
     data.languages.forEach(function(locale) {
-        locale.selected = locale.name === config.locale
+        locale.selected = locale.name === config.locale;
     });
     data.logging = config.logging ? 'checked' : '';
-    console.log("Settings:", data);
+    console.log('Settings:', data);
     res.render('settings', data);
 });
 

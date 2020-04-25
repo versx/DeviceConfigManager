@@ -262,11 +262,11 @@ router.post('/config', async function(req, res) {
     var c = await Config.getByName(device.config);
     if (c === null) {
         console.error('Failed to grab config', device.config);
-        var data = {
+        var noConfigData2 = {
             status: 'error',
             error: 'Device not assigned to config!'
         };
-        res.send(JSON.stringify(data));
+        res.send(JSON.stringify(noConfigData2));
         return;
     }
     // Build json config
