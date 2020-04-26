@@ -78,17 +78,18 @@ class Log {
             });
         });
     }
-    static getTotalSize() {
+    static async getTotalSize() {
         var total = 0;
-        if (!fs.existsSync(logsDir)) {
+        var exists = await fileExists(logsDir);
+        if (!exists) {
             return total;
         }
         var logs = fs.readdirSync(logsDir);
         if (logs && logs.length > 0) {
-            logs.forEach(function(log) {
+            logs.forEach(async function(log) {
                 var logFile = path.join(logsDir, log);
-                var stats = fs.statSync(logFile);
-                total += stats.size;
+                var logSize = await fileSize(logFile);
+                total += logSize;
             });
         }
         return total;

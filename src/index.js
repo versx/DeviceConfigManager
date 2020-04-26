@@ -121,7 +121,7 @@ app.get(['/', '/index'], async function(req, res) {
         var configs = await Config.getAll();
         var schedules = ScheduleManager.getAll();
         var metadata = await Migrator.getEntries();
-        var logsSize = Log.getTotalSize();
+        var logsSize = await Log.getTotalSize();
         var data = defaultData;
         data.metadata = metadata;
         data.devices = devices.length;

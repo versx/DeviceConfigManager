@@ -442,9 +442,9 @@ router.get('/schedule/delete_all', function(req, res) {
 
 
 // Logging API requests
-router.get('/logs/:uuid', function(req, res) {
+router.get('/logs/:uuid', async function(req, res) {
     var uuid = req.params.uuid;
-    var logs = Log.getByDevice(uuid);
+    var logs = await Log.getByDevice(uuid);
     res.send({
         uuid: uuid,
         data: {
@@ -453,7 +453,7 @@ router.get('/logs/:uuid', function(req, res) {
     });
 });
 
-router.post('/log/new', function(req, res) {
+router.post('/log/new', async function(req, res) {
     if (config.logging.enabled === false) {
         // Logs are disabled
         res.send('OK');
@@ -463,7 +463,7 @@ router.post('/log/new', function(req, res) {
     var messages = req.body.messages;
     if (messages) {
         messages.forEach(function(message) {
-            var result = Log.create(uuid, message);
+            var result = await Log.create(uuid, message);
             if (result) {
                 // Success
             }
@@ -473,22 +473,24 @@ router.post('/log/new', function(req, res) {
     res.send('OK');
 });
 
-router.get('/log/delete/:uuid', function(req, res) {
+router.get('/log/delete/:uuid', async function(req, res) {
     var uuid = req.params.uuid;
-    var result = Log.delete(uuid);
+    var result = await Log.delete(uuid);
     if (result) {
         // Success
     }
     res.redirect('/device/logs/' + uuid);
 });
 
-router.get('/log/export/:uuid', function(req, res) {
+router.get('/log/export/:uuid', async function(req, res) {
     var uuid = req.params.uuid;
-    var logs = Log.getByDevice(uuid);
     var logText = '';
-    logs.forEach(function(log) {
-        logText += `${log.timestamp} ${log.uuid} ${log.message}\n`;
-    });
+    var logs = await Log.getByDevice(uuid);
+    if (logs) {
+        logs.forEach(function(log) {
+            logText += `${log.timestamp} ${log.uuid} ${log.message}\n`;
+        });
+    }
     res.send(logText);
 });
 
