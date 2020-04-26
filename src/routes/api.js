@@ -76,7 +76,7 @@ router.post('/settings/change_ui', function(req, res) {
     newConfig.title = data.title;
     newConfig.locale = data.locale;
     newConfig.style = data.style;
-    newConfig.logging.enabled = data.logging === 'on' ? 1 : 0;
+    newConfig.logging.enabled = data.logging === 'on';
     newConfig.logging.max_size = data.max_size;
     fs.writeFileSync(path.resolve(__dirname, '../config.json'), JSON.stringify(newConfig, null, 2));
     res.redirect('/settings');

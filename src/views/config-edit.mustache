@@ -12,6 +12,15 @@
                     <input type="text" class="form-control" name="name" value="{{name}}" placeholder="Main Config" required>
                 </div>
                 <div class="form-group">
+                    Provider (Doesn't do anything yet)
+                    <select class="form-control" name="provider">
+                        <option value="" selected disabled hidden>Choose a Provider</option>
+                        {{#providers}}
+                            <option value="{{name}}" {{#selected}}selected{{/selected}}>{{name}}</option>
+                        {{/providers}}
+                    </select>
+                </div>
+                <div class="form-group">
                     Backend Url
                     <input type="text" class="form-control" name="backend_url" value="{{backend_url}}" placeholder="http://10.0.1.100:9001/controler" required>
                 </div>

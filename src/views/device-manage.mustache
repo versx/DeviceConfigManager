@@ -138,7 +138,7 @@
                     for ( i = 0; i < responseTextLen; i++ ) {
                         binary += String.fromCharCode(responseText.charCodeAt(i) & 255)
                     }
-                    utils.saveDataAsImage(uuid + '.png', binary);
+                    //utils.saveDataAsImage(uuid + '.png', binary);
                     $('#' + id).attr('src', 'data:image/png;base64,' + btoa(binary));
                 } else {
                     $('#' + id).text(JSON.stringify(result, null, 2));
@@ -149,10 +149,5 @@
                 console.error('Error Thrown:', errorThrown);
             } 
         });
-    }
-    function saveDataAsImage(path, imgData) {
-        var data = imgData.replace(/^data:image\/\w+;base64,/, "");
-        var buf = new Buffer(data, 'base64');
-        fs.writeFileSync('image.png', buf);
     }
 </script>

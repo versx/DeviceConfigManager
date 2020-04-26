@@ -23,10 +23,10 @@ const timezones = require('../static/data/timezones.json');
 // TODO: Secure /api/config endpoint with token
 // TODO: Provider option to show/hide config options
 // TODO: Accomodate for # in uuid name
-// TODO: Exports logs
 // TODO: Localization
 // TODO: Fix schedule end time
 // TODO: Center align data in table columns
+// TODO: Config explainations
 
 // Default mustache data shared between pages
 const defaultData = {
@@ -193,7 +193,12 @@ app.get('/config/assign/:uuid', async function(req, res) {
 });
 
 app.get('/config/new', function(req, res) {
-    res.render('config-new', defaultData);
+    var data = defaultData;
+    data.providers = [
+        { name: 'GoCheats' },
+        { name: 'Kevin' }
+    ];
+    res.render('config-new', data);
 });
 
 app.get('/config/edit/:name', async function(req, res) {
@@ -203,6 +208,13 @@ app.get('/config/edit/:name', async function(req, res) {
     data.title = config.title;
     data.old_name = name;
     data.name = c.name;
+    data.providers = [
+        { name: 'GoCheats' },
+        { name: 'Kevin' }
+    ];
+    data.providers.forEach(function(provider) {
+        provider.selected = provider.name == name;
+    });
     data.backend_url = c.backendUrl;
     data.data_endpoints = c.dataEndpoints;
     data.token = c.token;

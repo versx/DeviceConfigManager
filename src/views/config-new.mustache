@@ -12,12 +12,21 @@
                     <input type="text" class="form-control" name="name" value="" placeholder="Main Config" required>
                 </div>
                 <div class="form-group">
+                    Provider (Doesn't do anything yet)
+                    <select class="form-control" name="provider">
+                        <option value="" selected disabled hidden>Choose a Provider</option>
+                        {{#providers}}
+                            <option value="{{name}}">{{name}}</option>
+                        {{/providers}}
+                    </select>
+                </div>
+                <div class="form-group">
                     Backend Url
-                    <input type="text" class="form-control" name="backend_url" value="" placeholder="http://10.0.1.100:9001" required>
+                    <input type="text" class="form-control" name="backend_url" value="" placeholder="http://10.0.1.100:9001" data-toggle="tooltip" title="Backend that will control the device, i.e. `/controler` endpoint." required>
                 </div>
                 <div class="form-group">
                     Data Endpoints (Separated by a `,`)
-                    <input type="text" class="form-control" name="data_endpoints" value="" placeholder="http://10.0.1.100:9001,http://10.0.1.99:9002" required>
+                    <input type="text" class="form-control" name="data_endpoints" value="" placeholder="http://10.0.1.100:9001,http://10.0.1.99:9002" data-toggle="tooltip" title="Where to send data, i.e. `/raw` endpoint.">
                 </div>
                 <div class="form-group">
                     Backend Token
@@ -62,6 +71,7 @@
 </html>
 
 <script>
+    $('[data-toggle="tooltip"]').tooltip();
     if ("{{style}}" === 'dark') {
         $('body').css('background-color', 'rgb(33, 37, 41)');
         $('body').css('color', 'rgb(255, 255, 255)');
