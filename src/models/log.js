@@ -23,18 +23,21 @@ class Log {
         if (!exists) {
             return null;
         }
-        var data = await utils.readFile(logFile).split('\r\n');
         var logs = [];
-        data.forEach(function(log) {
-            if (log) {
-                var l = JSON.parse(log);
-                logs.push({
-                    message: l.message,
-                    date: utils.getDateTime(l.timestamp),
-                    uuid: l.uuid
-                });
-            }
-        });
+        var data = await utils.readFile(logFile);
+        var split = data.split('\r\n');
+        if (split) {
+            split.forEach(function(log) {
+                if (log) {
+                    var l = JSON.parse(log);
+                    logs.push({
+                        message: l.message,
+                        date: utils.getDateTime(l.timestamp),
+                        uuid: l.uuid
+                    });
+                }
+            });
+        }
         return logs;
     }
     static async create(uuid, message) {
@@ -45,7 +48,7 @@ class Log {
             var size = await utils.fileSize(logFile) || 0;
             var maxSize = (config.logging.max_size || 5) * 1024 * 1024;
             if (size >= maxSize) {
-                this.delete(uuid);
+                await this.delete(uuid);
             }
         }
         var msg = {
