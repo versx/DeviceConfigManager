@@ -64,7 +64,7 @@ app.use('/screenshots', express.static(path.resolve(__dirname, '../screenshots')
 app.use(i18n.init);
 
 // register helper as a locals function wrapped as mustache expects
-app.use(function (req, res, next) {
+app.use(function(req, res, next) {
     // mustache helper
     res.locals.__ = function() {
         /* eslint-disable no-unused-vars */
@@ -333,7 +333,8 @@ app.get('/settings', function(req, res) {
     });
     data.languages = [
         { 'name': 'en' },
-        { 'name': 'es' }
+        { 'name': 'es' },
+        { 'name': 'de' }
     ];
     data.languages.forEach(function(locale) {
         locale.selected = locale.name === config.locale;

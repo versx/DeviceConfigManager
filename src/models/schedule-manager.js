@@ -99,9 +99,8 @@ class ScheduleManager {
                     await ScheduleManager.triggerSchedule(schedule, schedule.config);
                 } else if (startTimeSeconds !== 0 &&
                     endTimeSeconds !== 0 &&
-                    now < startTimeSeconds &&
-                    now > endTimeSeconds && 
-                    lastUpdate < endTimeSeconds) {
+                    !(now > startTimeSeconds && now < endTimeSeconds) && 
+                    lastUpdate > endTimeSeconds) {
                     await ScheduleManager.triggerSchedule(schedule, schedule.next_config);
                 }
             }

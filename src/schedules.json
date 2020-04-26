@@ -1,2 +1,12 @@
 {
+  "test": {
+    "name": "test",
+    "config": "Leveling",
+    "uuids": "iPhone9SE",
+    "start_time": "15:15:00",
+    "end_time": "15:17:00",
+    "timezone": -8,
+    "next_config": "Main",
+    "enabled": 1
+  }
 }
