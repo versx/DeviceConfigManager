@@ -3,18 +3,18 @@
     <body>
         {{> navbar}}
         <br>
-        <h1 align="center" id="header">{{uuid}} Device Logs</h1>
+        <h1 align="center" id="header">{{uuid}} {{Device Logs}}</h1>
         <br>
         <div style="width:90%; margin-left:calc(5%);">
-            <a href="/api/log/delete/{{uuid}}" role="button" style="float: right;" class="btn btn-danger" onclick="return confirm('Are you sure you want to delete {{uuid}} logs?');">Delete All</a>
-            <a href="#" role="button" style="float: right;" class="btn btn-primary" onclick="exportLogs()">Export All</a>
+            <a href="/api/log/delete/{{uuid}}" role="button" style="float: right;" class="btn btn-danger" onclick="return confirm('{{Are you sure you want to delete all logs for}} {{uuid}}?');">{{Delete All}}</a>
+            <a href="#" role="button" style="float: right;" class="btn btn-primary" onclick="exportLogs()">{{Export All}}</a>
             <br><br>
             <table id="table" class="table table-{{style}} table-sm table-striped table-bordered table-hover dt-responsive nowrap" style="position: center; width:100%">
                 <thead class="thead-dark">
                 <tr>
-                    <th>Date</th>
-                    <th>UUID</th>
-                    <th>Message</th>
+                    <th>{{Date}}</th>
+                    <th>{{UUID}}</th>
+                    <th>{{Message}}</th>
                 </tr>
                 </thead>
                 <tbody>

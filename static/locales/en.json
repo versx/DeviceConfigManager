@@ -75,14 +75,38 @@
     "Select Device Config": "Select Device Config",
     "Choose a Config": "Choose a Config",
     "Assign": "Assign",
-
-    "Hello %s, how are you today? How was your %s.": "Hello %s, how are you today? How was your %s.",
-    "%s cat": {
-        "one": "%s cat",
-        "other": "%s cats"
-    },
-    "There is one monkey in the %%s": {
-        "one": "There is one monkey in the %%s",
-        "other": "There are %d monkeys in the %%s"
-    }
+    "New Device Config Schedule": "New Device Config Schedule",
+    "Select Config": "Select Config",
+    "Select Device(s)": "Select Device(s)",
+    "Choose Device(s)": "Choose Device(s)",
+    "Time Zone": "Time Zone",
+    "Choose a Timezone": "Choose a Timezone",
+    "Select On Complete Config": "Select On Complete Config",
+    "Edit Device Config Schedule": "Edit Device Config Schedule",
+    "Delete Schedule": "Delete Schedule",
+    "Are you sure that you want to delete schedule": "Are you sure that you want to delete schedule",
+    "Device Logs": "Device Logs",
+    "Date": "Date",
+    "Message": "Message",
+    "Are you sure you want to delete all logs for": "Are you sure you want to delete all logs for",
+    "Delete Device": "Delete Device",
+    "Are you sure that you want to delete device": "Are you sure that you want to delete device",
+    "Device IP": "Device IP",
+    "Management": "Management",
+    "Description": "Description",
+    "Action": "Action",
+    "Response": "Response",
+    "GET": "GET",
+    "RESTART": "RESTART",
+    "REBOOT": "REBOOT",
+    "SEND": "SEND",
+    "DELETE": "DELETE",
+    "Get Screenshot": "Get Screenshot",
+    "Get Current Location": "Get Current Location",
+    "Get Current Config Data": "Get Current Config Data",
+    "Get Current Account Data": "Get Current Account Data",
+    "Get System Information Data": "Get System Information Data",
+    "Restart Game": "Restart Game",
+    "Reboot Device": "Reboot Device",
+    "Send Typing Data": "Send Typing Data"
 }
