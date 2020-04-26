@@ -3,58 +3,67 @@
     <body>
         {{> navbar}}
         <br>
-        <h1 align="center" id="header">New Device Config</h1>
+        <h1 align="center" id="header">{{New Device Config}}</h1>
         <br>
         <div class="w-75" style="float: none; margin: 0 auto;">
             <form action="/api/config/new" method="post">
                 <div class="form-group">
-                    Name
+                    {{Name}}
                     <input type="text" class="form-control" name="name" value="" placeholder="Main Config" required>
                 </div>
                 <div class="form-group">
-                    Backend Url
-                    <input type="text" class="form-control" name="backend_url" value="" placeholder="http://10.0.1.100:9001" required>
+                    {{Provider}}
+                    <select class="form-control provider-select" name="provider" required>
+                        <option value="" selected disabled hidden>{{Choose a Provider}}</option>
+                        {{#providers}}
+                            <option value="{{name}}">{{name}}</option>
+                        {{/providers}}
+                    </select>
                 </div>
                 <div class="form-group">
-                    Data Endpoints (Separated by a `,`)
-                    <input type="text" class="form-control" name="data_endpoints" value="" placeholder="http://10.0.1.100:9001,http://10.0.1.99:9002" required>
+                    {{Backend Url}}
+                    <input type="text" class="form-control" name="backend_url" value="" placeholder="http://10.0.1.100:9001" data-toggle="tooltip" title="Backend that will control the device, i.e. `/controler` endpoint." required>
                 </div>
                 <div class="form-group">
-                    Backend Token
+                    {{Data Endpoints (Separated by a `,`)}}
+                    <input type="text" class="form-control" name="data_endpoints" value="" placeholder="http://10.0.1.100:9001,http://10.0.1.99:9002" data-toggle="tooltip" title="Where to send data, i.e. `/raw` endpoint.">
+                </div>
+                <div class="form-group">
+                    {{Backend Token}}
                     <input type="text" class="form-control" name="token" value="">
                 </div>
-                <div class="form-group">
-                    Heartbeat Max Time
+                <div class="form-group heartbeat_max_time">
+                    {{Heartbeat Max Time}}
                     <input type="number" class="form-control" name="heartbeat_max_time" value="120" step=1 min="1" max="999" required>
                 </div>
-                <div class="form-group">
-                    Minimum Delay Logout
+                <div class="form-group min_delay_logout">
+                    {{Minimum Delay Logout}}
                     <input type="number" class="form-control" name="min_delay_logout" value="120" step=1 min="1" max="999" required>
                 </div>
 
-                <div class="form-check">
+                <div class="form-check account_manager">
                     <input type="checkbox" class="form-check-input" name="account_manager" checked>
-                    <label class="form-check-label" for="account_manager">Account Manager</label>
+                    <label class="form-check-label" for="account_manager">{{Account Manager}}</label>
                 </div>
-                <div class="form-check">
+                <div class="form-check deploy_eggs">
                     <input type="checkbox" class="form-check-input" name="deploy_eggs" checked>
-                    <label class="form-check-label" for="deploy_eggs">Deploy Eggs</label>
+                    <label class="form-check-label" for="deploy_eggs">{{Deploy Eggs}}</label>
                 </div>
-                <div class="form-check">
+                <div class="form-check nearby_tracker">
                     <input type="checkbox" class="form-check-input" name="nearby_tracker" checked>
-                    <label class="form-check-label" for="nearby_tracker">Nearby Tracker</label>
+                    <label class="form-check-label" for="nearby_tracker">{{Nearby Tracker}}</label>
                 </div>
-                <div class="form-check">
+                <div class="form-check auto_login">
                     <input type="checkbox" class="form-check-input" name="auto_login">
-                    <label class="form-check-label" for="auto_login">Auto-Login</label>
-                </div>
-
-                <div class="form-check">
-                    <input type="checkbox" class="form-check-input" name="is_default">
-                    <label class="form-check-label" for="is_default">Is Default Config</label>
+                    <label class="form-check-label" for="auto_login">{{Auto-Login}}</label>
                 </div>
                 <br>
-                <button type="submit" class="btn btn-primary">Create</button>
+                <div class="form-check">
+                    <input type="checkbox" class="form-check-input" name="is_default">
+                    <label class="form-check-label" for="is_default">{{Is Default Config}}</label>
+                </div>
+                <br>
+                <button type="submit" class="btn btn-primary">{{Create}}</button>
                 <br>
             </form>
         </div>
@@ -62,9 +71,27 @@
 </html>
 
 <script>
+    $('[data-toggle="tooltip"]').tooltip();
     if ("{{style}}" === 'dark') {
         $('body').css('background-color', 'rgb(33, 37, 41)');
         $('body').css('color', 'rgb(255, 255, 255)');
         //$('#header').css('color', 'white');
     }
+    $('.provider-select').change(function() {
+        if ($(this).val() === 'GoCheats') {
+            $('.heartbeat_max_time').addClass('d-none');
+            $('.min_delay_logout').addClass('d-none');
+            $('.account_manager').addClass('d-none');
+            $('.deploy_eggs').addClass('d-none');
+            $('.nearby_tracker').addClass('d-none');
+            $('.auto_login').addClass('d-none');
+        } else {
+            $('.heartbeat_max_time').removeClass('d-none');
+            $('.min_delay_logout').removeClass('d-none');
+            $('.account_manager').removeClass('d-none');
+            $('.deploy_eggs').removeClass('d-none');
+            $('.nearby_tracker').removeClass('d-none');
+            $('.auto_login').removeClass('d-none');
+        }
+    });
 </script>

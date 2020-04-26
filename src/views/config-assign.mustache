@@ -3,20 +3,20 @@
     <body>
         {{> navbar}}
         <br>
-        <h1 align="center" id="header">Assign Config to {{device}}</h1>
+        <h1 align="center" id="header">{{Assign Config to}} {{device}}</h1>
         <br>
         <div class="w-75" style="float: none; margin: 0 auto;">
             <form action="/api/config/assign/{{device}}" method="post">
                 <div class="form-group">
-                    Select Device Config
+                    {{Select Device Config}}
                     <select class="form-control" name="config" required>
-                        <option value="" {{#nothing_selected}}selected{{/nothing_selected}} disabled hidden>Choose a Config</option>
+                        <option value="" {{#nothing_selected}}selected{{/nothing_selected}} disabled hidden>{{Choose a Config}}</option>
                         {{#configs}}
                             <option value="{{name}}" {{#selected}}selected{{/selected}}>{{name}}</option>
                         {{/configs}}
                     </select>
                 </div>
-                <button type="submit" class="btn btn-primary">Assign</button>
+                <button type="submit" class="btn btn-primary">{{Assign}}</button>
             </form>
         </div>
         <br>    

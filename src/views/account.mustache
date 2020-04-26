@@ -3,28 +3,28 @@
     <body>
         {{> navbar}}
         <br>
-        <h1 align="center" id="header">{{username}} Account Profile</h1>
+        <h1 align="center" id="header">{{username}} {{Account Profile}}</h1>
         <br>
         <div class="w-75" style="float: none; margin: 0 auto;">
             <div class="card bg-dark p-1 m-3">
-                <div class="card-header text-center bg-dark"><b>Change Password</b></div>
+                <div class="card-header text-center bg-dark"><b>{{Change Password}}</b></div>
                 <div class="card-body">
                     <div class="container">
                         <form action="/api/account/change_password/{{username}}" method="post">
                             <div class="form-group">
-                                Old Password
+                                {{Old Password}}
                                 <input type="password" class="form-control" name="old_password" value="" placeholder="" required>
                             </div>
                             <div class="form-group">
-                                Password
+                                {{Password}}
                                 <input type="password" class="form-control" name="password" value="" placeholder="" required>
                             </div>
                             <div class="form-group">
-                                Confirm Password
+                                {{Confirm Password}}
                                 <input type="password" class="form-control" name="password2" value="" placeholder="" required>
                             </div>
                             <br>
-                            <button type="submit" class="btn btn-primary">Change</button>
+                            <button type="submit" class="btn btn-primary">{{Change}}</button>
                             <br>
                         </form>
                     </div>

@@ -3,20 +3,20 @@
     <body>
         {{> navbar}}
         <br>
-        <h1 align="center" id="header">Devices</h1>
+        <h1 align="center" id="header">{{Devices}}</h1>
         <br>
         <div style="width:90%; margin-left:calc(5%);">
-            <a href="/device/new" role="button" style="float: right;" class="btn btn-success">New Device</a>
+            <a href="/device/new" role="button" style="float: right;" class="btn btn-success">{{New Device}}</a>
             <br><br>
             <table id="table" class="table table-{{style}} table-striped table-bordered table-hover dt-responsive nowrap" style="position: center; width:100%">
                 <thead class="thead-dark">
                 <tr>
-                    <th>Preview</th>
-                    <th>UUID</th>
-                    <th>Config</th>
-                    <th>iOS Version</th>
-                    <th>IPA Version</th>
-                    <th>Last Seen</th>
+                    <th>{{Preview}}</th>
+                    <th>{{UUID}}</th>
+                    <th>{{Config}}</th>
+                    <th>{{iOS Version}}</th>
+                    <th>{{IPA Version}}</th>
+                    <th>{{Last Config}}</th>
                     <th width="5%"></th>
                 </tr>
                 </thead>
@@ -42,6 +42,7 @@
             },
             "paging":   true,
             "lengthMenu": [[25, 50, 100, -1], [25, 50, 100, "All"]],
+            "pageLength": 100,
             "columns": [
                 { "data": "image" },
                 { "data": "uuid" },

@@ -3,14 +3,14 @@
     <body>
         {{> navbar}}
         <br>
-        <h1 align="center" id="header">Delete Schedule {{name}}</h1>
+        <h1 align="center" id="header">{{Delete Schedule}} {{name}}</h1>
         <br>
         <div class="w-75" style="float: none; margin: 0 auto;">
             <form action="/api/schedule/delete/{{name}}" method="post">
                 <div align="center">
-                    <h3 id="message">Are you sure that you want to delete schedule {{name}}?</h3>
-                    <a href="/configs" id="cancel" name="cancel" class="btn btn-secondary">Cancel</a>
-                    <button type="submit" class="btn btn-danger">Delete</button>
+                    <h3 id="message">{{Are you sure that you want to delete schedule}} {{name}}?</h3>
+                    <a href="/configs" id="cancel" name="cancel" class="btn btn-secondary">{{Cancel}}</a>
+                    <button type="submit" class="btn btn-danger">{{Delete}}</button>
                 </div>
                 <br>
             </form>

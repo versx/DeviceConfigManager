@@ -3,23 +3,23 @@
     <body>
         {{> navbar}}
         <br>
-        <h1 align="center" id="header">Schedules</h1>
+        <h1 align="center" id="header">{{Schedules}}</h1>
         <br>
         <div style="width:90%; margin-left:calc(5%);">
-            <a href="/api/schedule/delete_all" role="button" style="float: right;" class="btn btn-danger" onclick="return confirm('Are you sure you want to delete all schedules?');">Delete All</a> &nbsp;
-            <a href="/schedule/new" role="button" style="float: right;" class="btn btn-success">New Schedule</a> 
+            <a href="/api/schedule/delete_all" role="button" style="float: right;" class="btn btn-danger" onclick="return confirm('Are you sure you want to delete all schedules?');">{{Delete All}}</a> &nbsp;
+            <a href="/schedule/new" role="button" style="float: right;" class="btn btn-success">{{New Schedule}}</a> 
             <br><br>
             <table id="table" class="table table-{{style}} table-striped table-bordered table-hover dt-responsive nowrap" style="position: center; width:100%">
                 <thead class="thead-dark">
                 <tr>
-                    <th>Name</th>
-                    <th>Config</th>
-                    <th>Device(s)</th>
-                    <th>Start Time</th>
-                    <th>End Time</th>
-                    <th>Timezone Offset</th>
-                    <th>Next Config</th>
-                    <th>Enabled</th>
+                    <th>{{Name}}</th>
+                    <th>{{Config}}</th>
+                    <th>{{Device(s)}}</th>
+                    <th>{{Start Time}}</th>
+                    <th>{{End Time}}</th>
+                    <th>{{Timezone Offset}}</th>
+                    <th>{{Next Config}}</th>
+                    <th>{{Enabled}}</th>
                     <th width="5%"></th>
                 </tr>
                 </thead>

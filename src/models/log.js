@@ -3,6 +3,7 @@
 const fs = require('fs');
 const path = require('path');
 const utils = require('../utils.js');
+const config = require('../config.json');
 
 const logsDir = path.resolve(__dirname, '../../logs');
 if (!fs.existsSync(logsDir)) {
@@ -38,6 +39,13 @@ class Log {
     static create(uuid, message) {
         var name = uuid + '.log';
         var logFile = path.resolve(logsDir, name);
+        if (fs.existsSync(logFile)) {
+            var size = fs.statSync(logFile).size || 0;
+            var maxSize = (config.logging.max_size || 5) * 1024 * 1024;
+            if (size >= maxSize) {
+                this.delete(uuid);
+            }
+        }
         var msg = {
             message: message,
             timestamp: new Date() / 1000,
@@ -66,6 +74,19 @@ class Log {
                 });
             });
         });
+    }
+    static getTotalSize() {
+        var total = 0;
+        if (!fs.existsSync(logsDir)) {
+            return total;
+        }
+        var logs = fs.readdirSync(logsDir);
+        logs.forEach(function(log) {
+            var logFile = path.join(logsDir, log);
+            var stats = fs.statSync(logFile);
+            total += stats.size;
+        });
+        return total;
     }
 }
 

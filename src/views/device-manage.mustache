@@ -3,51 +3,51 @@
     <body>
         {{> navbar}}
         <br>
-        <h1 align="center" id="header">{{name}} Management</h1>
+        <h1 align="center" id="header">{{name}} {{Management}}</h1>
         <br>
         <div class="w-75" style="float: none; margin: 0 auto;">
             <table id="table" class="table table-{{style}} table-striped table-bordered table-hover dt-responsive nowrap" style="position: center; width:100%">
                 <thead class="thead-dark">
                     <tr>
-                        <th width="40%">Description</th>
-                        <th width="40%">Action</th>
-                        <th width="40%">Response</th>
+                        <th width="40%">{{Description}}</th>
+                        <th width="40%">{{Action}}</th>
+                        <th width="40%">{{Response}}</th>
                     </tr>
                 </thead>
                 <tbody>
                     <tr>
-                        <th>Get Screenshot</th>
-                        <th><button type='button' class='btn btn-success' onclick='get("http://{{clientip}}:8080/screen", "screenshot")'>GET</button></th>
-                        <th><div id='screenshot'></div></th>
+                        <th>{{Get Screenshot}}</th>
+                        <th><button type='button' class='btn btn-success' onclick='get("http://{{clientip}}:8080/screen", "screenshot")'>{{GET}}</button></th>
+                        <th><img id='screenshot' src=''/></div></th>
                     </tr>
                     <tr>
-                        <th>Get Current Location</th>
-                        <th><button type='button' class='btn btn-success' onclick='get("http://{{clientip}}:8080/loc", "location")'>GET</button></th>
+                        <th>{{Get Current Location}}</th>
+                        <th><button type='button' class='btn btn-success' onclick='get("http://{{clientip}}:8080/loc", "location")'>{{GET}}</button></th>
                         <th><div id='location'></div></th>
                     </tr>
                     <tr>
-                        <th>Get Current Config Data</th>
-                        <th><button type='button' class='btn btn-success' onclick='get("http://{{clientip}}:8080/config", "config")'>GET</button></th>
+                        <th>{{Get Current Config Data}}</th>
+                        <th><button type='button' class='btn btn-success' onclick='get("http://{{clientip}}:8080/config", "config")'>{{GET}}</button></th>
                         <th><div id='config'></div></th>
                     </tr>
                     <tr>
-                        <th>Get Current Account Data</th>
-                        <th><button type='button' class='btn btn-success' onclick='get("http://{{clientip}}:8080/account", "account")'>GET</button></th>
+                        <th>{{Get Current Account Data}}</th>
+                        <th><button type='button' class='btn btn-success' onclick='get("http://{{clientip}}:8080/account", "account")'>{{GET}}</button></th>
                         <th><div id='account'></div></th>
                     </tr>
                     <tr>
-                        <th>Get System Information Data</th>
-                        <th><button type='button' class='btn btn-success' onclick='get("http://{{clientip}}:8080/system_info", "system_info")'>GET</button></th>
+                        <th>{{Get System Information Data}}</th>
+                        <th><button type='button' class='btn btn-success' onclick='get("http://{{clientip}}:8080/system_info", "system_info")'>{{GET}}</button></th>
                         <th><div id='system_info'></div></th>
                     </tr>
                     <tr>
-                        <th>Restart Game</th>
-                        <th><button type='button' class='btn btn-success' onclick='get("http://{{clientip}}:8080/restart", "restart")'>RESTART</button></th>
+                        <th>{{Restart Game}}</th>
+                        <th><button type='button' class='btn btn-success' onclick='get("http://{{clientip}}:8080/restart", "restart")'>{{RESTART}}</button></th>
                         <th><div id='restart'></div></th>
                     </tr>
                     <tr>
-                        <th>Reboot Device (WIP currently restarts the game)</th>
-                        <th><button type='button' class='btn btn-success' onclick='get("http://{{clientip}}:8080/reboot", "reboot")'>REBOOT</button></th>
+                        <th>{{Reboot Device}} (WIP currently restarts the game)</th>
+                        <th><button type='button' class='btn btn-success' onclick='get("http://{{clientip}}:8080/reboot", "reboot")'>{{REBOOT}}</button></th>
                         <th><div id='reboot'></div></th>
                     </tr>
                     <tr>
@@ -87,20 +87,20 @@
                         <th><div id='touch'></div></th>
                     </tr>
                     <tr>
-                        <th>Send Typing Data (WIP)</th>
+                        <th>{{Send Typing Data}} (WIP)</th>
                         <th>
                             <form action="http://{{clientip}}:8080/type" method="post">
                                 <div class="form-group">
                                     <input type="text" class="form-control" name="type_text" placeholder="{ 'text': 'User123' }">
                                 </div>
-                                <button type='submit' class='btn btn-danger'>SEND</button>
+                                <button type='submit' class='btn btn-danger'>{{SEND}}</button>
                             </form>
                         </th>
                         <th><div id='type'></div></th>
                     </tr>
                     <tr>
-                        <th>Delete Device</th>
-                        <th><button type='button' class='btn btn-danger'><a href='/device/delete/{{name}}'>DELETE</a></button></th>
+                        <th>{{Delete Device}}</th>
+                        <th><button type='button' class='btn btn-danger'><a href='/device/delete/{{name}}'>{{DELETE}}</a></button></th>
                     </tr>
                 </tbody>
             </table>
@@ -116,27 +116,38 @@
     }
 
     function get(url, id) {
-        if (url.includes('/screen')) {
-            
-        }
+        var uuid = '{{uuid}}';
         var isScreen = url.includes('/screen');
         $.ajax({
             url: url,
             type: 'GET',
-            dataType: isScreen ? 'image/jpeg' : 'json',
-            success: function (data) {
-                console.log("Ajax response:", data);
+            beforeSend: function (xhr) {
+                xhr.overrideMimeType('text/plain; charset=x-user-defined');
+            },
+            dataType: isScreen ? null : 'json',
+            async: true,
+            success: function (result, textStatus, jqXHR) {
                 if (isScreen) {
-                    img = new Image();
-                    img.src = data;
-                    $('#' + id).append(img);
+                    if (result.length < 1) {
+                        $('#' + id).attr('src', 'data:image/png;base64,');
+                        return;
+                    }
+                    var binary = "";
+                    var responseText = jqXHR.responseText;
+                    var responseTextLen = responseText.length;
+                    for ( i = 0; i < responseTextLen; i++ ) {
+                        binary += String.fromCharCode(responseText.charCodeAt(i) & 255)
+                    }
+                    //utils.saveDataAsImage(uuid + '.png', binary);
+                    $('#' + id).attr('src', 'data:image/png;base64,' + btoa(binary));
                 } else {
-                    $('#' + id).text(JSON.stringify(data, null, 2));
+                    $('#' + id).text(JSON.stringify(result, null, 2));
                 }
             },
-            error: function (error) {
-                console.log("Error:", error);
-            }
+            error: function(xhr, textStatus, errorThrown) {
+                console.error('Error:', textStatus);
+                console.error('Error Thrown:', errorThrown);
+            } 
         });
     }
 </script>

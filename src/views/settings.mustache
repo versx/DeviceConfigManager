@@ -3,31 +3,31 @@
     <body>
         {{> navbar}}
         <br>
-        <h1 align="center" id="header">Settings</h1>
+        <h1 align="center" id="header">{{Settings}}</h1>
         <br>
         <div class="w-75" style="float: none; margin: 0 auto;">
             <div class="card bg-dark p-1 m-3">
-                <div class="card-header text-center bg-dark"><b>User Interface</b></div>
+                <div class="card-header text-center bg-dark"><b>{{User Interface}}</b></div>
                 <div class="card-body">
                     <div class="container">
                         <form action="/api/settings/change_ui" method="post">
                             <div class="form-group">
-                                Title
+                                {{Title}}
                                 <input type="text" class="form-control" name="title" value="{{title}}" placeholder="Device Config Manager" required>
                             </div>
                             <div class="form-group">
-                                Locale
+                                {{Locale}}
                                 <select class="form-control" name="locale">
-                                    <option value="" {{#nothing_selected}}selected{{/nothing_selected}} disabled hidden>Choose a Locale</option>
+                                    <option value="" {{#nothing_selected}}selected{{/nothing_selected}} disabled hidden>{{Choose a Locale}}</option>
                                     {{#languages}}
                                     <option value="{{name}}" {{#selected}}selected{{/selected}}>{{name}}</option>
                                     {{/languages}}
                                 </select>
                             </div>
                             <div class="form-group">
-                                Theme
+                                {{Theme}}
                                 <select class="form-control" name="style">
-                                    <option value="" {{#nothing_selected}}selected{{/nothing_selected}} disabled hidden>Choose a Theme</option>
+                                    <option value="" {{#nothing_selected}}selected{{/nothing_selected}} disabled hidden>{{Choose a Theme}}</option>
                                     {{#styles}}
                                     <option value="{{name}}" {{#selected}}selected{{/selected}}>{{name}}</option>
                                     {{/styles}}
@@ -35,22 +35,26 @@
                             </div>
                             <div class="form-check">
                                 <input type="checkbox" class="form-check-input" name="logging" {{logging}}>
-                                <label class="form-check-label" for="logging">Enable Device Logging</label>
+                                <label class="form-check-label" for="logging">{{Enable Device Logging}}</label>
+                            </div>
+                            <div class="form-group">
+                                {{Maximum Log File Size (Per Phone)}}
+                                <input type="text" class="form-control" name="max_size" value="{{max_size}}" placeholder="5" required>
                             </div>
                             <br>
-                            <button type="submit" class="btn btn-primary">Save</button>
+                            <button type="submit" class="btn btn-primary">{{Save}}</button>
                             <br>
                         </form>
                     </div>
                 </div>
             </div>
             <div class="card bg-dark p-1 m-3">
-                <div class="card-header text-center bg-dark"><b>Database</b></div>
+                <div class="card-header text-center bg-dark"><b>{{Database}}</b></div>
                 <div class="card-body">
                     <div class="container">
                         <form action="/api/settings/change_db" method="post">
                             <div class="form-group">
-                                Host
+                                {{Host}}
                                 <input type="text" class="form-control" name="host" value="{{host}}" placeholder="127.0.0.1" required>
                             </div>
                             <div class="form-group">
@@ -58,23 +62,23 @@
                                 <input type="text" class="form-control" name="port" value="{{port}}" placeholder="3306" required>
                             </div>
                             <div class="form-group">
-                                Username
+                                {{Username}}
                                 <input type="text" class="form-control" name="username" value="{{username}}" placeholder="" required>
                             </div>
                             <div class="form-group">
-                                Password
+                                {{Password}}
                                 <input type="password" class="form-control" name="password" value="{{password}}" placeholder="" required>
                             </div>
                             <div class="form-group">
-                                Database
+                                {{Database}}
                                 <input type="text" class="form-control" name="database" value="{{database}}" placeholder="dcm" required>
                             </div>
                             <div class="form-group">
-                                Character Set
+                                {{Character Set}}
                                 <input type="text" class="form-control" name="charset" value="{{charset}}" placeholder="utf8mb4" required>
                             </div>
                             <br>
-                            <button type="submit" class="btn btn-primary">Save</button>
+                            <button type="submit" class="btn btn-primary">{{Save}}</button>
                             <br>
                         </form>
                     </div>

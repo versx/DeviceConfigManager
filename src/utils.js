@@ -19,6 +19,7 @@ function getDateTime(timestamp) {
 
 function buildConfig(backendUrl, dataEndpoints, token, heartbeatMaxTime, minDelayLogout,
     accountManager, deployEggs, nearbyTracker, autoLogin) {
+    // TODO: Check provider against keys needed (or just assume?) and only return those keys.
     var obj = {
         'backend_url': backendUrl,
         'data_endpoints': (dataEndpoints || '').split(',') || [],
@@ -34,9 +35,29 @@ function buildConfig(backendUrl, dataEndpoints, token, heartbeatMaxTime, minDela
     return json;
 }
 
+function saveDataAsImage(name, imgData) {
+    var data = imgData.replace(/^data:image\/\w+;base64,/, '');
+    var buf = new Buffer(data, 'base64');
+    fs.writeFileSync('../screenshots/' + name, buf);
+}
+
+function formatBytes(bytes) {
+    const sizes = ['Bytes', 'KB', 'MB', 'GB', 'TB'];
+    if (bytes === 0) {
+        return 0;
+    }
+    const index = parseInt(Math.floor(Math.log(bytes) / Math.log(1024)));
+    if (index == 0) {
+        return bytes + ' ' + sizes[index];
+    }
+    return (bytes / Math.pow(1024, index)).toFixed(1) + ' ' + sizes[index];
+}
+
 module.exports = {
     readFile,
     snooze,
     getDateTime,
-    buildConfig
+    buildConfig,
+    saveDataAsImage,
+    formatBytes
 };

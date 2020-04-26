@@ -76,7 +76,8 @@ router.post('/settings/change_ui', function(req, res) {
     newConfig.title = data.title;
     newConfig.locale = data.locale;
     newConfig.style = data.style;
-    newConfig.logging = data.logging === 'on' ? 1 : 0;
+    newConfig.logging.enabled = data.logging === 'on';
+    newConfig.logging.max_size = data.max_size;
     fs.writeFileSync(path.resolve(__dirname, '../config.json'), JSON.stringify(newConfig, null, 2));
     res.redirect('/settings');
 });
@@ -269,6 +270,7 @@ router.post('/config', async function(req, res) {
         res.send(JSON.stringify(noConfigData2));
         return;
     }
+
     // Build json config
     var json = utils.buildConfig(
         c.backendUrl,
@@ -302,8 +304,9 @@ router.post('/config/assign/:uuid', async function(req, res) {
 
 router.post('/config/new', async function(req, res) {
     var data = req.body;
-    var result = await Config.create(
+    var cfg = await Config.create(
         data.name,
+        data.provider,
         data.backend_url,
         data.data_endpoints,
         data.token,
@@ -315,8 +318,12 @@ router.post('/config/new', async function(req, res) {
         data.auto_login === 'on' ? 1 : 0,
         data.is_default === 'on' ? 1 : 0
     );
-    if (result) {
+    if (cfg) {
         console.log('Config inserted');
+        if (cfg.isDefault) {
+            console.log('Setting default config:', data.name);
+            await Config.setDefault(data.name);
+        }
     } else {
         console.error('Failed to create new config');
     }
@@ -328,6 +335,7 @@ router.post('/config/edit/:name', async function(req, res) {
     var data = req.body;
     var c = await Config.getByName(oldName);
     c.name = data.name;
+    c.provider = data.provider;
     c.backendUrl = data.backend_url;
     c.dataEndpoints = data.data_endpoints;
     c.token = data.token;
@@ -339,9 +347,11 @@ router.post('/config/edit/:name', async function(req, res) {
     c.autoLogin = data.auto_login === 'on' ? 1 : 0;
     c.isDefault = data.is_default === 'on' ? 1 : 0;
     if (await c.save(oldName)) {
+        console.log('Config saved');
         // Success
         if (c.isDefault) {
-            await Config.setDefault(oldName);
+            console.log('Setting default config:', c.name);
+            await Config.setDefault(c.name);
         }
     }
     res.redirect('/configs');
@@ -444,7 +454,7 @@ router.get('/logs/:uuid', function(req, res) {
 });
 
 router.post('/log/new', function(req, res) {
-    if (config.logging === false) {
+    if (config.logging.enabled === false) {
         // Logs are disabled
         res.send('OK');
         return;
@@ -470,6 +480,16 @@ router.get('/log/delete/:uuid', function(req, res) {
         // Success
     }
     res.redirect('/device/logs/' + uuid);
+});
+
+router.get('/log/export/:uuid', function(req, res) {
+    var uuid = req.params.uuid;
+    var logs = Log.getByDevice(uuid);
+    var logText = '';
+    logs.forEach(function(log) {
+        logText += `${log.timestamp} ${log.uuid} ${log.message}\n`;
+    });
+    res.send(logText);
 });
 
 router.get('/logs/delete_all', function(req, res) {
