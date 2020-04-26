@@ -6,6 +6,7 @@ const session = require('express-session');
 const bodyParser = require('body-parser');
 const app = express();
 const mustacheExpress = require('mustache-express');
+const i18n = require('i18n');
 
 const config = require('./config.json');
 const utils = require('./utils.js');
@@ -26,16 +27,7 @@ const timezones = require('../static/data/timezones.json');
 // TODO: Localization
 // TODO: Fix schedule end time
 // TODO: Center align data in table columns
-// TODO: Config explainations
 // TODO: Change require to import
-
-// Default mustache data shared between pages
-const defaultData = {
-    title: config.title,
-    locale: config.locale,
-    style: config.style == 'dark' ? 'dark' : '',
-    logging: config.logging.enabled
-};
 
 const providers = [
     { name: 'GoCheats' },
@@ -54,6 +46,11 @@ async function run() {
     app.listen(config.port, config.interface, () => console.log(`Listening on port ${config.port}...`));
 }
 
+i18n.configure({
+    locales:['en', 'es', 'de'],
+    directory: path.resolve(__dirname, '../static/locales')
+});
+
 // View engine
 app.set('view engine', 'mustache');
 app.set('views', path.resolve(__dirname, 'views'));
@@ -63,6 +60,29 @@ app.engine('mustache', mustacheExpress());
 app.use(express.static(path.resolve(__dirname, '../static')));
 //app.use('/logs', express.static(path.resolve(__dirname, '../logs')));
 app.use('/screenshots', express.static(path.resolve(__dirname, '../screenshots')));
+
+//app.use(express.cookieParser());
+app.use(i18n.init);
+
+// register helper as a locals function wrapped as mustache expects
+app.use(function (req, res, next) {
+    // mustache helper
+    res.locals.__ = function () {
+        return function (text, render) {
+            return i18n.__.apply(req, arguments);
+        };
+   };
+   next();
+});
+
+// Default mustache data shared between pages
+const defaultData = require('../static/locales/' + config.locale + '.json');
+defaultData.title = config.title;
+defaultData.locale = config.locale,
+defaultData.style = config.style == 'dark' ? 'dark' : '',
+defaultData.logging = config.logging.enabled
+
+i18n.setLocale(config.locale);
 
 // Body parser middlewares
 app.use(bodyParser.json());
@@ -138,6 +158,8 @@ app.get('/devices', function(req, res) {
 });
 
 app.get('/device/new', async function(req, res) {
+    var data = defaultData;
+    data.configs = await Config.getAll();
     res.render('device-new', defaultData);
 });
 

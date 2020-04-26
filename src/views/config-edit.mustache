@@ -3,67 +3,67 @@
     <body>
         {{> navbar}}
         <br>
-        <h1 align="center" id="header">Edit Device Config {{old_name}}</h1>
+        <h1 align="center" id="header">{{Edit Device Config}} {{old_name}}</h1>
         <br>
         <div class="w-75" style="float: none; margin: 0 auto;">
             <form action="/api/config/edit/{{old_name}}" method="post">
                 <div class="form-group">
-                    Name
+                    {{Name}}
                     <input type="text" class="form-control" name="name" value="{{name}}" placeholder="Main Config" required>
                 </div>
                 <div class="form-group">
-                    Provider (Doesn't do anything yet)
+                    {{Provider}}
                     <select class="form-control provider-select" name="provider" required>
-                        <option value="" selected disabled hidden>Choose a Provider</option>
+                        <option value="" selected disabled hidden>{{Choose a Provider}}</option>
                         {{#providers}}
                             <option value="{{name}}" {{#selected}}selected{{/selected}}>{{name}}</option>
                         {{/providers}}
                     </select>
                 </div>
                 <div class="form-group">
-                    Backend Url
+                    {{Backend Url}}
                     <input type="text" class="form-control" name="backend_url" value="{{backend_url}}" placeholder="http://10.0.1.100:9001/controler" data-toggle="tooltip" title="Backend that will control the device, i.e. `/controler` endpoint." required>
                 </div>
                 <div class="form-group">
-                    Data Endpoints (Separated by a `,`)
+                    {{Data Endpoints (Separated by a `,`)}}
                     <input type="text" class="form-control" name="data_endpoints" value="{{data_endpoints}}" placeholder="http://10.0.1.100:9001/raw,http://10.0.1.99:9002/raw" data-toggle="tooltip" title="Where to send data, i.e. `/raw` endpoint.">
                 </div>
                 <div class="form-group">
-                    Backend Token
+                    {{Backend Token}}
                     <input type="text" class="form-control" name="token" value="{{token}}">
                 </div>
                 <div class="form-group heartbeat_max_time {{#gocheats_selected}}d-none{{/gocheats_selected}}">
-                    Heartbeat Max Time
+                    {{Heartbeat Max Time}}
                     <input type="number" class="form-control" name="heartbeat_max_time" value="{{heartbeat_max_time}}" step=1 min="1" max="999" required>
                 </div>
                 <div class="form-group min_delay_logout {{#gocheats_selected}}d-none{{/gocheats_selected}}">
-                    Minimum Delay Logout
+                    {{Minimum Delay Logout}}
                     <input type="number" class="form-control" name="min_delay_logout" value="{{min_delay_logout}}" step=1 min="1" max="999" required>
                 </div>
 
                 <div class="form-check account_manager {{#gocheats_selected}}d-none{{/gocheats_selected}}">
                     <input type="checkbox" class="form-check-input" name="account_manager" {{account_manager}}>
-                    <label class="form-check-label" for="account_manager">Account Manager</label>
+                    <label class="form-check-label" for="account_manager">{{Account Manager}}</label>
                 </div>
                 <div class="form-check deploy_eggs {{#gocheats_selected}}d-none{{/gocheats_selected}}">
                     <input type="checkbox" class="form-check-input" name="deploy_eggs" {{deploy_eggs}}>
-                    <label class="form-check-label" for="deploy_eggs">Deploy Eggs</label>
+                    <label class="form-check-label" for="deploy_eggs">{{Deploy Eggs}}</label>
                 </div>
                 <div class="form-check nearby_tracker {{#gocheats_selected}}d-none{{/gocheats_selected}}">
                     <input type="checkbox" class="form-check-input" name="nearby_tracker" {{nearby_tracker}}>
-                    <label class="form-check-label" for="nearby_tracker">Nearby Tracker</label>
+                    <label class="form-check-label" for="nearby_tracker">{{Nearby Tracker}}</label>
                 </div>
                 <div class="form-check auto_login {{#gocheats_selected}}d-none{{/gocheats_selected}}">
                     <input type="checkbox" class="form-check-input" name="auto_login" {{auto_login}}>
-                    <label class="form-check-label" for="auto_login">Auto-Login</label>
+                    <label class="form-check-label" for="auto_login">{{Auto-Login}}</label>
                 </div>
                 <br>
                 <div class="form-check">
                     <input type="checkbox" class="form-check-input" name="is_default" {{is_default}}>
-                    <label class="form-check-label" for="is_default">Is Default Config</label>
+                    <label class="form-check-label" for="is_default">{{Is Default Config}}</label>
                 </div>
                 <br>
-                <button type="submit" class="btn btn-primary">Save</button>
+                <button type="submit" class="btn btn-primary">{{Save}}</button>
                 <br>
             </form>
         </div>
