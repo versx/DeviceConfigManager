@@ -270,6 +270,7 @@ router.post('/config', async function(req, res) {
         res.send(JSON.stringify(noConfigData2));
         return;
     }
+
     // Build json config
     var json = utils.buildConfig(
         c.backendUrl,
@@ -305,6 +306,7 @@ router.post('/config/new', async function(req, res) {
     var data = req.body;
     var cfg = await Config.create(
         data.name,
+        data.provider,
         data.backend_url,
         data.data_endpoints,
         data.token,
@@ -333,6 +335,7 @@ router.post('/config/edit/:name', async function(req, res) {
     var data = req.body;
     var c = await Config.getByName(oldName);
     c.name = data.name;
+    c.provider = data.provider;
     c.backendUrl = data.backend_url;
     c.dataEndpoints = data.data_endpoints;
     c.token = data.token;

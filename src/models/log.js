@@ -39,10 +39,12 @@ class Log {
     static create(uuid, message) {
         var name = uuid + '.log';
         var logFile = path.resolve(logsDir, name);
-        var size = fs.statSync(logFile).size || 0;
-        var maxSize = (config.logging.max_size || 5) * 1024 * 1024;
-        if (size >= maxSize) {
-            this.delete(uuid);
+        if (fs.existsSync(logFile)) {
+            var size = fs.statSync(logFile).size || 0;
+            var maxSize = (config.logging.max_size || 5) * 1024 * 1024;
+            if (size >= maxSize) {
+                this.delete(uuid);
+            }
         }
         var msg = {
             message: message,
@@ -72,6 +74,19 @@ class Log {
                 });
             });
         });
+    }
+    static getTotalSize() {
+        var total = 0;
+        if (!fs.existsSync(logsDir)) {
+            return total;
+        }
+        var logs = fs.readdirSync(logsDir);
+        logs.forEach(function(log) {
+            var logFile = path.join(logsDir, log);
+            var stats = fs.statSync(logFile);
+            total += stats.size;
+        });
+        return total;
     }
 }
 

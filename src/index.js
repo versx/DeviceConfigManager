@@ -11,6 +11,7 @@ const config = require('./config.json');
 const utils = require('./utils.js');
 const Device = require('./models/device.js');
 const Config = require('./models/config.js');
+const Log = require('./models/log.js');
 const Migrator = require('./migrator.js');
 const ScheduleManager = require('./models/schedule-manager.js');
 const apiRoutes = require('./routes/api.js');
@@ -21,12 +22,12 @@ const timezones = require('../static/data/timezones.json');
 // TODO: Fix devices scroll with DataTables
 // TODO: Delete all logs button
 // TODO: Secure /api/config endpoint with token
-// TODO: Provider option to show/hide config options
 // TODO: Accomodate for # in uuid name
 // TODO: Localization
 // TODO: Fix schedule end time
 // TODO: Center align data in table columns
 // TODO: Config explainations
+// TODO: Change require to import
 
 // Default mustache data shared between pages
 const defaultData = {
@@ -35,6 +36,11 @@ const defaultData = {
     style: config.style == 'dark' ? 'dark' : '',
     logging: config.logging.enabled
 };
+
+const providers = [
+    { name: 'GoCheats' },
+    { name: 'Kevin' },
+]
 
 run();
 
@@ -94,12 +100,14 @@ app.get(['/', '/index'], async function(req, res) {
         var configs = await Config.getAll();
         var schedules = ScheduleManager.getAll();
         var metadata = await Migrator.getEntries();
+        var logsSize = Log.getTotalSize();
         var data = defaultData;
         data.metadata = metadata;
         data.devices = devices.length;
         data.configs = configs.length;
         data.schedules = Object.keys(schedules).length;
         data.username = username;
+        data.logs_size = utils.formatBytes(logsSize);
         res.render('index', data);
     }
 });
@@ -194,10 +202,7 @@ app.get('/config/assign/:uuid', async function(req, res) {
 
 app.get('/config/new', function(req, res) {
     var data = defaultData;
-    data.providers = [
-        { name: 'GoCheats' },
-        { name: 'Kevin' }
-    ];
+    data.providers = providers;
     res.render('config-new', data);
 });
 
@@ -208,13 +213,11 @@ app.get('/config/edit/:name', async function(req, res) {
     data.title = config.title;
     data.old_name = name;
     data.name = c.name;
-    data.providers = [
-        { name: 'GoCheats' },
-        { name: 'Kevin' }
-    ];
+    data.providers = providers;
     data.providers.forEach(function(provider) {
-        provider.selected = provider.name == name;
+        provider.selected = provider.name === c.provider;
     });
+    data.gocheats_selected = c.provider === data.providers[0].name;
     data.backend_url = c.backendUrl;
     data.data_endpoints = c.dataEndpoints;
     data.token = c.token;

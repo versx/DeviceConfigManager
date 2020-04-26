@@ -3,9 +3,10 @@
 const query = require('../db.js');
 
 class Config {
-    constructor(name, backendUrl, dataEndpoints, token, heartbeatMaxTime, minDelayLogout,
+    constructor(name, provider, backendUrl, dataEndpoints, token, heartbeatMaxTime, minDelayLogout,
         accountManager, deployEggs, nearbyTracker, autoLogin, isDefault) {
         this.name = name;
+        this.provider = provider;
         this.backendUrl = backendUrl;
         this.dataEndpoints = dataEndpoints;
         this.token = token;
@@ -23,7 +24,7 @@ class Config {
     }
     static async getByName(name) {
         var sql = `
-        SELECT backend_url, data_endpoints, token, heartbeat_max_time, min_delay_logout,
+        SELECT backend_url, provider, data_endpoints, token, heartbeat_max_time, min_delay_logout,
                account_manager, deploy_eggs, nearby_tracker, auto_login, is_default
         FROM configs
         WHERE name = ?
@@ -36,6 +37,7 @@ class Config {
         var c = result[0];
         var data = new Config(
             name,
+            c.provider,
             c.backend_url,
             c.data_endpoints,
             c.token,
@@ -49,13 +51,13 @@ class Config {
         );
         return data;
     }
-    static async create(name, backendUrl, dataEndpoints, token, heartbeatMaxTime, minDelayLogout,
+    static async create(name, provider, backendUrl, dataEndpoints, token, heartbeatMaxTime, minDelayLogout,
         accountManager, deployEggs, nearbyTracker, autoLogin, isDefault) {
         var sql = `
-        INSERT INTO configs (name, backend_url, data_endpoints, token, heartbeat_max_time, min_delay_logout,
+        INSERT INTO configs (name, provider, backend_url, data_endpoints, token, heartbeat_max_time, min_delay_logout,
                             account_manager, deploy_eggs, nearby_tracker, auto_login, is_default)
-        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`;
-        var args = [name, backendUrl, dataEndpoints, token, heartbeatMaxTime, minDelayLogout,
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`;
+        var args = [name, provider, backendUrl, dataEndpoints, token, heartbeatMaxTime, minDelayLogout,
             accountManager, deployEggs, nearbyTracker, autoLogin, isDefault];
         var result = await query(sql, args);
         return result.affectedRows === 1;
@@ -68,7 +70,7 @@ class Config {
     }
     static async getDefault() {
         var sql = `
-        SELECT name, backend_url, data_endpoints, token, heartbeat_max_time, min_delay_logout,
+        SELECT name, provider, backend_url, data_endpoints, token, heartbeat_max_time, min_delay_logout,
                account_manager, deploy_eggs, nearby_tracker, auto_login, is_default
         FROM configs
         WHERE is_default = 1
@@ -80,6 +82,7 @@ class Config {
         var c = result[0];
         var data = new Config(
             c.name,
+            c.provider,
             c.backend_url,
             c.data_endpoints,
             c.token,
@@ -104,11 +107,12 @@ class Config {
     async save(oldName) {
         var sql = `
         UPDATE configs
-        SET name=?, backend_url=?, data_endpoints=?, token=?, heartbeat_max_time=?, min_delay_logout=?,
+        SET name=?, provider=?, backend_url=?, data_endpoints=?, token=?, heartbeat_max_time=?, min_delay_logout=?,
             account_manager=?, deploy_eggs=?, nearby_tracker=?, auto_login=?, is_default=?
         WHERE name=?`;
         var args = [
             this.name,
+            this.provider,
             this.backendUrl,
             this.dataEndpoints,
             this.token,

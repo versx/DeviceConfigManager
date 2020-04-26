@@ -13,7 +13,7 @@
                 </div>
                 <div class="form-group">
                     Provider (Doesn't do anything yet)
-                    <select class="form-control" name="provider">
+                    <select class="form-control provider-select" name="provider" required>
                         <option value="" selected disabled hidden>Choose a Provider</option>
                         {{#providers}}
                             <option value="{{name}}" {{#selected}}selected{{/selected}}>{{name}}</option>
@@ -22,42 +22,42 @@
                 </div>
                 <div class="form-group">
                     Backend Url
-                    <input type="text" class="form-control" name="backend_url" value="{{backend_url}}" placeholder="http://10.0.1.100:9001/controler" required>
+                    <input type="text" class="form-control" name="backend_url" value="{{backend_url}}" placeholder="http://10.0.1.100:9001/controler" data-toggle="tooltip" title="Backend that will control the device, i.e. `/controler` endpoint." required>
                 </div>
                 <div class="form-group">
                     Data Endpoints (Separated by a `,`)
-                    <input type="text" class="form-control" name="data_endpoints" value="{{data_endpoints}}" placeholder="http://10.0.1.100:9001/raw,http://10.0.1.99:9002/raw" required>
+                    <input type="text" class="form-control" name="data_endpoints" value="{{data_endpoints}}" placeholder="http://10.0.1.100:9001/raw,http://10.0.1.99:9002/raw" data-toggle="tooltip" title="Where to send data, i.e. `/raw` endpoint.">
                 </div>
                 <div class="form-group">
                     Backend Token
                     <input type="text" class="form-control" name="token" value="{{token}}">
                 </div>
-                <div class="form-group">
+                <div class="form-group heartbeat_max_time {{#gocheats_selected}}d-none{{/gocheats_selected}}">
                     Heartbeat Max Time
                     <input type="number" class="form-control" name="heartbeat_max_time" value="{{heartbeat_max_time}}" step=1 min="1" max="999" required>
                 </div>
-                <div class="form-group">
+                <div class="form-group min_delay_logout {{#gocheats_selected}}d-none{{/gocheats_selected}}">
                     Minimum Delay Logout
                     <input type="number" class="form-control" name="min_delay_logout" value="{{min_delay_logout}}" step=1 min="1" max="999" required>
                 </div>
 
-                <div class="form-check">
+                <div class="form-check account_manager {{#gocheats_selected}}d-none{{/gocheats_selected}}">
                     <input type="checkbox" class="form-check-input" name="account_manager" {{account_manager}}>
                     <label class="form-check-label" for="account_manager">Account Manager</label>
                 </div>
-                <div class="form-check">
+                <div class="form-check deploy_eggs {{#gocheats_selected}}d-none{{/gocheats_selected}}">
                     <input type="checkbox" class="form-check-input" name="deploy_eggs" {{deploy_eggs}}>
                     <label class="form-check-label" for="deploy_eggs">Deploy Eggs</label>
                 </div>
-                <div class="form-check">
+                <div class="form-check nearby_tracker {{#gocheats_selected}}d-none{{/gocheats_selected}}">
                     <input type="checkbox" class="form-check-input" name="nearby_tracker" {{nearby_tracker}}>
                     <label class="form-check-label" for="nearby_tracker">Nearby Tracker</label>
                 </div>
-                <div class="form-check">
+                <div class="form-check auto_login {{#gocheats_selected}}d-none{{/gocheats_selected}}">
                     <input type="checkbox" class="form-check-input" name="auto_login" {{auto_login}}>
                     <label class="form-check-label" for="auto_login">Auto-Login</label>
                 </div>
-
+                <br>
                 <div class="form-check">
                     <input type="checkbox" class="form-check-input" name="is_default" {{is_default}}>
                     <label class="form-check-label" for="is_default">Is Default Config</label>
@@ -76,4 +76,21 @@
         $('body').css('color', 'rgb(255, 255, 255)');
         //$('#header').css('color', 'white');
     }
+    $('.provider-select').change(function() {
+        if ($(this).val() === 'GoCheats') {
+            $('.heartbeat_max_time').addClass('d-none');
+            $('.min_delay_logout').addClass('d-none');
+            $('.account_manager').addClass('d-none');
+            $('.deploy_eggs').addClass('d-none');
+            $('.nearby_tracker').addClass('d-none');
+            $('.auto_login').addClass('d-none');
+        } else {
+            $('.heartbeat_max_time').removeClass('d-none');
+            $('.min_delay_logout').removeClass('d-none');
+            $('.account_manager').removeClass('d-none');
+            $('.deploy_eggs').removeClass('d-none');
+            $('.nearby_tracker').removeClass('d-none');
+            $('.auto_login').removeClass('d-none');
+        }
+    });
 </script>
