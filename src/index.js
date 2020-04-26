@@ -24,7 +24,6 @@ const timezones = require('../static/data/timezones.json');
 // TODO: Delete all logs button
 // TODO: Secure /api/config endpoint with token
 // TODO: Accomodate for # in uuid name
-// TODO: Localization
 // TODO: Fix schedule end time
 // TODO: Center align data in table columns
 // TODO: Change require to import
@@ -32,7 +31,7 @@ const timezones = require('../static/data/timezones.json');
 const providers = [
     { name: 'GoCheats' },
     { name: 'Kevin' },
-]
+];
 
 run();
 
@@ -67,20 +66,22 @@ app.use(i18n.init);
 // register helper as a locals function wrapped as mustache expects
 app.use(function (req, res, next) {
     // mustache helper
-    res.locals.__ = function () {
-        return function (text, render) {
+    res.locals.__ = function() {
+        /* eslint-disable no-unused-vars */
+        return function(text, render) {
             return i18n.__.apply(req, arguments);
         };
-   };
-   next();
+        /* eslint-disable no-unused-vars */
+    };
+    next();
 });
 
 // Default mustache data shared between pages
 const defaultData = require('../static/locales/' + config.locale + '.json');
 defaultData.title = config.title;
-defaultData.locale = config.locale,
-defaultData.style = config.style == 'dark' ? 'dark' : '',
-defaultData.logging = config.logging.enabled
+defaultData.locale = config.locale;
+defaultData.style = config.style == 'dark' ? 'dark' : '';
+defaultData.logging = config.logging.enabled;
 
 i18n.setLocale(config.locale);
 

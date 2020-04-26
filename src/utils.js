@@ -36,21 +36,21 @@ function buildConfig(backendUrl, dataEndpoints, token, heartbeatMaxTime, minDela
 }
 
 function saveDataAsImage(name, imgData) {
-    var data = imgData.replace(/^data:image\/\w+;base64,/, "");
+    var data = imgData.replace(/^data:image\/\w+;base64,/, '');
     var buf = new Buffer(data, 'base64');
     fs.writeFileSync('../screenshots/' + name, buf);
 }
 
 function formatBytes(bytes) {
-    const sizes = ["Bytes", "KB", "MB", "GB", "TB"];
+    const sizes = ['Bytes', 'KB', 'MB', 'GB', 'TB'];
     if (bytes === 0) {
         return 0;
     }
     const index = parseInt(Math.floor(Math.log(bytes) / Math.log(1024)));
     if (index == 0) {
-        return bytes + " " + sizes[index];
+        return bytes + ' ' + sizes[index];
     }
-    return (bytes / Math.pow(1024, index)).toFixed(1) + " " + sizes[index];
+    return (bytes / Math.pow(1024, index)).toFixed(1) + ' ' + sizes[index];
 }
 
 module.exports = {
