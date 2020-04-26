@@ -462,7 +462,7 @@ router.post('/log/new', async function(req, res) {
     var uuid = req.body.uuid;
     var messages = req.body.messages;
     if (messages) {
-        messages.forEach(function(message) {
+        messages.forEach(async function(message) {
             var result = await Log.create(uuid, message);
             if (result) {
                 // Success

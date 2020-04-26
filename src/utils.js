@@ -2,9 +2,37 @@
 
 const fs = require('fs');
 
-function readFile(path) {
-    var data = fs.readFileSync(path);
-    return data.toString('utf8');
+async function readFile(path) {
+    return new Promise(function(resolve, reject) {
+        fs.readFile(path, function(err, data) {
+            if (err) {
+                return reject(err);
+            }
+            resolve(data.toString('utf8'));
+        });
+    });
+}
+
+async function fileExists(path) {
+    return new Promise(function(resolve, reject) {
+        fs.access(path, fs.F_OK, function(err) {
+            if (err) {
+                return reject(err);
+            }
+            resolve(true);
+        });
+    });
+}
+
+async function fileSize(path) {
+    return new Promise(function(resolve, reject) {
+        fs.stat(path, function(err, stats) {
+            if (err) {
+                return reject(err);
+            }
+            resolve(stats.size);
+        });
+    });
 }
 
 function snooze(ms) {
@@ -55,6 +83,8 @@ function formatBytes(bytes) {
 
 module.exports = {
     readFile,
+    fileExists,
+    fileSize,
     snooze,
     getDateTime,
     buildConfig,

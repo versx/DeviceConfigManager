@@ -19,11 +19,11 @@ class Log {
     static async getByDevice(uuid) {
         var name = uuid + '.log';
         var logFile = path.resolve(logsDir, name);
-        var exists = await fileExists(logFile);
+        var exists = await utils.fileExists(logFile);
         if (!exists) {
             return null;
         }
-        var data = utils.readFile(logFile).split('\r\n');
+        var data = await utils.readFile(logFile).split('\r\n');
         var logs = [];
         data.forEach(function(log) {
             if (log) {
@@ -40,9 +40,9 @@ class Log {
     static async create(uuid, message) {
         var name = uuid + '.log';
         var logFile = path.resolve(logsDir, name);
-        var exists = await fileExists(logFile);
+        var exists = await utils.fileExists(logFile);
         if (exists) {
-            var size = await fileSize(logFile) || 0;
+            var size = await utils.fileSize(logFile) || 0;
             var maxSize = (config.logging.max_size || 5) * 1024 * 1024;
             if (size >= maxSize) {
                 this.delete(uuid);
@@ -60,7 +60,7 @@ class Log {
     static async delete(uuid) {
         var name = uuid + '.log';
         var logFile = path.resolve(logsDir, name);
-        var exists = await fileExists(logFile);
+        var exists = await utils.fileExists(logFile);
         if (exists) {
             fs.unlinkSync(logFile);
             return true;
@@ -80,7 +80,7 @@ class Log {
     }
     static async getTotalSize() {
         var total = 0;
-        var exists = await fileExists(logsDir);
+        var exists = await utils.fileExists(logsDir);
         if (!exists) {
             return total;
         }
@@ -88,58 +88,12 @@ class Log {
         if (logs && logs.length > 0) {
             logs.forEach(async function(log) {
                 var logFile = path.join(logsDir, log);
-                var logSize = await fileSize(logFile);
+                var logSize = await utils.fileSize(logFile);
                 total += logSize;
             });
         }
         return total;
     }
-}
-
-async function fileExists(path) {
-    return new Promise(function(resolve, reject) {
-        fs.access(path, fs.F_OK, function(err) {
-            if (err) {
-                return reject(err);
-            }
-            resolve(true);
-        });
-    });
-}
-
-async function fileSize(path) {
-    return new Promise(function(resolve, reject) {
-        fs.stat(path, function(err, stats) {
-            if (err) {
-                return reject(err);
-            }
-            resolve(stats.size);
-        });
-    });
-}
-
-function query(sql, args) {
-    return new Promise(function(resolve, reject) {
-        // The Promise constructor should catch any errors thrown on
-        // this tick. Alternately, try/catch and reject(err) on catch.
-        var conn = getConnection();
-        /* eslint-disable no-unused-vars */
-        conn.query(sql, args, function(err, rows, fields) {
-        /* eslint-enable no-unused-vars */
-            // Call reject on error states,
-            // call resolve with results
-            if (err) {
-                return reject(err);
-            }
-            resolve(rows);
-            conn.end(function(err, args) {
-                if (err) {
-                    console.error('Failed to close mysql connection:', args);
-                    return;
-                }
-            });
-        });
-    });
 }
 
 module.exports = Log;

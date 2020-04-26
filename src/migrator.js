@@ -75,7 +75,7 @@ class Migrator {
             var migrateSQL;
             try {
                 var sqlFile = `${migrationsDir}${path.sep}${fromVersion + 1}.sql`;
-                migrateSQL = utils.readFile(sqlFile);
+                migrateSQL = await utils.readFile(sqlFile);
                 migrateSQL.replace('\r', '').replace('\n', '');
             } catch (err) {
                 console.error('[DBController] Migration failed:', err);

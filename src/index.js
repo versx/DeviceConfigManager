@@ -24,7 +24,6 @@ const timezones = require('../static/data/timezones.json');
 // TODO: Delete all logs button
 // TODO: Secure /api/config endpoint with token
 // TODO: Accomodate for # in uuid name
-// TODO: Fix schedule end time
 // TODO: Center align data in table columns
 // TODO: Change require to import
 
