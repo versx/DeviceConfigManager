@@ -116,6 +116,7 @@
     }
 
     function get(url, id) {
+        var uuid = '{{uuid}}';
         var isScreen = url.includes('/screen');
         $.ajax({
             url: url,
@@ -137,9 +138,7 @@
                     for ( i = 0; i < responseTextLen; i++ ) {
                         binary += String.fromCharCode(responseText.charCodeAt(i) & 255)
                     }
-                    var data = binary.replace(/^data:image\/\w+;base64,/, "");
-                    var buf = new Buffer(data, 'base64');
-                    fs.writeFile('image.png', buf);
+                    utils.saveDataAsImage(uuid + '.png', binary);
                     $('#' + id).attr('src', 'data:image/png;base64,' + btoa(binary));
                 } else {
                     $('#' + id).text(JSON.stringify(result, null, 2));
@@ -151,11 +150,9 @@
             } 
         });
     }
-    function blobToDataUrl(blob) {
-        return new Promise(resolve => {
-            const reader = new FileReader();    // https://developer.mozilla.org/en-US/docs/Using_files_from_web_applications
-            reader.onload = e => resolve(e.target.result);
-            reader.readAsDataURL(blob);
-        });
+    function saveDataAsImage(path, imgData) {
+        var data = imgData.replace(/^data:image\/\w+;base64,/, "");
+        var buf = new Buffer(data, 'base64');
+        fs.writeFileSync('image.png', buf);
     }
 </script>

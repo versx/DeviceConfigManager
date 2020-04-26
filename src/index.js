@@ -19,12 +19,16 @@ const timezones = require('../static/data/timezones.json');
 
 // TODO: Create route classes
 // TODO: Fix devices scroll with DataTables
-// TODO: Add screenshot to manage page response
 // TODO: Delete all logs button
 // TODO: Secure /api/config endpoint with token
 // TODO: Provider option to show/hide config options
 // TODO: Accomodate for # in uuid name
+// TODO: Exports logs
+// TODO: Localization
+// TODO: Fix schedule end time
+// TODO: Center align data in table columns
 
+// Default mustache data shared between pages
 const defaultData = {
     title: config.title,
     locale: config.locale,
@@ -44,15 +48,20 @@ async function run() {
     app.listen(config.port, config.interface, () => console.log(`Listening on port ${config.port}...`));
 }
 
-// Middleware
+// View engine
 app.set('view engine', 'mustache');
 app.set('views', path.resolve(__dirname, 'views'));
 app.engine('mustache', mustacheExpress());
+
+// Static paths
+app.use(express.static(path.resolve(__dirname, '../static')));
+//app.use('/logs', express.static(path.resolve(__dirname, '../logs')));
+app.use('/screenshots', express.static(path.resolve(__dirname, '../screenshots')));
+
+// Body parser middlewares
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false, limit: '50mb' })); // for parsing application/x-www-form-urlencoded
 //app.use(bodyParser.raw({ type: 'application/x-www-form-urlencoded' }));
-app.use(express.static(path.resolve(__dirname, '../static')));
-app.use('/screenshots', express.static(path.resolve(__dirname, '../screenshots')));
 
 // Sessions middleware
 app.use(session({

@@ -7,6 +7,7 @@
         <br>
         <div style="width:90%; margin-left:calc(5%);">
             <a href="/api/log/delete/{{uuid}}" role="button" style="float: right;" class="btn btn-danger" onclick="return confirm('Are you sure you want to delete {{uuid}} logs?');">Delete All</a>
+            <a href="#" role="button" style="float: right;" class="btn btn-primary" onclick="exportLogs()">Export All</a>
             <br><br>
             <table id="table" class="table table-{{style}} table-sm table-striped table-bordered table-hover dt-responsive nowrap" style="position: center; width:100%">
                 <thead class="thead-dark">
@@ -38,7 +39,7 @@
             },
             "paging":   true,
             "lengthMenu": [[25, 50, 100, -1], [25, 50, 100, "All"]],
-            "pageLength": 50,
+            "pageLength": 100,
             "columns": [
                 { "data": "date" },
                 { "data": "uuid" },
@@ -59,5 +60,34 @@
                 table.ajax.reload(null, false);
             }, 5000);
         } );
-    } );
+    });
+
+    function exportLogs() {
+        $.ajax({
+            url: '/api/log/export/{{uuid}}',
+            type: 'GET',
+            success: function(data, textStatus, jqXHR) {
+                //console.log("RECEIVED:", data);
+                downloader(data, 'html/text', '{{uuid}}.log');
+            },
+            error: function(jqXHR, textStatus, errorThrown) {
+                console.error("ERROR:", textStatus);
+                console.error("ERROR THROWN:", errorThrown);
+            }
+        });
+    }
+
+    function downloader(data, type, name) {
+        let blob = new Blob([data], {type});
+        let url = window.URL.createObjectURL(blob);
+        downloadURI(url, name);
+        window.URL.revokeObjectURL(url);
+    }
+
+    function downloadURI(uri, name) {
+        let link = document.createElement("a");
+        link.download = name;
+        link.href = uri;
+        link.click();
+    }
 </script>

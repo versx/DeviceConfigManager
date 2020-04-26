@@ -479,6 +479,16 @@ router.get('/log/delete/:uuid', function(req, res) {
     res.redirect('/device/logs/' + uuid);
 });
 
+router.get('/log/export/:uuid', function(req, res) {
+    var uuid = req.params.uuid;
+    var logs = Log.getByDevice(uuid);
+    var logText = '';
+    logs.forEach(function(log) {
+        logText += `${log.timestamp} ${log.uuid} ${log.message}\n`;
+    });
+    res.send(logText);
+});
+
 router.get('/logs/delete_all', function(req, res) {
     var result = Log.deleteAll();
     if (result) {

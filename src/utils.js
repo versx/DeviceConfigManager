@@ -34,9 +34,16 @@ function buildConfig(backendUrl, dataEndpoints, token, heartbeatMaxTime, minDela
     return json;
 }
 
+function saveDataAsImage(name, imgData) {
+    var data = imgData.replace(/^data:image\/\w+;base64,/, "");
+    var buf = new Buffer(data, 'base64');
+    fs.writeFileSync('../screenshots/' + name, buf);
+}
+
 module.exports = {
     readFile,
     snooze,
     getDateTime,
-    buildConfig
+    buildConfig,
+    saveDataAsImage
 };
