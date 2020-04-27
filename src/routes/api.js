@@ -19,7 +19,8 @@ const Log = require('../models/log.js');
 const ScheduleManager = require('../models/schedule-manager.js');
 
 router.use(function(req, res, next) {
-    if (req.path === '/api/login' || req.path === '/login' || req.path === '/config') {
+    if (req.path === '/api/login' || req.path === '/login' ||
+        req.path === '/config' || req.path === '/log/new') {
         return next();
     }
     if (req.session.loggedin) {
