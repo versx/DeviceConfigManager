@@ -82,20 +82,24 @@ class Log {
         });
     }
     static async getTotalSize() {
-        var total = 0;
         var exists = await utils.fileExists(logsDir);
-        if (!exists) {
-            return total;
-        }
-        var logs = fs.readdirSync(logsDir);
-        if (logs && logs.length > 0) {
-            logs.forEach(async function(log) {
-                var logFile = path.join(logsDir, log);
-                var logSize = await utils.fileSize(logFile);
-                total += logSize;
-            });
-        }
-        return total;
+        return new Promise((resolve, reject) => {
+            if (!exists) {
+                return reject(total);
+            }
+            var total = 0;
+            var files = fs.readdirSync(logsDir);
+            if (files) {
+                files.forEach(function(file) {
+                    var logFile = path.resolve(logsDir, file);
+                    var stats = fs.statSync(logFile);
+                    total += stats.size;
+                });
+            } else {
+                return reject();
+            }
+            resolve(total);
+        })
     }
 }
 
