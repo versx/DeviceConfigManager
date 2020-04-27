@@ -108,5 +108,6 @@
     "Get System Information Data": "System Infodaten anfragen",
     "Restart Game": "Spiel neustarten",
     "Reboot Device": "Gerät rebooten",
-    "Send Typing Data": "Text an Gerät schicken"
+    "Send Typing Data": "Text an Gerät schicken",
+    "Export All": "Export All"
 }

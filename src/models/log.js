@@ -99,7 +99,7 @@ class Log {
                 return reject();
             }
             resolve(total);
-        })
+        });
     }
 }
 

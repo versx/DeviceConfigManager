@@ -15,23 +15,28 @@ async function readFile(path) {
 
 async function fileExists(path) {
     return new Promise(function(resolve, reject) {
-        fs.access(path, fs.F_OK, function(err) {
-            if (err) {
-                return reject(err);
-            }
-            resolve(true);
-        });
+        try {
+            fs.exists(path, function(exists) {
+                resolve(exists);
+            });
+        } catch (e) {
+            return reject(e);
+        }
     });
 }
 
 async function fileSize(path) {
     return new Promise(function(resolve, reject) {
-        fs.stat(path, function(err, stats) {
-            if (err) {
-                return reject(err);
-            }
-            resolve(stats.size);
-        });
+        try {
+            fs.stat(path, function(err, stats) {
+                if (err) {
+                    return reject(err);
+                }
+                resolve(stats.size);
+            });
+        } catch (e) {
+            return reject(e);
+        }
     });
 }
 
@@ -63,12 +68,6 @@ function buildConfig(backendUrl, dataEndpoints, token, heartbeatMaxTime, minDela
     return json;
 }
 
-function saveDataAsImage(name, imgData) {
-    var data = imgData.replace(/^data:image\/\w+;base64,/, '');
-    var buf = new Buffer(data, 'base64');
-    fs.writeFileSync('../screenshots/' + name, buf);
-}
-
 function formatBytes(bytes) {
     const sizes = ['Bytes', 'KB', 'MB', 'GB', 'TB'];
     if (bytes === 0) {
@@ -88,6 +87,5 @@ module.exports = {
     snooze,
     getDateTime,
     buildConfig,
-    saveDataAsImage,
     formatBytes
 };

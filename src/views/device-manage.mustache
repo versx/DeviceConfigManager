@@ -138,16 +138,36 @@
                     for ( i = 0; i < responseTextLen; i++ ) {
                         binary += String.fromCharCode(responseText.charCodeAt(i) & 255)
                     }
-                    //utils.saveDataAsImage(uuid + '.png', binary);
                     $('#' + id).attr('src', 'data:image/png;base64,' + btoa(binary));
+                    $('#' + id).attr('width', 84);
+                    $('#' + id).attr('height', 128);
+                    sendImageData(id, binary);
                 } else {
                     $('#' + id).text(JSON.stringify(result, null, 2));
                 }
             },
             error: function(xhr, textStatus, errorThrown) {
+                $('#' + id).text('Error');
                 console.error('Error:', textStatus);
                 console.error('Error Thrown:', errorThrown);
             } 
+        });
+    }
+
+    function sendImageData(id, imageData) {
+        $.ajax({
+            url: '/api/device/screen/{{name}}',
+            type: 'POST',
+            data: { data: btoa(imageData) },
+            async: true,
+            success: function(result, textStatus, jqXHR) {
+                console.log("Screenshot sent:", result);
+            },
+            error: function(xhr, textStatus, errorThrown) {
+                $('#' + id).text('Error');
+                console.error('Error:', textStatus);
+                console.error('Error Thrown:', errorThrown);
+            }
         });
     }
 </script>

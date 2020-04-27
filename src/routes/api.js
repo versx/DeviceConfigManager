@@ -5,12 +5,13 @@ const path = require('path');
 const express = require('express');
 const router = express.Router();
 const multer = require('multer');
-const config = require('../config.json');
-const utils = require('../utils.js');
+const atob = require('atob');
 
 const screenshotsDir = path.resolve(__dirname, '../../screenshots');
 const upload = multer({ dest: screenshotsDir });
 
+const config = require('../config.json');
+const utils = require('../utils.js');
 const Account = require('../models/account.js');
 const Config = require('../models/config.js');
 const Device = require('../models/device.js');
@@ -76,8 +77,10 @@ router.post('/settings/change_ui', function(req, res) {
     newConfig.title = data.title;
     newConfig.locale = data.locale;
     newConfig.style = data.style;
-    newConfig.logging.enabled = data.logging === 'on';
-    newConfig.logging.max_size = data.max_size;
+    newConfig.logging = {
+        enabled: data.logging === 'on',
+        max_size: data.max_size
+    };
     fs.writeFileSync(path.resolve(__dirname, '../config.json'), JSON.stringify(newConfig, null, 2));
     res.redirect('/settings');
 });
@@ -169,6 +172,16 @@ router.post('/device/:uuid/screen', upload.single('file'), function(req, res) {
                 .end('ERROR');
         });
     }
+});
+
+router.post('/device/screen/:uuid', function(req, res) {
+    var uuid = req.params.uuid;
+    var data = Buffer.from(req.body.data, 'base64');
+    var screenFshotFile = path.resolve(__dirname, '../../screenshots/' + uuid + '.png');
+    fs.writeFile(screenFshotFile, data, function(err) {
+        if (err) throw err;
+        console.log("Image saved");
+    });
 });
 
 router.post('/device/delete/:uuid', async function(req, res) {
@@ -442,6 +455,14 @@ router.get('/schedule/delete_all', function(req, res) {
 
 
 // Logging API requests
+router.get('/logs/delete_all', function(req, res) {
+    var result = Log.deleteAll();
+    if (result) {
+        // Success
+    }
+    res.redirect('/settings');
+});
+
 router.get('/logs/:uuid', async function(req, res) {
     var uuid = req.params.uuid;
     var logs = await Log.getByDevice(uuid);
@@ -492,14 +513,6 @@ router.get('/log/export/:uuid', async function(req, res) {
         });
     }
     res.send(logText);
-});
-
-router.get('/logs/delete_all', function(req, res) {
-    var result = Log.deleteAll();
-    if (result) {
-        // Success
-    }
-    res.redirect('/logs');
 });
 
 module.exports = router;
