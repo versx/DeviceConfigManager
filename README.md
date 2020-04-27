@@ -25,6 +25,11 @@ You can also pre-create devices and assign configs yourself if needed.
 6.) Access via http://machineip:port/ using username: `root` and password `pass123!`  
 7.) Change default password via the Settings page  
 
+## Updating  
+1.) `git pull`  
+2.) Run `npm install` in root folder  
+3.) Run `npm run start`  
+
 ## Notes  
 If you use HAProxy, make sure to set `option forwardfor` in your haproxy.cfg if you are not passing the x-forward-for header so the correct IP addresses are saved.  
 
