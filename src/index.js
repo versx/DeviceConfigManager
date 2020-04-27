@@ -1,6 +1,8 @@
 'use strict';
 
 const path = require('path');
+//const csrf = require('csurf');
+//const cookieParser = require('cookie-parser');
 const express = require('express');
 const session = require('express-session');
 const bodyParser = require('body-parser');
@@ -21,10 +23,7 @@ const timezones = require('../static/data/timezones.json');
 
 // TODO: Create route classes
 // TODO: Fix devices scroll with DataTables
-// TODO: Delete all logs button
 // TODO: Secure /api/config endpoint with token
-// TODO: Accomodate for # in uuid name
-// TODO: Fix schedule end time
 // TODO: Center align data in table columns
 // TODO: Change require to import
 
@@ -60,11 +59,10 @@ app.use(express.static(path.resolve(__dirname, '../static')));
 //app.use('/logs', express.static(path.resolve(__dirname, '../logs')));
 app.use('/screenshots', express.static(path.resolve(__dirname, '../screenshots')));
 
-//app.use(express.cookieParser());
 app.use(i18n.init);
 
 // register helper as a locals function wrapped as mustache expects
-app.use(function (req, res, next) {
+app.use(function(req, res, next) {
     // mustache helper
     res.locals.__ = function() {
         /* eslint-disable no-unused-vars */
@@ -90,6 +88,21 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false, limit: '50mb' })); // for parsing application/x-www-form-urlencoded
 //app.use(bodyParser.raw({ type: 'application/x-www-form-urlencoded' }));
 
+/*
+app.use(cookieParser());
+app.use(csrf({ cookie: true }));
+app.use(function(req, res, next) {
+    var csrf = req.csrfToken();
+    defaultData.csrf = csrf;
+    //defaultData.csrf = request.session?.data["csrf"];
+    console.log("CSRF Token:", csrf);
+    res.cookie('x-csrf-token', csrf);
+    res.cookie('TOKEN', csrf);
+    res.locals.csrftoken = csrf;
+    next();
+});
+*/
+
 // Sessions middleware
 app.use(session({
     secret: config.secret, // REVIEW: Randomize?
@@ -110,6 +123,10 @@ app.use(function(req, res, next) {
         next();
         return;
     }
+    //if (defaultData.csrf !== req.csrfToken()) {
+    //    console.log("TOKEN GOOD");
+    //    //return next();
+    //}
     res.redirect('/login');
 });
 
@@ -121,7 +138,7 @@ app.get(['/', '/index'], async function(req, res) {
         var configs = await Config.getAll();
         var schedules = ScheduleManager.getAll();
         var metadata = await Migrator.getEntries();
-        var logsSize = Log.getTotalSize();
+        var logsSize = await Log.getTotalSize();
         var data = defaultData;
         data.metadata = metadata;
         data.devices = devices.length;
@@ -333,13 +350,13 @@ app.get('/settings', function(req, res) {
     });
     data.languages = [
         { 'name': 'en' },
-        { 'name': 'es' }
+        { 'name': 'es' },
+        { 'name': 'de' }
     ];
     data.languages.forEach(function(locale) {
         locale.selected = locale.name === config.locale;
     });
     data.logging = config.logging.enabled ? 'checked' : '';
     data.max_size = config.logging.max_size;
-    console.log('Settings:', data);
     res.render('settings', data);
 });

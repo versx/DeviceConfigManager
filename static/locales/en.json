@@ -107,6 +107,9 @@
     "Get Current Account Data": "Get Current Account Data",
     "Get System Information Data": "Get System Information Data",
     "Restart Game": "Restart Game",
-    "Reboot Device": "Reboot Device",
-    "Send Typing Data": "Send Typing Data"
+    "Send Typing Data": "Send Typing Data",
+    "Export All": "Export All",
+    "Send Touch Location": "Send Touch Location",
+    "Send Pixel Check Location": "Send Pixel Check Location",
+    "Send Data for Testing": "Send Data for Testing"
 }
