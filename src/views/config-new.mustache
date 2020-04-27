@@ -32,28 +32,28 @@
                     {{Backend Token}}
                     <input type="text" class="form-control" name="token" value="">
                 </div>
-                <div class="form-group heartbeat_max_time">
+                <div class="form-group heartbeat_max_time d-none">
                     {{Heartbeat Max Time}}
                     <input type="number" class="form-control" name="heartbeat_max_time" value="120" step=1 min="1" max="999" required>
                 </div>
-                <div class="form-group min_delay_logout">
+                <div class="form-group min_delay_logout d-none">
                     {{Minimum Delay Logout}}
                     <input type="number" class="form-control" name="min_delay_logout" value="120" step=1 min="1" max="999" required>
                 </div>
 
-                <div class="form-check account_manager">
+                <div class="form-check account_manager d-none">
                     <input type="checkbox" class="form-check-input" name="account_manager" checked>
                     <label class="form-check-label" for="account_manager">{{Account Manager}}</label>
                 </div>
-                <div class="form-check deploy_eggs">
+                <div class="form-check deploy_eggs d-none">
                     <input type="checkbox" class="form-check-input" name="deploy_eggs" checked>
                     <label class="form-check-label" for="deploy_eggs">{{Deploy Eggs}}</label>
                 </div>
-                <div class="form-check nearby_tracker">
+                <div class="form-check nearby_tracker d-none">
                     <input type="checkbox" class="form-check-input" name="nearby_tracker" checked>
                     <label class="form-check-label" for="nearby_tracker">{{Nearby Tracker}}</label>
                 </div>
-                <div class="form-check auto_login">
+                <div class="form-check auto_login d-none">
                     <input type="checkbox" class="form-check-input" name="auto_login">
                     <label class="form-check-label" for="auto_login">{{Auto-Login}}</label>
                 </div>
