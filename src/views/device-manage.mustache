@@ -46,42 +46,37 @@
                         <th><div id='restart'></div></th>
                     </tr>
                     <tr>
-                        <th>{{Reboot Device}} (WIP currently restarts the game)</th>
-                        <th><button type='button' class='btn btn-success' onclick='get("http://{{clientip}}:8080/reboot", "reboot")'>{{REBOOT}}</button></th>
-                        <th><div id='reboot'></div></th>
-                    </tr>
-                    <tr>
-                        <th>Send Data for Testing (WIP)</th>
+                        <th>{{Send Data for Testing}} (WIP)</th>
                         <th>
                             <form action="http://{{clientip}}:8080/data" method="post">
                                 <div class="form-group">
                                     <input type="text" class="form-control" name="data_text" placeholder="{}">
                                 </div>
-                                <button type='submit' class='btn btn-danger'>SEND</button>
+                                <button type='submit' class='btn btn-danger'>{{SEND}}</button>
                             </form>
                         </th>
                         <th><div id='data'></div></th>
                     </tr>
                     <tr>
-                        <th>Send Pixel Check Location (WIP)</th>
+                        <th>{{Send Pixel Check Location}} (WIP)</th>
                         <th>
                             <form action="http://{{clientip}}:8080/pixel" method="post">
                                 <div class="form-group">
                                     <input type="text" class="form-control" name="pixel_text" placeholder="{ 'x': 320, 'y': 320 }">
                                 </div>
-                                <button type='submit' class='btn btn-danger'>SEND</button>
+                                <button type='submit' class='btn btn-danger'>{{SEND}}</button>
                             </form>
                         </th>
                         <th><div id='pixel'></div></th>
                     </tr>
                     <tr>
-                        <th>Send Touch Location (WIP)</th>
+                        <th>{{Send Touch Location}} (WIP)</th>
                         <th>
                             <form action="http://{{clientip}}:8080/touch" method="post">
                                 <div class="form-group">
                                     <input type="text" class="form-control" name="touch_text" placeholder="{ 'x': 160, 'y': 160 }">
                                 </div>
-                                <button type='submit' class='btn btn-danger'>SEND</button>
+                                <button type='submit' class='btn btn-danger'>{{SEND}}</button>
                             </form>
                         </th>
                         <th><div id='touch'></div></th>
@@ -142,6 +137,15 @@
                     $('#' + id).attr('width', 84);
                     $('#' + id).attr('height', 128);
                     sendImageData(id, binary);
+                } else if (url.includes('/account')) {
+                    var text = '';
+                    if (result.username) {
+                        text += 'Username: ' + result.username;
+                    }
+                    if (result.password) {
+                        text += '\nPassword: ' + result.password;
+                    }
+                    $('#' + id).text(text);
                 } else {
                     $('#' + id).text(JSON.stringify(result, null, 2));
                 }
