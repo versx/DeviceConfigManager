@@ -50,20 +50,32 @@ function getDateTime(timestamp) {
     return d.toLocaleDateString('en-US') + ' ' + d.toLocaleTimeString('en-US'); // TODO: locale
 }
 
-function buildConfig(backendUrl, dataEndpoints, token, heartbeatMaxTime, minDelayLogout,
+function buildConfig(provider, backendUrl, dataEndpoints, token, heartbeatMaxTime, minDelayLogout,
     accountManager, deployEggs, nearbyTracker, autoLogin) {
-    // TODO: Check provider against keys needed (or just assume?) and only return those keys.
-    var obj = {
-        'backend_url': backendUrl,
-        'data_endpoints': (dataEndpoints || '').split(',') || [],
-        'backend_secret_token': token,
-        'heartbeat_max_time': heartbeatMaxTime,
-        'min_delay_logout': minDelayLogout,
-        'account_manager': accountManager,
-        'deploy_eggs': deployEggs,
-        'nearby_tracker': nearbyTracker,
-        'auto_login': autoLogin
-    };
+    var obj = {};
+    console.log("Provider:", provider);
+    switch (provider) {
+        case 'GoCheats':
+            obj = {
+                'backend_url': backendUrl,
+                'data_endpoints': (dataEndpoints || '').split(',') || [],
+                'backend_secret_token': token
+            };
+            break;
+        case 'Kevin':
+            obj = {
+                'backend_url': backendUrl,
+                'data_endpoints': (dataEndpoints || '').split(',') || [],
+                'backend_secret_token': token,
+                'heartbeat_max_time': heartbeatMaxTime,
+                'min_delay_logout': minDelayLogout,
+                'account_manager': accountManager,
+                'deploy_eggs': deployEggs,
+                'nearby_tracker': nearbyTracker,
+                'auto_login': autoLogin
+            };
+            break;
+    }
     var json = JSON.stringify(obj, null, 2);
     return json;
 }

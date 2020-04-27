@@ -24,7 +24,6 @@ const timezones = require('../static/data/timezones.json');
 // TODO: Create route classes
 // TODO: Fix devices scroll with DataTables
 // TODO: Secure /api/config endpoint with token
-// TODO: Accomodate for # in uuid name
 // TODO: Center align data in table columns
 // TODO: Change require to import
 

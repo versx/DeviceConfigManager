@@ -286,6 +286,7 @@ router.post('/config', async function(req, res) {
 
     // Build json config
     var json = utils.buildConfig(
+        c.provider,
         c.backendUrl,
         c.dataEndpoints,
         c.token,
