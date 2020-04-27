@@ -113,15 +113,17 @@
     function get(url, id) {
         var uuid = '{{uuid}}';
         var isScreen = url.includes('/screen');
+        var isRestart = url.includes('/restart');
         $.ajax({
             url: url,
             type: 'GET',
             beforeSend: function (xhr) {
                 xhr.overrideMimeType('text/plain; charset=x-user-defined');
             },
-            dataType: isScreen ? null : 'json',
+            dataType: (isScreen || isRestart) ? null : 'json',
             async: true,
             success: function (result, textStatus, jqXHR) {
+                console.log("Url:", url);
                 if (isScreen) {
                     if (result.length < 1) {
                         $('#' + id).attr('src', 'data:image/png;base64,');
@@ -146,6 +148,8 @@
                         text += '\nPassword: ' + result.password;
                     }
                     $('#' + id).text(text);
+                } else if (isRestart) {
+                    $('#' + id).text('Restarted');
                 } else {
                     $('#' + id).text(JSON.stringify(result, null, 2));
                 }
