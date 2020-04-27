@@ -31,7 +31,8 @@ You can also pre-create devices and assign configs yourself if needed.
 3.) Run `npm run start`  
 
 ## Notes  
-If you use HAProxy, make sure to set `option forwardfor` in your haproxy.cfg if you are not passing the x-forward-for header so the correct IP addresses are saved.  
+- If you use HAProxy, make sure to set `option forwardfor` in your haproxy.cfg if you are not passing the x-forward-for header so the correct IP addresses are saved.  
+- `Backend Url` and `Data Endpoints` do not need to have the `/raw` or `/controler` endpoints added to configs.  
 
 ## PM2 (recommended)
 Once everything is setup and running appropriately, you can add this to PM2 ecosystem.config.js file so it is automatically started:  

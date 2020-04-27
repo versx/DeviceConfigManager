@@ -18,6 +18,21 @@ const Device = require('../models/device.js');
 const Log = require('../models/log.js');
 const ScheduleManager = require('../models/schedule-manager.js');
 
+router.use(function(req, res, next) {
+    if (req.path === '/api/login' || req.path === '/login' ||
+        req.path === '/config' || req.path === '/log/new') {
+        return next();
+    }
+    if (req.session.loggedin) {
+        next();
+        return;
+    }
+    //if (defaultData.csrf !== req.csrfToken()) {
+    //    console.log("TOKEN GOOD");
+    //    //return next();
+    //}
+    res.redirect('/login');
+});
 
 // Authentication API Route
 router.post('/login', async function(req, res) {

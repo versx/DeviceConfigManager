@@ -53,7 +53,6 @@ function getDateTime(timestamp) {
 function buildConfig(provider, backendUrl, dataEndpoints, token, heartbeatMaxTime, minDelayLogout,
     accountManager, deployEggs, nearbyTracker, autoLogin) {
     var obj = {};
-    console.log("Provider:", provider);
     switch (provider) {
         case 'GoCheats':
             obj = {

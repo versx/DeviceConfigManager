@@ -26,6 +26,7 @@ const timezones = require('../static/data/timezones.json');
 // TODO: Secure /api/config endpoint with token
 // TODO: Center align data in table columns
 // TODO: Change require to import
+// TODO: Fix logs on mobile
 
 const providers = [
     { name: 'GoCheats' },
@@ -115,7 +116,7 @@ app.use('/api', apiRoutes);
 
 // Login middleware
 app.use(function(req, res, next) {
-    if (req.path === '/api/login' || req.path === '/login' || req.path.includes('/api/config')) {
+    if (req.path === '/api/login' || req.path === '/login' || req.path === '/api/config') {
         return next();
     }
     if (req.session.loggedin) {
