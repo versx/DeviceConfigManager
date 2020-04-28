@@ -1,8 +1,8 @@
 'use strict';
 
 const path = require('path');
-//const csrf = require('csurf');
-//const cookieParser = require('cookie-parser');
+const csrf = require('csurf');
+const cookieParser = require('cookie-parser');
 const express = require('express');
 const session = require('express-session');
 const bodyParser = require('body-parser');
@@ -26,7 +26,6 @@ const timezones = require('../static/data/timezones.json');
 // TODO: Secure /api/config endpoint with token
 // TODO: Center align data in table columns
 // TODO: Change require to import
-// TODO: Fix logs on mobile
 
 const providers = [
     { name: 'GoCheats' },
@@ -89,21 +88,6 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false, limit: '50mb' })); // for parsing application/x-www-form-urlencoded
 //app.use(bodyParser.raw({ type: 'application/x-www-form-urlencoded' }));
 
-/*
-app.use(cookieParser());
-app.use(csrf({ cookie: true }));
-app.use(function(req, res, next) {
-    var csrf = req.csrfToken();
-    defaultData.csrf = csrf;
-    //defaultData.csrf = request.session?.data["csrf"];
-    console.log("CSRF Token:", csrf);
-    res.cookie('x-csrf-token', csrf);
-    res.cookie('TOKEN', csrf);
-    res.locals.csrftoken = csrf;
-    next();
-});
-*/
-
 // Sessions middleware
 app.use(session({
     secret: config.secret, // REVIEW: Randomize?
@@ -114,6 +98,19 @@ app.use(session({
 // API Route
 app.use('/api', apiRoutes);
 
+// CSRF token middleware
+app.use(cookieParser());
+app.use(csrf({ cookie: true }));
+app.use(function(req, res, next) {
+    var csrf = req.csrfToken();
+    defaultData.csrf = csrf;
+    //console.log("CSRF Token:", csrf);
+    res.cookie('x-csrf-token', csrf);
+    res.cookie('TOKEN', csrf);
+    res.locals.csrftoken = csrf;
+    next();
+});
+
 // Login middleware
 app.use(function(req, res, next) {
     if (req.path === '/api/login' || req.path === '/login' || req.path === '/api/config') {
@@ -121,13 +118,15 @@ app.use(function(req, res, next) {
     }
     if (req.session.loggedin) {
         defaultData.logged_in = true;
-        next();
-        return;
+        return next();
+        //return;
     }
-    //if (defaultData.csrf !== req.csrfToken()) {
-    //    console.log("TOKEN GOOD");
-    //    //return next();
-    //}
+    /*
+    if (defaultData.csrf === req.csrfToken()) {
+        //console.log("TOKEN GOOD");
+        return next();
+    }
+    */
     res.redirect('/login');
 });
 

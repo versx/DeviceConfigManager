@@ -116,14 +116,16 @@ class ScheduleManager {
             uuids.forEach(async function(uuid) {
                 var device = await Device.getByName(uuid);
                 // Check if the device config is not already set to the scheduled config to assign.
-                if (device.config !== config) {
-                    device.config = config;
-                    var result = await device.save();
-                    if (result) {
-                        // Success
-                        console.log('Device', uuid, 'assigned config', config, 'successfully');
-                    } else {
-                        console.error('Failed to assign device', uuid, 'config', config);
+                if (device.confnig) {
+                    if (device.config !== config) {
+                        device.config = config;
+                        var result = await device.save();
+                        if (result) {
+                            // Success
+                            console.log('Device', uuid, 'assigned config', config, 'successfully');
+                        } else {
+                            console.error('Failed to assign device', uuid, 'config', config);
+                        }
                     }
                 }
             });

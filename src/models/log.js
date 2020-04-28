@@ -57,7 +57,9 @@ class Log {
             uuid: uuid
         };
         fs.appendFile(logFile, JSON.stringify(msg) + '\r\n', function (err) {
-            if (err) throw err;
+            if (err) {
+                console.error('Error occurred:', err);
+            }
         });
     }
     static async delete(uuid) {
@@ -72,11 +74,15 @@ class Log {
     }
     static deleteAll() {
         fs.readdir(logsDir, function(err, files) {
-            if (err) throw err;
+            if (err) {
+                console.error('Failed to find log directory:', logsDir);
+            }
             files.forEach(function(file) {
                 var logFile = path.join(logsDir, file);
                 fs.unlink(logFile, function(err) {
-                    if (err) throw err;
+                    if (err) {
+                        console.error('Failed to delete log file:', logFile);
+                    }
                 });
             });
         });
