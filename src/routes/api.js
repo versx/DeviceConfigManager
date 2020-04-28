@@ -5,7 +5,6 @@ const path = require('path');
 const express = require('express');
 const router = express.Router();
 const multer = require('multer');
-const atob = require('atob');
 
 const screenshotsDir = path.resolve(__dirname, '../../screenshots');
 const upload = multer({ dest: screenshotsDir });
@@ -27,10 +26,6 @@ router.use(function(req, res, next) {
         next();
         return;
     }
-    //if (defaultData.csrf !== req.csrfToken()) {
-    //    console.log("TOKEN GOOD");
-    //    //return next();
-    //}
     res.redirect('/login');
 });
 
@@ -194,8 +189,9 @@ router.post('/device/screen/:uuid', function(req, res) {
     var data = Buffer.from(req.body.data, 'base64');
     var screenFshotFile = path.resolve(__dirname, '../../screenshots/' + uuid + '.png');
     fs.writeFile(screenFshotFile, data, function(err) {
-        if (err) throw err;
-        console.log("Image saved");
+        if (err) {
+            console.error('Failed to save screenshot');
+        }
     });
 });
 
