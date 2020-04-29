@@ -2,12 +2,16 @@ version: '3.2'
 
 services:
   dcm:
-    build:
-        context: .
-        dockerfile: ./etc/dev/node/Dockerfile
+    image: node:12.16.2-alpine
+    working_dir: /app
     command:
-      - "npm"
-      - "start"
+      - sh
+      - -c
+      - |
+        npm install
+        npm start
+    volumes:
+      - .:/app
     ports:
       - "9991:9991"
 
@@ -17,7 +21,9 @@ services:
     ports:
       - "3306:3306"
     environment:
-      - MYSQL_ROOT_PASSWORD=pass123!
+      - MYSQL_USER=user123
+      - MYSQL_PASSWORD=pass123
+      - MYSQL_ROOT_PASSWORD=pass123
       - MYSQL_DATABASE=dcm
     volumes:
       - db_data:/var/lib/mysql
