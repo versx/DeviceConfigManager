@@ -1,6 +1,6 @@
 'use strict';
 
-const query = require('../db.js');
+const query = require('../services/db.js');
 
 class Device {
     constructor(uuid, config, lastSeen, clientip, iosVersion, ipaVersion) {
