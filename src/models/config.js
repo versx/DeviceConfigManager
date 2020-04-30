@@ -1,6 +1,6 @@
 'use strict';
 
-const query = require('../db.js');
+const query = require('../services/db.js');
 
 class Config {
     constructor(name, provider, backendUrl, dataEndpoints, token, heartbeatMaxTime, minDelayLogout,

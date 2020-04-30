@@ -564,7 +564,6 @@ router.get('/log/export/:uuid', async function(req, res) {
 
 async function get(uuid, url) {
     var isScreen = url.includes('/screen');
-    var device = await Device.getByName(uuid);
     if (isScreen) {
         var screenshotFile = path.resolve(__dirname, '../../screenshots/' + uuid + '.png');
         var fileStream = fs.createWriteStream(screenshotFile);

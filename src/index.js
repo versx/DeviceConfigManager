@@ -15,7 +15,7 @@ const utils = require('./utils.js');
 const Device = require('./models/device.js');
 const Config = require('./models/config.js');
 const Log = require('./models/log.js');
-const Migrator = require('./migrator.js');
+const Migrator = require('./services/migrator.js');
 const ScheduleManager = require('./models/schedule-manager.js');
 const apiRoutes = require('./routes/api.js');
 
@@ -27,6 +27,7 @@ const timezones = require('../static/data/timezones.json');
 // TODO: Center align data in table columns
 // TODO: Change require to import
 // TODO: Test schedules with more than one device
+// TODO: Better log management/rotation
 
 const providers = [
     { name: 'GoCheats' },

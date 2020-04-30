@@ -3,9 +3,9 @@
 const path = require('path');
 const fs = require('fs');
 const query = require('./db.js');
-const utils = require('./utils.js');
+const utils = require('../utils.js');
 
-const migrationsDir = path.resolve(__dirname, '../migrations');
+const migrationsDir = path.resolve(__dirname, '../../migrations');
 
 class Migrator {
     constructor() {
