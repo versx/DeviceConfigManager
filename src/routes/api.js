@@ -530,12 +530,18 @@ router.post('/log/new', async function(req, res) {
     var uuid = req.body.uuid;
     var messages = req.body.messages;
     if (messages) {
+        for (var i = 0; i < messages.length; i++) {
+            var result = await Log.create(uuid, message);
+            if (result) {
+                // Success
+            }
+        }
         messages.forEach(async function(message) {
             var result = await Log.create(uuid, message);
             if (result) {
                 // Success
             }
-            console.log('[SYSLOG]', uuid, ':', message);
+            //console.log('[SYSLOG]', uuid, ':', message);
         });
     }
     res.send('OK');
