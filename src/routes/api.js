@@ -5,6 +5,7 @@ const path = require('path');
 const express = require('express');
 const router = express.Router();
 const multer = require('multer');
+const request = require('request');
 
 const screenshotsDir = path.resolve(__dirname, '../../screenshots');
 const upload = multer({ dest: screenshotsDir });
@@ -135,6 +136,37 @@ router.get('/devices', async function(req, res) {
     }
 });
 
+router.post('/devices/mass_action', async function(req, res) {
+    var type = req.body.type;
+    var endpoint = '';
+    switch (type) {
+        case 'screenshot':
+            console.log("Received screenshot mass action");
+            res.send('Received screenshot');
+            endpoint = 'screen';
+            break;
+        case 'restart':
+            console.log("Received restart mass action");
+            res.send('Received restart');
+            endpoint = 'restart';
+            break;
+        default:
+            res.send('Error Occurred');
+    }
+    if (endpoint !== '') {
+        var devices = await Device.getAll();
+        if (devices) {
+            devices.forEach(function(device) {
+                var ip = device.clientip;
+                if (ip) {
+                    var host = `http://${ip}:8080/${endpoint}`;
+                    get(device.uuid, host);
+                }
+            });
+        }
+    }
+});
+
 router.post('/device/new', async function(req, res) {
     var uuid = req.body.uuid;
     var config = req.body.config || null;
@@ -147,6 +179,7 @@ router.post('/device/new', async function(req, res) {
     res.redirect('/devices');
 });
 
+// Kevin screenshot support
 router.post('/device/:uuid/screen', upload.single('file'), function(req, res) {
     var uuid = req.params.uuid;
     var fileName = uuid + '.png';
@@ -186,9 +219,10 @@ router.post('/device/:uuid/screen', upload.single('file'), function(req, res) {
 
 router.post('/device/screen/:uuid', function(req, res) {
     var uuid = req.params.uuid;
-    var data = Buffer.from(req.body.data, 'base64');
-    var screenFshotFile = path.resolve(__dirname, '../../screenshots/' + uuid + '.png');
-    fs.writeFile(screenFshotFile, data, function(err) {
+    console.log("Received screen");
+    var data = Buffer.from(req.body.body, 'base64');
+    var screenshotFile = path.resolve(__dirname, '../../screenshots/' + uuid + '.png');
+    fs.writeFile(screenshotFile, data, function(err) {
         if (err) {
             console.error('Failed to save screenshot');
         }
@@ -526,5 +560,28 @@ router.get('/log/export/:uuid', async function(req, res) {
     }
     res.send(logText);
 });
+
+function get(uuid, url) {
+    var isScreen = url.includes('/screen');
+    if (isScreen) {
+        var screenshotFile = path.resolve(__dirname, '../../screenshots/' + uuid + '.png');
+        var fileStream = fs.createWriteStream(screenshotFile);
+        request
+            .get(url)
+            .on('error', function(err) {
+                console.error('Failed to get screenshot for', uuid, 'at', url, 'Are you sure the device is up?', err.code);
+            })
+            .pipe(fileStream);
+    } else {
+        request.get(url, function(err, response, body) {
+            if (err) {
+                console.error('Error:', err);
+            }
+            //console.log('StatusCode:', response && response.statusCode);
+        }).on('error', function(err) {
+            console.error("Error occurred:", err);
+        });
+    }
+}
 
 module.exports = router;

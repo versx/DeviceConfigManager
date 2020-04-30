@@ -167,7 +167,8 @@
         $.ajax({
             url: '/api/device/screen/{{name}}',
             type: 'POST',
-            data: { data: btoa(imageData) },
+            dataType: 'json',
+            data: { body: btoa(imageData) },
             async: true,
             success: function(result, textStatus, jqXHR) {
                 console.log("Screenshot sent:", result);
