@@ -54,26 +54,26 @@ function buildConfig(provider, backendUrl, dataEndpoints, token, heartbeatMaxTim
     accountManager, deployEggs, nearbyTracker, autoLogin) {
     var obj = {};
     switch (provider) {
-        case 'GoCheats':
-            obj = {
-                'backend_url': backendUrl,
-                'data_endpoints': (dataEndpoints || '').split(',') || [],
-                'backend_secret_token': token
-            };
-            break;
-        case 'Kevin':
-            obj = {
-                'backend_url': backendUrl,
-                'data_endpoints': (dataEndpoints || '').split(',') || [],
-                'backend_secret_token': token,
-                'heartbeat_max_time': heartbeatMaxTime,
-                'min_delay_logout': minDelayLogout,
-                'account_manager': accountManager,
-                'deploy_eggs': deployEggs,
-                'nearby_tracker': nearbyTracker,
-                'auto_login': autoLogin
-            };
-            break;
+    case 'GoCheats':
+        obj = {
+            'backend_url': backendUrl,
+            'data_endpoints': (dataEndpoints || '').split(',') || [],
+            'backend_secret_token': token
+        };
+        break;
+    case 'Kevin':
+        obj = {
+            'backend_url': backendUrl,
+            'data_endpoints': (dataEndpoints || '').split(',') || [],
+            'backend_secret_token': token,
+            'heartbeat_max_time': heartbeatMaxTime,
+            'min_delay_logout': minDelayLogout,
+            'account_manager': accountManager,
+            'deploy_eggs': deployEggs,
+            'nearby_tracker': nearbyTracker,
+            'auto_login': autoLogin
+        };
+        break;
     }
     var json = JSON.stringify(obj, null, 2);
     return json;

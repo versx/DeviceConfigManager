@@ -140,18 +140,18 @@ router.post('/devices/mass_action', async function(req, res) {
     var type = req.body.type;
     var endpoint = '';
     switch (type) {
-        case 'screenshot':
-            console.log("Received screenshot mass action");
-            res.send('Received screenshot');
-            endpoint = 'screen';
-            break;
-        case 'restart':
-            console.log("Received restart mass action");
-            res.send('Received restart');
-            endpoint = 'restart';
-            break;
-        default:
-            res.send('Error Occurred');
+    case 'screenshot':
+        console.log('Received screenshot mass action');
+        res.send('Received screenshot');
+        endpoint = 'screen';
+        break;
+    case 'restart':
+        console.log('Received restart mass action');
+        res.send('Received restart');
+        endpoint = 'restart';
+        break;
+    default:
+        res.send('Error Occurred');
     }
     if (endpoint !== '') {
         var devices = await Device.getAll();
@@ -219,7 +219,7 @@ router.post('/device/:uuid/screen', upload.single('file'), function(req, res) {
 
 router.post('/device/screen/:uuid', function(req, res) {
     var uuid = req.params.uuid;
-    console.log("Received screen");
+    console.log('Received screen');
     var data = Buffer.from(req.body.body, 'base64');
     var screenshotFile = path.resolve(__dirname, '../../screenshots/' + uuid + '.png');
     fs.writeFile(screenshotFile, data, function(err) {
@@ -227,6 +227,7 @@ router.post('/device/screen/:uuid', function(req, res) {
             console.error('Failed to save screenshot');
         }
     });
+    res.sendStatus(200).end();
 });
 
 router.post('/device/delete/:uuid', async function(req, res) {
@@ -561,8 +562,9 @@ router.get('/log/export/:uuid', async function(req, res) {
     res.send(logText);
 });
 
-function get(uuid, url) {
+async function get(uuid, url) {
     var isScreen = url.includes('/screen');
+    var device = await Device.getByName(uuid);
     if (isScreen) {
         var screenshotFile = path.resolve(__dirname, '../../screenshots/' + uuid + '.png');
         var fileStream = fs.createWriteStream(screenshotFile);
@@ -573,13 +575,12 @@ function get(uuid, url) {
             })
             .pipe(fileStream);
     } else {
-        request.get(url, function(err, response, body) {
+        request.get(url, function(err) {
             if (err) {
                 console.error('Error:', err);
             }
-            //console.log('StatusCode:', response && response.statusCode);
         }).on('error', function(err) {
-            console.error("Error occurred:", err);
+            console.error('Error occurred:', err);
         });
     }
 }

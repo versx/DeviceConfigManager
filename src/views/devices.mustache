@@ -48,7 +48,8 @@
         const table = $('#table').DataTable( {
             "ajax": {
                 "url": "/api/devices",
-                "dataSrc": "data.devices"
+                "dataSrc": "data.devices",
+                "async": true
             },
             "paging":   true,
             "lengthMenu": [[25, 50, 100, -1], [25, 50, 100, "All"]],

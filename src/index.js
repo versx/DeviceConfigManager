@@ -26,6 +26,7 @@ const timezones = require('../static/data/timezones.json');
 // TODO: Secure /api/config endpoint with token
 // TODO: Center align data in table columns
 // TODO: Change require to import
+// TODO: Test schedules with more than one device
 
 const providers = [
     { name: 'GoCheats' },
@@ -61,9 +62,9 @@ app.use('/screenshots', express.static(path.resolve(__dirname, '../screenshots')
 
 app.use(i18n.init);
 
-// register helper as a locals function wrapped as mustache expects
+// Register helper as a locals function wrapped as mustache expects
 app.use(function(req, res, next) {
-    // mustache helper
+    // Mustache helper
     res.locals.__ = function() {
         /* eslint-disable no-unused-vars */
         return function(text, render) {
