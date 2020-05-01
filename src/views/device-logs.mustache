@@ -13,7 +13,6 @@
                 <thead class="thead-dark">
                 <tr>
                     <th>{{Date}}</th>
-                    <th>{{UUID}}</th>
                     <th>{{Message}}</th>
                 </tr>
                 </thead>
@@ -43,14 +42,13 @@
             "pageLength": 100,
             "columns": [
                 { "data": "date" },
-                { "data": "uuid" },
                 { "data": "message" }
             ],
             "info":     true,
             "order": [[ 0, "desc" ]],
             "search.caseInsensitive": true,
             "columnDefs": [ {
-                "targets": [2],
+                "targets": [1],
                 "orderable": false
             }]
         });

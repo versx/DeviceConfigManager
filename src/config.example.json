@@ -7,7 +7,8 @@
     "secret": "-/!sup3rr4nd0m70p53cr3t70k3ny0u5h0u1dch4ng3!/-",
     "logging": {
         "enabled": true,
-        "max_size": 5
+        "max_size": 5,
+        "format": "YYYY-MM-DD hh:mm:ss A"
     },
     "db": {
         "host": "127.0.0.1",

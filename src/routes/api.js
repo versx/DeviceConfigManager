@@ -17,6 +17,7 @@ const Config = require('../models/config.js');
 const Device = require('../models/device.js');
 const Log = require('../models/log.js');
 const ScheduleManager = require('../models/schedule-manager.js');
+const logger = require('../services/logger.js');
 
 router.use(function(req, res, next) {
     if (req.path === '/api/login' || req.path === '/login' ||
@@ -531,19 +532,9 @@ router.post('/log/new', async function(req, res) {
     var uuid = req.body.uuid;
     var messages = req.body.messages;
     if (messages) {
-        for (var i = 0; i < messages.length; i++) {
-            var result = await Log.create(uuid, message);
-            if (result) {
-                // Success
-            }
+        for (var i = messages.length - 1; i >= 0; i--) {
+            logger(uuid).info(messages[i]);
         }
-        messages.forEach(async function(message) {
-            var result = await Log.create(uuid, message);
-            if (result) {
-                // Success
-            }
-            //console.log('[SYSLOG]', uuid, ':', message);
-        });
     }
     res.send('OK');
 });

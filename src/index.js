@@ -24,12 +24,8 @@ const timezones = require('../static/data/timezones.json');
 // TODO: Create route classes
 // TODO: Fix devices scroll with DataTables
 // TODO: Secure /api/config endpoint with token
-// TODO: Center align data in table columns
 // TODO: Change require to import
-// TODO: Test schedules with more than one device
-// TODO: Better log management/rotation
 // TODO: Fix log ordering
-// TODO: Fix schedule devices list
 
 const providers = [
     { name: 'GoCheats' },
