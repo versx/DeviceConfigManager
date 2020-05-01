@@ -28,8 +28,8 @@ const timezones = require('../static/data/timezones.json');
 // TODO: Change require to import
 // TODO: Test schedules with more than one device
 // TODO: Better log management/rotation
-// TODO: Device notes column
 // TODO: Fix log ordering
+// TODO: Fix schedule devices list
 
 const providers = [
     { name: 'GoCheats' },

@@ -12,8 +12,8 @@
                 </button>
                 <div class="dropdown-menu" aria-labelledby="actionsDropdown">
                     <a class="dropdown-item" href="/device/new">{{New Device}}</a>
-                    <button type='button' class="dropdown-item" onclick='sendMassAction("screenshot")'>Get All Screenshots</button>
-                    <button type='button' class="dropdown-item" onclick='sendMassAction("restart")'>Restart All Devices</button>
+                    <button type='button' class="dropdown-item" onclick='sendMassAction("screenshot")'>{{Get All Screenshots}}</button>
+                    <button type='button' class="dropdown-item" onclick='sendMassAction("restart")'>{{Restart All Devices}}</button>
                 </div>
             </div>
             <!--<a href="/device/new" role="button" style="float: right;" class="btn btn-success">{{New Device}}</a>-->
@@ -27,6 +27,7 @@
                     <th>{{iOS Version}}</th>
                     <th>{{IPA Version}}</th>
                     <th>{{Last Config}}</th>
+                    <th>{{Notes}}</th>
                     <th width="5%"></th>
                 </tr>
                 </thead>
@@ -61,6 +62,7 @@
                 { "data": "ios_version" },
                 { "data": "ipa_version" },
                 { "data": "last_seen" },
+                { "data": "notes" },
                 { "data": "buttons" },
             ],
             "info": true,

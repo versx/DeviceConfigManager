@@ -171,7 +171,8 @@ router.post('/device/new', async function(req, res) {
     var uuid = req.body.uuid;
     var config = req.body.config || null;
     var clientip = req.body.clientip || null;
-    var result = await Device.create(uuid, config, null, clientip);
+    var notes = req.body.notes || null;
+    var result = await Device.create(uuid, config, null, clientip, null, null, notes);
     if (result) {
         // Success
     }
