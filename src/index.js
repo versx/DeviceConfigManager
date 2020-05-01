@@ -18,6 +18,7 @@ const Log = require('./models/log.js');
 const Migrator = require('./services/migrator.js');
 const ScheduleManager = require('./models/schedule-manager.js');
 const apiRoutes = require('./routes/api.js');
+const defaultData = require('./data/default.js');
 
 const timezones = require('../static/data/timezones.json');
 
@@ -25,7 +26,6 @@ const timezones = require('../static/data/timezones.json');
 // TODO: Fix devices scroll with DataTables
 // TODO: Secure /api/config endpoint with token
 // TODO: Change require to import
-// TODO: Fix log ordering
 
 const providers = [
     { name: 'GoCheats' },
@@ -73,13 +73,6 @@ app.use(function(req, res, next) {
     };
     next();
 });
-
-// Default mustache data shared between pages
-const defaultData = require('../static/locales/' + config.locale + '.json');
-defaultData.title = config.title;
-defaultData.locale = config.locale;
-defaultData.style = config.style == 'dark' ? 'dark' : '';
-defaultData.logging = config.logging.enabled;
 
 i18n.setLocale(config.locale);
 

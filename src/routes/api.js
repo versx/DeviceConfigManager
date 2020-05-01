@@ -524,7 +524,7 @@ router.get('/logs/:uuid', async function(req, res) {
 });
 
 router.post('/log/new', async function(req, res) {
-    if (config.logging.enabled === false) {
+    if (!config.logging.enabled) {
         // Logs are disabled
         res.send('OK');
         return;
