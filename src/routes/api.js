@@ -529,6 +529,8 @@ router.post('/log/new', async function(req, res) {
         res.send('OK');
         return;
     }
+
+    // REVIEW: Update device last_seen?
     var uuid = req.body.uuid;
     var messages = req.body.messages;
     if (messages) {

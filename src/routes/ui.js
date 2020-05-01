@@ -28,12 +28,15 @@ router.get(['/', '/index'], async function(req, res) {
         var schedules = ScheduleManager.getAll();
         var metadata = await Migrator.getEntries();
         var logsSize = await Log.getTotalSize();
+        var delta = 15 * 60;
         var data = defaultData;
         data.metadata = metadata;
         data.devices = devices.length;
         data.configs = configs.length;
         data.schedules = Object.keys(schedules).length;
         data.username = username;
+        data.devices_online = devices.filter(x => x.last_seen >= (Math.round((new Date()).getTime() / 1000) - delta)).length;
+        data.devices_offline = devices.filter(x => x.last_seen < (Math.round((new Date()).getTime() / 1000) - delta)).length;
         data.logs_size = utils.formatBytes(logsSize);
         res.render('index', data);
     }
