@@ -37,7 +37,7 @@
         </div>
       </li>
     </ul>
-    <!--<input type="hidden" name="_csrf" value="{{csrf}}">-->
+    <input type="hidden" name="_csrf" value="{{csrf}}">
     {{/logged_in}}
   </div>
 </nav>
@@ -45,7 +45,7 @@
 <br>
 
 <script>
-    console.log("CSRF:", "{{csrf}}");
+    //console.log("CSRF:", "{{csrf}}");
     $(document).ready(function() {
           // Get current URL path and assign 'active' class
         var pathname = window.location.pathname;

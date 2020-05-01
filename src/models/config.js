@@ -1,6 +1,6 @@
 'use strict';
 
-const query = require('../db.js');
+const query = require('../services/db.js');
 
 class Config {
     constructor(name, provider, backendUrl, dataEndpoints, token, heartbeatMaxTime, minDelayLogout,
@@ -19,7 +19,17 @@ class Config {
         this.isDefault = isDefault;
     }
     static async getAll() {
-        var configs = await query('SELECT * FROM configs');
+        //var configs = await query('SELECT * FROM configs');
+        var sql = `
+        SELECT name, backend_url, provider, data_endpoints, token, heartbeat_max_time, min_delay_logout,
+               account_manager, deploy_eggs, nearby_tracker, auto_login, is_default, devices
+        FROM configs AS configs
+        LEFT JOIN (
+            SELECT COUNT(config) AS devices, config
+            FROM devices
+            GROUP BY config
+        ) devices ON (configs.name = devices.config)`;
+        var configs = await query(sql);
         return configs;
     }
     static async getByName(name) {

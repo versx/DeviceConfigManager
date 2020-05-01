@@ -52,6 +52,33 @@
                 </div>
             </div>
             <div class="card text-center p-1 m-3">
+                <div class="card-header bg-dark text-light text-center"><b>Device Status (Last 15 Minutes)</b></div>
+                <div class="card-body">
+                    <div class="container">
+                        <div class="row">
+                            <div class="col-lg-6">
+                                <div class="list-group">
+                                    <a class="list-group-item">
+                                        <h3 class="pull-right"><img src="./img/online.png" width="48" height="64"/></h3>
+                                        <h4 class="list-group-item-heading">{{devices_online}}</h4>
+                                        <p class="list-group-item-text">Online</p>
+                                    </a>
+                                </div>
+                            </div>
+                            <div class="col-lg-6">
+                                <div class="list-group">
+                                    <a class="list-group-item">
+                                        <h3 class="pull-right"><img src="./img/offline.png" width="48" height="64"/></h3>
+                                        <h4 class="list-group-item-heading">{{devices_offline}}</h4>
+                                        <p class="list-group-item-text">Offline</p>
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="card text-center p-1 m-3">
                 <div class="card-header bg-dark text-light text-center"><b>{{Metadata}}</b></div>
                 <div class="card-body">
                     <table id="table" class="table table-{{style}} table-striped table-bordered table-hover dt-responsive nowrap" style="position: center; width:100%">

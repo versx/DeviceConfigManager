@@ -96,6 +96,7 @@
                     <tr>
                         <th>{{Delete Device}}</th>
                         <th><button type='button' class='btn btn-danger'><a href='/device/delete/{{name}}'>{{DELETE}}</a></button></th>
+                        <th></th>
                     </tr>
                 </tbody>
             </table>
@@ -166,7 +167,8 @@
         $.ajax({
             url: '/api/device/screen/{{name}}',
             type: 'POST',
-            data: { data: btoa(imageData) },
+            dataType: 'json',
+            data: { body: btoa(imageData) },
             async: true,
             success: function(result, textStatus, jqXHR) {
                 console.log("Screenshot sent:", result);
