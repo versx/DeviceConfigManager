@@ -14,7 +14,7 @@
                             <div class="col-lg-3">
                                 <div class="list-group">
                                     <a class="list-group-item">
-                                        <h3 class="pull-right"><img src="./img/device.png" width="64" height="64"/></h3>
+                                        <h3 class="pull-right"><img src="./img/device.png" width="48" height="64"/></h3>
                                         <h4 class="list-group-item-heading">{{devices}}</h4>
                                         <p class="list-group-item-text">{{Devices}}</p>
                                     </a>
@@ -44,6 +44,33 @@
                                         <h3 class="pull-right"><img src="./img/logs.png" width="64" height="64"/></h3>
                                         <h4 class="list-group-item-heading">{{logs_size}}</h4>
                                         <p class="list-group-item-text">{{Total Log Size}}</p>
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="card text-center p-1 m-3">
+                <div class="card-header bg-dark text-light text-center"><b>Device Status (Last 15 Minutes)</b></div>
+                <div class="card-body">
+                    <div class="container">
+                        <div class="row">
+                            <div class="col-lg-6">
+                                <div class="list-group">
+                                    <a class="list-group-item">
+                                        <h3 class="pull-right"><img src="./img/online.png" width="48" height="64"/></h3>
+                                        <h4 class="list-group-item-heading">{{devices_online}}</h4>
+                                        <p class="list-group-item-text">Online</p>
+                                    </a>
+                                </div>
+                            </div>
+                            <div class="col-lg-6">
+                                <div class="list-group">
+                                    <a class="list-group-item">
+                                        <h3 class="pull-right"><img src="./img/offline.png" width="48" height="64"/></h3>
+                                        <h4 class="list-group-item-heading">{{devices_offline}}</h4>
+                                        <p class="list-group-item-text">Offline</p>
                                     </a>
                                 </div>
                             </div>

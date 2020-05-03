@@ -21,12 +21,21 @@ You can also pre-create devices and assign configs yourself if needed.
 2.) Install dependencies `npm install`  
 3.) Copy config `cp src/config.example.json src/config.json`  
 4.) Fill out config `vi src/config.json`  
-5.) Run `npm run start`  
+5.) Run `npm start`  
 6.) Access via http://machineip:port/ using username: `root` and password `pass123!`  
 7.) Change default password via the Settings page  
 
-## Notes  
-If you use HAProxy, make sure to set `option forwardfor` in your haproxy.cfg if you are not passing the x-forward-for header so the correct IP addresses are saved.  
+## Updating  
+1.) `git pull`  
+2.) Run `npm install` in root folder  
+3.) Run `npm start`  
+
+## FAQ
+Q.) Why are devices showing my HAProxy IP address?
+A.) You need to make sure to set `option forwardfor` in your haproxy.cfg file under defaults so the `x-forward-for` header is sent with the request and the real IP is used.  
+
+Q.) Why are devices not connecting to backend or sending data to data endpoints?  
+A.) Make sure to **not** include the `/raw` or `/controler` endpoints in the `Backend Url` and `Data Endpoints` config options. These are automatically appended to each URL address.  
 
 ## PM2 (recommended)
 Once everything is setup and running appropriately, you can add this to PM2 ecosystem.config.js file so it is automatically started:  
@@ -46,7 +55,3 @@ module.exports = {
   ]
 };
 ```
-
-## TODO  
-- Support for other macless client provider configs with custom predefined configuration keys.  
-- Localization.  

@@ -1,0 +1,32 @@
+version: '3.2'
+
+services:
+  dcm:
+    image: node:12.16.2-alpine
+    working_dir: /app
+    command:
+      - sh
+      - -c
+      - |
+        npm install
+        npm start
+    volumes:
+      - .:/app
+    ports:
+      - "9991:9991"
+
+  mysql:
+    image: mysql:8
+    command: --default-authentication-plugin=mysql_native_password
+    ports:
+      - "3306:3306"
+    environment:
+      - MYSQL_USER=user123
+      - MYSQL_PASSWORD=pass123
+      - MYSQL_ROOT_PASSWORD=pass123
+      - MYSQL_DATABASE=dcm
+    volumes:
+      - db_data:/var/lib/mysql
+
+volumes:
+  db_data:

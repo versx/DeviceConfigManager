@@ -3,7 +3,6 @@
 const fs = require('fs');
 const path = require('path');
 const utils = require('../utils.js');
-const config = require('../config.json');
 
 const logsDir = path.resolve(__dirname, '../../logs');
 if (!fs.existsSync(logsDir)) {
@@ -16,49 +15,34 @@ class Log {
         this.timestamp = timestamp;
         this.message = message;
     }
-    static getByDevice(uuid) {
+    static async getByDevice(uuid) {
         var name = uuid + '.log';
         var logFile = path.resolve(logsDir, name);
-        if (!fs.existsSync(logFile)) {
+        var exists = await utils.fileExists(logFile);
+        if (!exists) {
             return null;
         }
-        var data = utils.readFile(logFile).split('\r\n');
         var logs = [];
-        data.forEach(function(log) {
-            if (log) {
-                var l = JSON.parse(log);
-                logs.push({
-                    message: l.message,
-                    date: utils.getDateTime(l.timestamp),
-                    uuid: l.uuid
-                });
-            }
-        });
+        var data = await utils.readFile(logFile);
+        var split = data.split('\r\n');
+        if (split) {
+            split.forEach(function(log) {
+                if (log) {
+                    var l = JSON.parse(log);
+                    logs.push({
+                        message: l.message,
+                        date: l.timestamp
+                    });
+                }
+            });
+        }
         return logs;
     }
-    static create(uuid, message) {
+    static async delete(uuid) {
         var name = uuid + '.log';
         var logFile = path.resolve(logsDir, name);
-        if (fs.existsSync(logFile)) {
-            var size = fs.statSync(logFile).size || 0;
-            var maxSize = (config.logging.max_size || 5) * 1024 * 1024;
-            if (size >= maxSize) {
-                this.delete(uuid);
-            }
-        }
-        var msg = {
-            message: message,
-            timestamp: new Date() / 1000,
-            uuid: uuid
-        };
-        fs.appendFile(logFile, JSON.stringify(msg) + '\r\n', function (err) {
-            if (err) throw err;
-        });
-    }
-    static delete(uuid) {
-        var name = uuid + '.log';
-        var logFile = path.resolve(logsDir, name);
-        if (fs.existsSync(logFile)) {
+        var exists = await utils.fileExists(logFile);
+        if (exists) {
             fs.unlinkSync(logFile);
             return true;
         }
@@ -66,27 +50,38 @@ class Log {
     }
     static deleteAll() {
         fs.readdir(logsDir, function(err, files) {
-            if (err) throw err;
+            if (err) {
+                console.error('Failed to find log directory:', logsDir);
+            }
             files.forEach(function(file) {
                 var logFile = path.join(logsDir, file);
                 fs.unlink(logFile, function(err) {
-                    if (err) throw err;
+                    if (err) {
+                        console.error('Failed to delete log file:', logFile);
+                    }
                 });
             });
         });
     }
-    static getTotalSize() {
-        var total = 0;
-        if (!fs.existsSync(logsDir)) {
-            return total;
-        }
-        var logs = fs.readdirSync(logsDir);
-        logs.forEach(function(log) {
-            var logFile = path.join(logsDir, log);
-            var stats = fs.statSync(logFile);
-            total += stats.size;
+    static async getTotalSize() {
+        var exists = await utils.fileExists(logsDir);
+        return new Promise((resolve, reject) => {
+            if (!exists) {
+                return reject(total);
+            }
+            var total = 0;
+            var files = fs.readdirSync(logsDir);
+            if (files) {
+                files.forEach(function(file) {
+                    var logFile = path.resolve(logsDir, file);
+                    var stats = fs.statSync(logFile);
+                    total += stats.size;
+                });
+            } else {
+                return reject();
+            }
+            resolve(total);
         });
-        return total;
     }
 }
 

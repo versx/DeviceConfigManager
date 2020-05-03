@@ -3,9 +3,9 @@
 const path = require('path');
 const fs = require('fs');
 const query = require('./db.js');
-const utils = require('./utils.js');
+const utils = require('../utils.js');
 
-const migrationsDir = path.resolve(__dirname, '../migrations');
+const migrationsDir = path.resolve(__dirname, '../../migrations');
 
 class Migrator {
     constructor() {
@@ -75,7 +75,7 @@ class Migrator {
             var migrateSQL;
             try {
                 var sqlFile = `${migrationsDir}${path.sep}${fromVersion + 1}.sql`;
-                migrateSQL = utils.readFile(sqlFile);
+                migrateSQL = await utils.readFile(sqlFile);
                 migrateSQL.replace('\r', '').replace('\n', '');
             } catch (err) {
                 console.error('[DBController] Migration failed:', err);
@@ -83,7 +83,7 @@ class Migrator {
             }
             var sqlSplit = migrateSQL.split(';');
             sqlSplit.forEach(async sql => {
-                let msql = sql.replace('&semi', ';').trim();
+                var msql = sql.replace('&semi', ';').trim();
                 if (msql !== '') {
                     console.log('[DBController] Executing:', msql);
                     var result = await query(msql)

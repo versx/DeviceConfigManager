@@ -9,11 +9,10 @@
             <a href="/api/log/delete/{{uuid}}" role="button" style="float: right;" class="btn btn-danger" onclick="return confirm('{{Are you sure you want to delete all logs for}} {{uuid}}?');">{{Delete All}}</a>
             <a href="#" role="button" style="float: right;" class="btn btn-primary" onclick="exportLogs()">{{Export All}}</a>
             <br><br>
-            <table id="table" class="table table-{{style}} table-sm table-striped table-bordered table-hover dt-responsive nowrap" style="position: center; width:100%">
+            <table id="table" class="table table-{{style}} table-sm table-striped table-bordered table-hover nowrap" style="position: center; width:100%">
                 <thead class="thead-dark">
                 <tr>
                     <th>{{Date}}</th>
-                    <th>{{UUID}}</th>
                     <th>{{Message}}</th>
                 </tr>
                 </thead>
@@ -35,25 +34,23 @@
         const table = $('#table').DataTable( {
             "ajax": {
                 "url": "/api/logs/{{uuid}}",
-                "dataSrc": "data.logs"
+                "dataSrc": "data.logs",
+                "async": true
             },
             "paging":   true,
             "lengthMenu": [[25, 50, 100, -1], [25, 50, 100, "All"]],
             "pageLength": 100,
             "columns": [
                 { "data": "date" },
-                { "data": "uuid" },
                 { "data": "message" }
             ],
             "info":     true,
             "order": [[ 0, "desc" ]],
             "search.caseInsensitive": true,
             "columnDefs": [ {
-                "targets": [2],
+                "targets": [1],
                 "orderable": false
-            }],
-            "responsive": true,
-            "processing": true
+            }]
         });
         $('#table').on( 'draw.dt', function () {
             setTimeout( function () {

@@ -6,7 +6,17 @@
         <h1 align="center" id="header">{{Devices}}</h1>
         <br>
         <div style="width:90%; margin-left:calc(5%);">
-            <a href="/device/new" role="button" style="float: right;" class="btn btn-success">{{New Device}}</a>
+            <div class="btn-group" role="group" style="float: right;">
+                <button id="actionsDropdown" type="button" class="btn btn-primary dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                    Actions
+                </button>
+                <div class="dropdown-menu" aria-labelledby="actionsDropdown">
+                    <a class="dropdown-item" href="/device/new">{{New Device}}</a>
+                    <button type='button' class="dropdown-item" onclick='sendMassAction("screenshot")'>{{Get All Screenshots}}</button>
+                    <button type='button' class="dropdown-item" onclick='sendMassAction("restart")'>{{Restart All Devices}}</button>
+                </div>
+            </div>
+            <!--<a href="/device/new" role="button" style="float: right;" class="btn btn-success">{{New Device}}</a>-->
             <br><br>
             <table id="table" class="table table-{{style}} table-striped table-bordered table-hover dt-responsive nowrap" style="position: center; width:100%">
                 <thead class="thead-dark">
@@ -17,6 +27,7 @@
                     <th>{{iOS Version}}</th>
                     <th>{{IPA Version}}</th>
                     <th>{{Last Config}}</th>
+                    <th>{{Notes}}</th>
                     <th width="5%"></th>
                 </tr>
                 </thead>
@@ -38,7 +49,8 @@
         const table = $('#table').DataTable( {
             "ajax": {
                 "url": "/api/devices",
-                "dataSrc": "data.devices"
+                "dataSrc": "data.devices",
+                "async": true
             },
             "paging":   true,
             "lengthMenu": [[25, 50, 100, -1], [25, 50, 100, "All"]],
@@ -50,12 +62,13 @@
                 { "data": "ios_version" },
                 { "data": "ipa_version" },
                 { "data": "last_seen" },
+                { "data": "notes" },
                 { "data": "buttons" },
             ],
             "info": true,
             "order": [[ 1, "asc" ]],
             "search.caseInsensitive": true,
-            "columnDefs": [ {
+            "columnDefs": [{
                 "targets": [6],
                 "orderable": false
             }],
@@ -64,7 +77,22 @@
         table.on('draw.dt', function() {
             setTimeout(function () {
                 table.ajax.reload(null, false);
-            }, 5000);
+            }, 30 * 1000);
         });
     });
+    function sendMassAction(action) {
+        $.ajax({
+            url: '/api/devices/mass_action',
+            type: 'POST',
+            data: { 'type': action },
+            async: true,
+            success: function(result, textStatus, jqXHR) {
+                console.log("Action response:", result);
+            },
+            error: function(xhr, textStatus, errorThrown) {
+                console.error('Error:', textStatus);
+                console.error('Error Thrown:', errorThrown);
+            } 
+        });
+    }
 </script>

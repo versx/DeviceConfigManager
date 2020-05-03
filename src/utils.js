@@ -2,9 +2,42 @@
 
 const fs = require('fs');
 
-function readFile(path) {
-    var data = fs.readFileSync(path);
-    return data.toString('utf8');
+async function readFile(path) {
+    return new Promise(function(resolve, reject) {
+        fs.readFile(path, function(err, data) {
+            if (err) {
+                return reject(err);
+            }
+            resolve(data.toString('utf8'));
+        });
+    });
+}
+
+async function fileExists(path) {
+    return new Promise(function(resolve, reject) {
+        try {
+            fs.exists(path, function(exists) {
+                resolve(exists);
+            });
+        } catch (e) {
+            return reject(e);
+        }
+    });
+}
+
+async function fileSize(path) {
+    return new Promise(function(resolve, reject) {
+        try {
+            fs.stat(path, function(err, stats) {
+                if (err) {
+                    return reject(err);
+                }
+                resolve(stats.size);
+            });
+        } catch (e) {
+            return reject(e);
+        }
+    });
 }
 
 function snooze(ms) {
@@ -17,28 +50,33 @@ function getDateTime(timestamp) {
     return d.toLocaleDateString('en-US') + ' ' + d.toLocaleTimeString('en-US'); // TODO: locale
 }
 
-function buildConfig(backendUrl, dataEndpoints, token, heartbeatMaxTime, minDelayLogout,
+function buildConfig(provider, backendUrl, dataEndpoints, token, heartbeatMaxTime, minDelayLogout,
     accountManager, deployEggs, nearbyTracker, autoLogin) {
-    // TODO: Check provider against keys needed (or just assume?) and only return those keys.
-    var obj = {
-        'backend_url': backendUrl,
-        'data_endpoints': (dataEndpoints || '').split(',') || [],
-        'backend_secret_token': token,
-        'heartbeat_max_time': heartbeatMaxTime,
-        'min_delay_logout': minDelayLogout,
-        'account_manager': accountManager,
-        'deploy_eggs': deployEggs,
-        'nearby_tracker': nearbyTracker,
-        'auto_login': autoLogin
-    };
+    var obj = {};
+    switch (provider) {
+    case 'GoCheats':
+        obj = {
+            'backend_url': backendUrl,
+            'data_endpoints': (dataEndpoints || '').split(',') || [],
+            'backend_secret_token': token
+        };
+        break;
+    case 'Kevin':
+        obj = {
+            'backend_url': backendUrl,
+            'data_endpoints': (dataEndpoints || '').split(',') || [],
+            'backend_secret_token': token,
+            'heartbeat_max_time': heartbeatMaxTime,
+            'min_delay_logout': minDelayLogout,
+            'account_manager': accountManager,
+            'deploy_eggs': deployEggs,
+            'nearby_tracker': nearbyTracker,
+            'auto_login': autoLogin
+        };
+        break;
+    }
     var json = JSON.stringify(obj, null, 2);
     return json;
-}
-
-function saveDataAsImage(name, imgData) {
-    var data = imgData.replace(/^data:image\/\w+;base64,/, '');
-    var buf = new Buffer(data, 'base64');
-    fs.writeFileSync('../screenshots/' + name, buf);
 }
 
 function formatBytes(bytes) {
@@ -55,9 +93,10 @@ function formatBytes(bytes) {
 
 module.exports = {
     readFile,
+    fileExists,
+    fileSize,
     snooze,
     getDateTime,
     buildConfig,
-    saveDataAsImage,
     formatBytes
 };

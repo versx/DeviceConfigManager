@@ -5,18 +5,31 @@ const path = require('path');
 const express = require('express');
 const router = express.Router();
 const multer = require('multer');
-const config = require('../config.json');
-const utils = require('../utils.js');
+const request = require('request');
 
 const screenshotsDir = path.resolve(__dirname, '../../screenshots');
 const upload = multer({ dest: screenshotsDir });
 
+const config = require('../config.json');
+const utils = require('../utils.js');
 const Account = require('../models/account.js');
 const Config = require('../models/config.js');
 const Device = require('../models/device.js');
 const Log = require('../models/log.js');
 const ScheduleManager = require('../models/schedule-manager.js');
+const logger = require('../services/logger.js');
 
+router.use(function(req, res, next) {
+    if (req.path === '/api/login' || req.path === '/login' ||
+        req.path === '/config' || req.path === '/log/new') {
+        return next();
+    }
+    if (req.session.loggedin) {
+        next();
+        return;
+    }
+    res.redirect('/login');
+});
 
 // Authentication API Route
 router.post('/login', async function(req, res) {
@@ -76,8 +89,10 @@ router.post('/settings/change_ui', function(req, res) {
     newConfig.title = data.title;
     newConfig.locale = data.locale;
     newConfig.style = data.style;
-    newConfig.logging.enabled = data.logging === 'on';
-    newConfig.logging.max_size = data.max_size;
+    newConfig.logging = {
+        enabled: data.logging === 'on',
+        max_size: data.max_size
+    };
     fs.writeFileSync(path.resolve(__dirname, '../config.json'), JSON.stringify(newConfig, null, 2));
     res.redirect('/settings');
 });
@@ -122,11 +137,43 @@ router.get('/devices', async function(req, res) {
     }
 });
 
+router.post('/devices/mass_action', async function(req, res) {
+    var type = req.body.type;
+    var endpoint = '';
+    switch (type) {
+    case 'screenshot':
+        console.log('Received screenshot mass action');
+        res.send('Received screenshot');
+        endpoint = 'screen';
+        break;
+    case 'restart':
+        console.log('Received restart mass action');
+        res.send('Received restart');
+        endpoint = 'restart';
+        break;
+    default:
+        res.send('Error Occurred');
+    }
+    if (endpoint !== '') {
+        var devices = await Device.getAll();
+        if (devices) {
+            devices.forEach(function(device) {
+                var ip = device.clientip;
+                if (ip) {
+                    var host = `http://${ip}:8080/${endpoint}`;
+                    get(device.uuid, host);
+                }
+            });
+        }
+    }
+});
+
 router.post('/device/new', async function(req, res) {
     var uuid = req.body.uuid;
     var config = req.body.config || null;
     var clientip = req.body.clientip || null;
-    var result = await Device.create(uuid, config, null, clientip);
+    var notes = req.body.notes || null;
+    var result = await Device.create(uuid, config, null, clientip, null, null, notes);
     if (result) {
         // Success
     }
@@ -134,6 +181,7 @@ router.post('/device/new', async function(req, res) {
     res.redirect('/devices');
 });
 
+// Kevin screenshot support
 router.post('/device/:uuid/screen', upload.single('file'), function(req, res) {
     var uuid = req.params.uuid;
     var fileName = uuid + '.png';
@@ -169,6 +217,19 @@ router.post('/device/:uuid/screen', upload.single('file'), function(req, res) {
                 .end('ERROR');
         });
     }
+});
+
+router.post('/device/screen/:uuid', function(req, res) {
+    var uuid = req.params.uuid;
+    console.log('Received screen');
+    var data = Buffer.from(req.body.body, 'base64');
+    var screenshotFile = path.resolve(__dirname, '../../screenshots/' + uuid + '.png');
+    fs.writeFile(screenshotFile, data, function(err) {
+        if (err) {
+            console.error('Failed to save screenshot');
+        }
+    });
+    res.sendStatus(200).end();
 });
 
 router.post('/device/delete/:uuid', async function(req, res) {
@@ -273,6 +334,7 @@ router.post('/config', async function(req, res) {
 
     // Build json config
     var json = utils.buildConfig(
+        c.provider,
         c.backendUrl,
         c.dataEndpoints,
         c.token,
@@ -442,9 +504,17 @@ router.get('/schedule/delete_all', function(req, res) {
 
 
 // Logging API requests
-router.get('/logs/:uuid', function(req, res) {
+router.get('/logs/delete_all', function(req, res) {
+    var result = Log.deleteAll();
+    if (result) {
+        // Success
+    }
+    res.redirect('/settings');
+});
+
+router.get('/logs/:uuid', async function(req, res) {
     var uuid = req.params.uuid;
-    var logs = Log.getByDevice(uuid);
+    var logs = await Log.getByDevice(uuid);
     res.send({
         uuid: uuid,
         data: {
@@ -453,51 +523,65 @@ router.get('/logs/:uuid', function(req, res) {
     });
 });
 
-router.post('/log/new', function(req, res) {
-    if (config.logging.enabled === false) {
+router.post('/log/new', async function(req, res) {
+    if (!config.logging.enabled) {
         // Logs are disabled
         res.send('OK');
         return;
     }
+
+    // REVIEW: Update device last_seen?
     var uuid = req.body.uuid;
     var messages = req.body.messages;
     if (messages) {
-        messages.forEach(function(message) {
-            var result = Log.create(uuid, message);
-            if (result) {
-                // Success
-            }
-            console.log('[SYSLOG]', uuid, ':', message);
-        });
+        for (var i = messages.length - 1; i >= 0; i--) {
+            logger(uuid).info(messages[i]);
+        }
     }
     res.send('OK');
 });
 
-router.get('/log/delete/:uuid', function(req, res) {
+router.get('/log/delete/:uuid', async function(req, res) {
     var uuid = req.params.uuid;
-    var result = Log.delete(uuid);
+    var result = await Log.delete(uuid);
     if (result) {
         // Success
     }
     res.redirect('/device/logs/' + uuid);
 });
 
-router.get('/log/export/:uuid', function(req, res) {
+router.get('/log/export/:uuid', async function(req, res) {
     var uuid = req.params.uuid;
-    var logs = Log.getByDevice(uuid);
     var logText = '';
-    logs.forEach(function(log) {
-        logText += `${log.timestamp} ${log.uuid} ${log.message}\n`;
-    });
+    var logs = await Log.getByDevice(uuid);
+    if (logs) {
+        logs.forEach(function(log) {
+            logText += `${log.timestamp} ${log.uuid} ${log.message}\n`;
+        });
+    }
     res.send(logText);
 });
 
-router.get('/logs/delete_all', function(req, res) {
-    var result = Log.deleteAll();
-    if (result) {
-        // Success
+async function get(uuid, url) {
+    var isScreen = url.includes('/screen');
+    if (isScreen) {
+        var screenshotFile = path.resolve(__dirname, '../../screenshots/' + uuid + '.png');
+        var fileStream = fs.createWriteStream(screenshotFile);
+        request
+            .get(url)
+            .on('error', function(err) {
+                console.error('Failed to get screenshot for', uuid, 'at', url, 'Are you sure the device is up?', err.code);
+            })
+            .pipe(fileStream);
+    } else {
+        request.get(url, function(err) {
+            if (err) {
+                console.error('Error:', err);
+            }
+        }).on('error', function(err) {
+            console.error('Error occurred:', err);
+        });
     }
-    res.redirect('/logs');
-});
+}
 
 module.exports = router;
