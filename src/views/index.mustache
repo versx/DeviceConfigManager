@@ -14,7 +14,7 @@
                             <div class="col-lg-3">
                                 <div class="list-group">
                                     <a class="list-group-item">
-                                        <h3 class="pull-right"><img src="./img/device.png" width="48" height="64"/></h3>
+                                        <h3 class="pull-right"><img src="./img/device.png" width="auto" height="64" class="darkInvert"/></h3>
                                         <h4 class="list-group-item-heading">{{devices}}</h4>
                                         <p class="list-group-item-text">{{Devices}}</p>
                                     </a>
@@ -23,7 +23,7 @@
                             <div class="col-lg-3">
                                 <div class="list-group">
                                     <a class="list-group-item">
-                                        <h3 class="pull-right"><img src="./img/config.png" width="64" height="64"/></h3>
+                                        <h3 class="pull-right"><img src="./img/config.png" width="auto" height="64" class="darkInvert"/></h3>
                                         <h4 class="list-group-item-heading">{{configs}}</h4>
                                         <p class="list-group-item-text">{{Configs}}</p>
                                     </a>
@@ -32,7 +32,7 @@
                             <div class="col-lg-3">
                                 <div class="list-group">
                                     <a class="list-group-item">
-                                        <h3 class="pull-right"><img src="./img/schedule.png" width="64" height="64"/></h3>
+                                        <h3 class="pull-right"><img src="./img/schedule.png" width="auto" height="64" class="darkInvert"/></h3>
                                         <h4 class="list-group-item-heading">{{schedules}}</h4>
                                         <p class="list-group-item-text">{{Schedules}}</p>
                                     </a>
@@ -41,7 +41,7 @@
                             <div class="col-lg-3">
                                 <div class="list-group">
                                     <a class="list-group-item">
-                                        <h3 class="pull-right"><img src="./img/logs.png" width="64" height="64"/></h3>
+                                        <h3 class="pull-right"><img src="./img/logs.png" width="auto" height="64" class="darkInvert"/></h3>
                                         <h4 class="list-group-item-heading">{{logs_size}}</h4>
                                         <p class="list-group-item-text">{{Total Log Size}}</p>
                                     </a>
@@ -59,7 +59,7 @@
                             <div class="col-lg-6">
                                 <div class="list-group">
                                     <a class="list-group-item">
-                                        <h3 class="pull-right"><img src="./img/online.png" width="48" height="64"/></h3>
+                                        <h3 class="pull-right"><img src="./img/online.png" width="auto" height="64"/></h3>
                                         <h4 class="list-group-item-heading">{{devices_online}}</h4>
                                         <p class="list-group-item-text">Online</p>
                                     </a>
@@ -68,7 +68,7 @@
                             <div class="col-lg-6">
                                 <div class="list-group">
                                     <a class="list-group-item">
-                                        <h3 class="pull-right"><img src="./img/offline.png" width="48" height="64"/></h3>
+                                        <h3 class="pull-right"><img src="./img/offline.png" width="auto" height="64"/></h3>
                                         <h4 class="list-group-item-heading">{{devices_offline}}</h4>
                                         <p class="list-group-item-text">Offline</p>
                                     </a>
@@ -80,7 +80,7 @@
             </div>
             <div class="card text-center p-1 m-3">
                 <div class="card-header bg-dark text-light text-center"><b>{{Metadata}}</b></div>
-                <div class="card-body">
+                <div class="card-body text-light">
                     <table id="table" class="table table-{{style}} table-striped table-bordered table-hover dt-responsive nowrap" style="position: center; width:100%">
                         <thead class="thead-dark">
                         <tr>
@@ -108,5 +108,11 @@
         $('body').css('background-color', 'rgb(33, 37, 41)');
         //$('body').css('color', 'rgb(255, 255, 255)');
         $('#header').css('color', 'white');
+        $('.card').css('background-color', '#1a1a1a');
+        $('.list-group-item').css('background-color', 'rgb(33, 37, 41)');
+        $('.list-group-item').css('border-color', 'white');
+        $('.darkInvert').css('filter', 'invert(100%)');
+		$('.card-body').css('color', 'white')
+		
     }
 </script>
