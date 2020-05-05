@@ -30,6 +30,7 @@ router.get(['/', '/index'], async function(req, res) {
         var logsSize = await Log.getTotalSize();
         var delta = 15 * 60;
         var data = defaultData;
+        data.logged_in = true; // TODO: Workaround
         data.metadata = metadata;
         data.devices = devices.length;
         data.configs = configs.length;
@@ -229,8 +230,8 @@ router.get('/settings', function(req, res) {
     data.title = config.title;
     data.host = config.db.host;
     data.port = config.db.port;
-    data.username = config.db.username;
-    data.password = config.db.password;
+    data.db_username = config.db.username;
+    data.db_password = config.db.password;
     data.database = config.db.database;
     data.charset = config.db.charset;
     data.styles = [
