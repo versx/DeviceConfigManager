@@ -180,7 +180,7 @@
                 url: listeners[i],
                 type: 'POST',
                 dataType: 'json',
-                data: { 'type': 'reboot', 'device': '{{name}}' },
+                data: { 'type': 'restart', 'device': '{{name}}' },
                 async: true,
                 success: function (result, textStatus, jqXHR) {
                     console.log("Result:", result);
