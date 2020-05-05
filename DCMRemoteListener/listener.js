@@ -3,6 +3,7 @@
 //------------------------------------------------------------------------------
 NODE_NAME = "Scanner 1";
 LISTENING_PORT = "6542";
+DOMAIN = "YOUR-DOMAIN.TLD"; // * allows all domains
 
 //------------------------------------------------------------------------------
 //  PACKAGE REQUIREMENTS
@@ -15,6 +16,13 @@ const { exec } = require("child_process");
 
 // DEFINE THE EXPRESS SERVER
 var server = express().use(express.json({ limit: "1mb" }));
+
+// DEFINE RESPONSE HEADERS
+server.use(function(req, res, next) {
+  res.header("Access-Control-Allow-Origin", DOMAIN);
+  res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
+  next();
+});
 
 //------------------------------------------------------------------------------
 //  GET LOCAL DEVICE INFORMATION

@@ -172,25 +172,22 @@
     }
 
     function reboot() {
-        // TODO: Get listener urls
-        var listeners = '{{listeners}}'.split(',');
+        var listeners = '{{listeners}}'.replace('&#x2F;', '/') // TODO: No mickey mouse
+                                       .replace('&#x2F;', '/')
+                                       .replace('&#x2F;', '/')
+                                       .split(',');
         console.log("Listeners:", listeners);
         for (var i = 0; i < listeners.length; i++) {
+            var url = listeners[i];
+            var data = JSON.stringify({ 'type': 'restart', 'device': '{{name}}' });
+            console.log('Sending reboot request to remote listener at', url);
             $.ajax({
-                url: listeners[i],
+                url: url,
                 type: 'POST',
                 dataType: 'json',
-                data: { 'type': 'restart', 'device': '{{name}}' },
+                data: data,
                 async: true,
-                success: function (result, textStatus, jqXHR) {
-                    console.log("Result:", result);
-                    $('#reboot').text(result);
-                },
-                error: function(xhr, textStatus, errorThrown) {
-                    $('#reboot').text('Error');
-                    console.error('Error:', textStatus);
-                    console.error('Error Thrown:', errorThrown);
-                } 
+                headers: { 'Accept': 'application/json', 'Content-Type': 'application/json' }
             });
         }
     }
