@@ -43,7 +43,14 @@ class Log {
         var logFile = path.resolve(logsDir, name);
         var exists = await utils.fileExists(logFile);
         if (exists) {
-            fs.unlinkSync(logFile);
+            fs.truncate(logFile, 0, function(err) { 
+                if (err) {
+                    console.error('Failed to clear log file', logFile);
+                } else {
+                    console.log('Cleared', uuid, 'log file.');
+                }
+            });
+            //fs.unlinkSync(logFile);
             return true;
         }
         return false;
@@ -55,11 +62,20 @@ class Log {
             }
             files.forEach(function(file) {
                 var logFile = path.join(logsDir, file);
+                fs.truncate(logFile, 0, function(err) { 
+                    if (err) {
+                        console.error('Failed to clear log file', logFile);
+                    } else {
+                        console.log('Cleared', logFile);
+                    }
+                });
+                /*
                 fs.unlink(logFile, function(err) {
                     if (err) {
                         console.error('Failed to delete log file:', logFile);
                     }
                 });
+                */
             });
         });
     }
