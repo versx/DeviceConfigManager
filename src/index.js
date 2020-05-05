@@ -20,6 +20,9 @@ const defaultData = require('./data/default.js');
 // TODO: Fix devices scroll with DataTables
 // TODO: Secure /api/config endpoint with token
 // TODO: Change require to import
+// TODO: Webhook devices down
+// TODO: Devices down list on front page
+// TODO: Specify clientip for screenshots/manage options
 
 run();
 
