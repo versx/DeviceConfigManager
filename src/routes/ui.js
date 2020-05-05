@@ -92,6 +92,7 @@ router.get('/device/manage/:uuid', async function(req, res) {
     var device = await Device.getByName(uuid);
     var data = defaultData;
     data.name = uuid;
+    data.listeners = config.listeners;
     if (device) {
         if (device.config) {
             var c = await Config.getByName(device.config);
