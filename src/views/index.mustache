@@ -60,7 +60,7 @@
                                 <div class="list-group">
                                     <a class="list-group-item">
                                         <h3 class="pull-right"><img src="./img/online.png" width="auto" height="64"/></h3>
-                                        <h4 class="list-group-item-heading">{{devices_online}}</h4>
+                                        <h4 class="list-group-item-heading">{{devices_online_count}}</h4>
                                         <p class="list-group-item-text">Online</p>
                                     </a>
                                 </div>
@@ -69,13 +69,32 @@
                                 <div class="list-group">
                                     <a class="list-group-item">
                                         <h3 class="pull-right"><img src="./img/offline.png" width="auto" height="64"/></h3>
-                                        <h4 class="list-group-item-heading">{{devices_offline}}</h4>
+                                        <h4 class="list-group-item-heading">{{devices_offline_count}}</h4>
                                         <p class="list-group-item-text">Offline</p>
                                     </a>
                                 </div>
                             </div>
                         </div>
                     </div>
+                </div>
+                <div class="card-header bg-dark text-light text-center"><b>Offline Devices</b></div>
+                <div class="card-body">
+                    <table id="table" class="table table-{{style}} table-striped table-bordered table-hover dt-responsive nowrap" style="position: center; width:100%">
+                        <thead class="thead-dark">
+                        <tr>
+                            <th>{{Name}}</th>
+                            <th>Last Seen</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        {{#devices_offline}}
+                            <tr>
+                                <td>{{uuid}}</td>
+                                <td>{{last_seen}}</td>
+                            </tr>
+                        {{/devices_offline}}
+                        </tbody>
+                    </table>
                 </div>
             </div>
             <div class="card text-center p-1 m-3">

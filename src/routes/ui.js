@@ -36,8 +36,12 @@ router.get(['/', '/index'], async function(req, res) {
         data.configs = configs.length;
         data.schedules = Object.keys(schedules).length;
         data.username = username;
-        data.devices_online = devices.filter(x => x.last_seen >= (Math.round((new Date()).getTime() / 1000) - delta)).length;
-        data.devices_offline = devices.filter(x => x.last_seen < (Math.round((new Date()).getTime() / 1000) - delta)).length;
+        data.devices_offline = devices.filter(x => x.last_seen < (Math.round((new Date()).getTime() / 1000) - delta));
+        data.devices_offline.forEach(function(device) {
+            device.last_seen = utils.getDateTime(device.last_seen);
+        });
+        data.devices_online_count = devices.filter(x => x.last_seen >= (Math.round((new Date()).getTime() / 1000) - delta)).length;
+        data.devices_offline_count = data.devices_offline.length;
         data.logs_size = utils.formatBytes(logsSize);
         res.render('index', data);
     }
