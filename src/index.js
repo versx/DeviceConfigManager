@@ -78,7 +78,7 @@ async function run() {
     
     // Login middleware
     app.use(function(req, res, next) {
-        if (req.path === '/api/login' || req.path === '/login' || req.path === '/api/config') {
+        if (req.path === '/api/login' || req.path === '/login' || req.path === '/api/config' || req.path == '/api/log/new') {
             return next();
         }
         if (req.session.loggedin) {

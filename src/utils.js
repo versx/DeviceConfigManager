@@ -75,7 +75,7 @@ function buildConfig(provider, backendUrl, dataEndpoints, token, heartbeatMaxTim
         };
         break;
     }
-    var json = JSON.stringify(obj, null, 2);
+    var json = JSON.stringify(obj);
     return json;
 }
 

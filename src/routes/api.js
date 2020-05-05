@@ -102,8 +102,8 @@ router.post('/settings/change_db', function(req, res) {
     var newConfig = config;
     newConfig.db.host = data.host;
     newConfig.db.port = data.port;
-    newConfig.db.username = data.username;
-    newConfig.db.password = data.password;
+    newConfig.db.db_username = data.username;
+    newConfig.db.db_password = data.password;
     newConfig.db.database = data.database;
     newConfig.db.charset = data.charset;
     fs.writeFileSync(path.resolve(__dirname, '../config.json'), JSON.stringify(newConfig, null, 2));
@@ -536,6 +536,7 @@ router.post('/log/new', async function(req, res) {
     if (messages) {
         for (var i = messages.length - 1; i >= 0; i--) {
             logger(uuid).info(messages[i]);
+            //console.log('[SYSLOG]', messages[i]);
         }
     }
     res.send('OK');
