@@ -46,6 +46,11 @@
                         <th><div id='restart'></div></th>
                     </tr>
                     <tr>
+                        <th>{{Reboot Device}}</th>
+                        <th><button type='button' class='btn btn-success' onclick='reboot()'>{{REBOOT}}</button></th>
+                        <th><div id='reboot'></div></th>
+                    </tr>
+                    <tr>
                         <th>{{Send Data for Testing}} (WIP)</th>
                         <th>
                             <form action="http://{{clientip}}:8080/data" method="post">
@@ -115,13 +120,14 @@
         var uuid = '{{uuid}}';
         var isScreen = url.includes('/screen');
         var isRestart = url.includes('/restart');
+        var isReboot = url.includes('/reboot');
         $.ajax({
             url: url,
             type: 'GET',
             beforeSend: function (xhr) {
                 xhr.overrideMimeType('text/plain; charset=x-user-defined');
             },
-            dataType: (isScreen || isRestart) ? null : 'json',
+            dataType: (isScreen || isRestart || isReboot) ? null : 'json',
             async: true,
             success: function (result, textStatus, jqXHR) {
                 console.log("Url:", url);
@@ -151,6 +157,8 @@
                     $('#' + id).text(text);
                 } else if (isRestart) {
                     $('#' + id).text('Restarted');
+                } else if (isReboot) {
+                    $('#' + id).text('Rebooted');
                 } else {
                     $('#' + id).text(JSON.stringify(result, null, 2));
                 }
@@ -161,6 +169,30 @@
                 console.error('Error Thrown:', errorThrown);
             } 
         });
+    }
+
+    function reboot() {
+        // TODO: Get listener urls
+        var listeners = '{{listeners}}'.split(',');
+        console.log("Listeners:", listeners);
+        for (var i = 0; i < listeners.length; i++) {
+            $.ajax({
+                url: listeners[i],
+                type: 'POST',
+                dataType: 'json',
+                data: { 'type': 'reboot', 'device': '{{name}}' },
+                async: true,
+                success: function (result, textStatus, jqXHR) {
+                    console.log("Result:", result);
+                    $('#reboot').text(result);
+                },
+                error: function(xhr, textStatus, errorThrown) {
+                    $('#reboot').text('Error');
+                    console.error('Error:', textStatus);
+                    console.error('Error Thrown:', errorThrown);
+                } 
+            });
+        }
     }
 
     function sendImageData(id, imageData) {

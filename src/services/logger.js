@@ -16,13 +16,13 @@ function getLogger(name) {
     var logFilePath = path.resolve(logsDir, name + '.log');
     var options = {
         file: {
-            //level: 'info',
+            level: 'info',
             filename: logFilePath,
             handleExceptions: true,
             json: true,
             maxsize: config.logging.max_size * 1024 * 1024, // 5MB
             maxFiles: 1,
-            //colorize: true,
+            colorize: true,
             timestamp: true
         }
     };
