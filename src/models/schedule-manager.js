@@ -112,7 +112,8 @@ class ScheduleManager {
     static async triggerSchedule(schedule, config) {
         console.log('Running schedule for', schedule, 'to assign config', config);
         if (schedule.uuids) {
-            schedule.uuids.forEach(async function(uuid) {
+            var uuids = Array.isArray(schedule.uuids) ? schedule.uuids : [schedule.uuids];
+            uuids.forEach(async function(uuid) {
                 var device = await Device.getByName(uuid);
                 // Check if the device config is not already set to the scheduled config to assign.
                 if (device.config !== config) {
