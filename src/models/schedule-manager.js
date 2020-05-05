@@ -2,7 +2,6 @@
 
 const fs = require('fs');
 const path = require('path');
-const moment = require('moment');
 
 const Device = require('./device.js');
 const utils = require('../utils.js');
@@ -74,7 +73,7 @@ class ScheduleManager {
         return false;
     }
     static async checkSchedules() {
-        var now = todaySeconds();
+        var now = utils.todaySeconds();
         if (lastUpdate === -2) {
             utils.snooze(5000);
             lastUpdate = parseInt(now);
@@ -86,8 +85,8 @@ class ScheduleManager {
         var schedules = ScheduleManager.getAll();
         var values = Object.values(schedules);
         values.forEach(async function(schedule) {
-            var startTimeSeconds = timeToSeconds(schedule.start_time);
-            var endTimeSeconds = timeToSeconds(schedule.end_time);
+            var startTimeSeconds = utils.timeToSeconds(schedule.start_time);
+            var endTimeSeconds = utils.timeToSeconds(schedule.end_time);
             console.log('Now:', now, 'Last Update:', lastUpdate, 'Start:', startTimeSeconds, 'End:', endTimeSeconds);
             console.log('Triggering schedule', schedule.name, 'in', startTimeSeconds - now, 'seconds');
             if (schedule.enabled) {
@@ -128,34 +127,6 @@ class ScheduleManager {
                 }
             });
         }
-    }
-}
-
-function timeToSeconds(time) {
-    if (time) {
-        var split = time.split(':');
-        if (split.length === 3) {
-            var hours = parseInt(split[0]);
-            var minutes = parseInt(split[1]);
-            var seconds = parseInt(split[2]);
-            var timeNew = parseInt(hours * 3600 + minutes * 60 + seconds);
-            return timeNew;
-        }
-    }
-    return 0;
-}
-
-function todaySeconds() {
-    var date = moment();
-    var formattedDate = date.format('HH:mm:ss');
-    var split = formattedDate.split(':');
-    if (split.length >= 3) {
-        var hour = parseInt(split[0]) || 0;
-        var minute = parseInt(split[1]) || 0;
-        var second = parseInt(split[2]) || 0;
-        return hour * 3600 + minute * 60 + second;
-    } else {
-        return 0;
     }
 }
 

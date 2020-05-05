@@ -5,7 +5,6 @@ const csrf = require('csurf');
 const cookieParser = require('cookie-parser');
 const express = require('express');
 const session = require('express-session');
-const bodyParser = require('body-parser');
 const app = express();
 const mustacheExpress = require('mustache-express');
 const i18n = require('i18n');
@@ -16,6 +15,10 @@ const Migrator = require('./services/migrator.js');
 const apiRoutes = require('./routes/api.js');
 const uiRoutes = require('./routes/ui.js');
 const defaultData = require('./data/default.js');
+
+const DeviceMonitor = require('./services/device-monitor.js');
+
+DeviceMonitor.checkDevices();
 
 // TODO: Fix devices scroll with DataTables
 // TODO: Secure /api/config endpoint with token
@@ -44,8 +47,8 @@ async function run() {
     app.use('/screenshots', express.static(path.resolve(__dirname, '../screenshots')));
 
     // Body parser middlewares
-    app.use(bodyParser.json());
-    app.use(bodyParser.urlencoded({ extended: false, limit: '50mb' })); // for parsing application/x-www-form-urlencoded
+    app.use(express.json());
+    app.use(express.urlencoded({ extended: true }));
 
     // Initialize localzation handler
     i18n.configure({
