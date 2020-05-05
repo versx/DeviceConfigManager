@@ -83,13 +83,15 @@
                         <thead class="thead-dark">
                         <tr>
                             <th>{{Name}}</th>
-                            <th>Last Seen</th>
+                            <th>{{Config}}</th>
+                            <th>{{Last Config}}</th>
                         </tr>
                         </thead>
                         <tbody>
                         {{#devices_offline}}
                             <tr>
                                 <td>{{uuid}}</td>
+                                <td>{{config}}</td>
                                 <td>{{last_seen}}</td>
                             </tr>
                         {{/devices_offline}}

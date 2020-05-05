@@ -1,6 +1,7 @@
 'use strict';
 
 const fs = require('fs');
+const moment = require('moment');
 
 async function readFile(path) {
     return new Promise(function(resolve, reject) {
@@ -91,6 +92,34 @@ function formatBytes(bytes) {
     return (bytes / Math.pow(1024, index)).toFixed(1) + ' ' + sizes[index];
 }
 
+function timeToSeconds(time) {
+    if (time) {
+        var split = time.split(':');
+        if (split.length === 3) {
+            var hours = parseInt(split[0]);
+            var minutes = parseInt(split[1]);
+            var seconds = parseInt(split[2]);
+            var timeNew = parseInt(hours * 3600 + minutes * 60 + seconds);
+            return timeNew;
+        }
+    }
+    return 0;
+}
+
+function todaySeconds() {
+    var date = moment();
+    var formattedDate = date.format('HH:mm:ss');
+    var split = formattedDate.split(':');
+    if (split.length >= 3) {
+        var hour = parseInt(split[0]) || 0;
+        var minute = parseInt(split[1]) || 0;
+        var second = parseInt(split[2]) || 0;
+        return hour * 3600 + minute * 60 + second;
+    } else {
+        return 0;
+    }
+}
+
 module.exports = {
     readFile,
     fileExists,
@@ -98,5 +127,7 @@ module.exports = {
     snooze,
     getDateTime,
     buildConfig,
-    formatBytes
+    formatBytes,
+    timeToSeconds,
+    todaySeconds
 };
