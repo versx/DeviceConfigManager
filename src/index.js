@@ -23,7 +23,9 @@ DeviceMonitor.checkDevices();
 // TODO: Fix devices scroll with DataTables
 // TODO: Secure /api/config endpoint with token
 // TODO: Change require to import
-// TODO: Webhook devices down
+// TODO: Edit Device page
+// TODO: Only update device IP if null in database
+
 
 run();
 
