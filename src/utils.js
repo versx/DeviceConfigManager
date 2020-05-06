@@ -2,24 +2,24 @@
 
 const fs = require('fs');
 
-function readFile(path) {
-    var data = fs.readFileSync(path);
+const readFile = path => {
+    const data = fs.readFileSync(path);
     return data.toString('utf8');
 }
 
-function snooze(ms) {
+const snooze = ms => {
     return new Promise(resolve => setTimeout(resolve, ms));
 }
 
-function getDateTime(timestamp) {
-    var unixTimestamp = timestamp * 1000;
-    var d = new Date(unixTimestamp);
+const getDateTime = timestamp => {
+    const unixTimestamp = timestamp * 1000;
+    const d = new Date(unixTimestamp);
     return d.toLocaleDateString('en-US') + ' ' + d.toLocaleTimeString('en-US'); // TODO: locale
 }
 
-function buildConfig(backendUrl, dataEndpoints, token, heartbeatMaxTime, minDelayLogout,
-    accountManager, deployEggs, nearbyTracker, autoLogin) {
-    var obj = {
+const buildConfig = (backendUrl, dataEndpoints, token, heartbeatMaxTime, minDelayLogout,
+    accountManager, deployEggs, nearbyTracker, autoLogin) => {
+    const obj = {
         'backend_url': backendUrl,
         'data_endpoints': (dataEndpoints || '').split(',') || [],
         'backend_secret_token': token,
@@ -30,7 +30,7 @@ function buildConfig(backendUrl, dataEndpoints, token, heartbeatMaxTime, minDela
         'nearby_tracker': nearbyTracker,
         'auto_login': autoLogin
     };
-    var json = JSON.stringify(obj, null, 2);
+    const json = JSON.stringify(obj, null, 2);
     return json;
 }
 

@@ -1,8 +1,8 @@
 /*
 "use strict"
 
-var express = require('express')
-var router = express.Router()
+const express = require('express')
+const router = express.Router()
 
 router.get('/', function (req, res) {
 });
@@ -19,8 +19,8 @@ router.get('/device/new', async function(req, res) {
 });
 
 router.get('/device/logs/:uuid', async function(req, res) {
-	var uuid = req.params.uuid;
-	var data = defaultData;
+	const uuid = req.params.uuid;
+	const data = defaultData;
 	data.uuid = uuid;
 	res.render('device-logs', data);
 });

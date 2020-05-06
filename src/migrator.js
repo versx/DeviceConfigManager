@@ -11,8 +11,8 @@ class Migrator {
     constructor() {
     }
     async load() {
-        var count = 1;
-        var done = false;
+        let count = 1;
+        let done = false;
         while (!done) {
             if (query === undefined || query === null) {
                 console.error(`[DBController] Failed to connect to database (as root) while initializing. Try: ${count}/10`);
@@ -26,8 +26,8 @@ class Migrator {
             done = true;
         }
         
-        var version = 0;
-        var createMetadataTableSQL = `
+        let version = 0;
+        const createMetadataTableSQL = `
         CREATE TABLE IF NOT EXISTS metadata (
             \`key\` VARCHAR(50) PRIMARY KEY NOT NULL,
             \`value\` VARCHAR(50) DEFAULT NULL
@@ -39,12 +39,12 @@ class Migrator {
                 process.exit(-1);
             });
         
-        var getDBVersionSQL = `
+        const getDBVersionSQL = `
         SELECT \`value\`
         FROM metadata
         WHERE \`key\` = "DB_VERSION"
         LIMIT 1;`;
-        var results = await query(getDBVersionSQL)
+        const results = await query(getDBVersionSQL)
             .then(x => x)
             .catch(err => {
                 console.error(`[DBController] Failed to get current database version: (${err})`);
@@ -56,13 +56,13 @@ class Migrator {
             version = 0;
         }
     
-        var newestVersion = this.getNewestDbVersion();
+        const newestVersion = this.getNewestDbVersion();
         console.log('[DbController] Current:', version, 'Latest:', newestVersion);
         this.migrate(version, newestVersion);
     }
     static async getEntries() {
-        var sql = 'SELECT `key`, `value` FROM metadata';
-        var results = await query(sql, []);
+        const sql = 'SELECT `key`, `value` FROM metadata';
+        const results = await query(sql, []);
         return results;
     }
     async migrate(fromVersion, toVersion) {
@@ -71,21 +71,21 @@ class Migrator {
             console.log('[DBController] MIGRATION IS ABOUT TO START IN 30 SECONDS, PLEASE MAKE SURE YOU HAVE A BACKUP!!!');
             await utils.snooze(30 * 1000);
             console.log(`[DBController] Migrating database to version ${(fromVersion + 1)}`);
-            var migrateSQL;
+            let migrateSQL;
             try {
-                var sqlFile = `${migrationsDir}${path.sep}${fromVersion + 1}.sql`;
+                const sqlFile = `${migrationsDir}${path.sep}${fromVersion + 1}.sql`;
                 migrateSQL = utils.readFile(sqlFile);
                 migrateSQL.replace('\r', '').replace('\n', '');
             } catch (err) {
                 console.error('[DBController] Migration failed:', err);
                 process.exit(-1);
             }
-            var sqlSplit = migrateSQL.split(';');
+            let sqlSplit = migrateSQL.split(';');
             sqlSplit.forEach(async sql => {
                 let msql = sql.replace('&semi', ';').trim();
                 if (msql !== '') {
                     console.log('[DBController] Executing:', msql);
-                    var result = await query(msql)
+                    const result = await query(msql)
                         .then(x => x)
                         .catch(async err => {
                             console.error('[DBController] Migration failed:', err);
@@ -111,8 +111,8 @@ class Migrator {
                 }
             });
             
-            var newVersion = fromVersion + 1;
-            var updateVersionSQL = `
+            const newVersion = fromVersion + 1;
+            const updateVersionSQL = `
             INSERT INTO metadata (\`key\`, \`value\`)
             VALUES("DB_VERSION", ${newVersion})
             ON DUPLICATE KEY UPDATE \`value\` = ${newVersion};`;
@@ -223,8 +223,8 @@ class Migrator {
         // TODO: Migrator rollback
     }
     getNewestDbVersion() {
-        var current = 0;
-        var keepChecking = true;
+        let current = 0;
+        let keepChecking = true;
         while (keepChecking) {
             if (fs.existsSync(`${migrationsDir}${path.sep}${current + 1}.sql`)) {
                 current++;
@@ -235,13 +235,13 @@ class Migrator {
         return current;
     }
     static async getValueForKey(key) {
-        var sql = `
+        const sql = `
         SELECT value
         FROM metadata
         WHERE \`key\` = ?
         LIMIT 1;`;
-        var args = [key];
-        var results = await query(sql, args)
+        const args = [key];
+        const results = await query(sql, args)
             .then(x => x)
             .catch(err => {
                 console.error('[DbController] Error:', err);
@@ -250,17 +250,17 @@ class Migrator {
         if (results.length === 0) {
             return null;
         }
-        var result = results[0];
+        const [result] = results;
         return result.value;
     }
     static async setValueForKey(key, value) {
-        var sql = `
+        const sql = `
         INSERT INTO metadata (\`key\`, \`value\`)
         VALUES(?, ?)
         ON DUPLICATE KEY UPDATE
         value=VALUES(value);`;
-        var args = [key, value];
-        var results = await query(sql, args)
+        const args = [key, value];
+        const results = await query(sql, args)
             .then(x => x)
             .catch(err => {
                 console.error('[DbController] Error:', err);

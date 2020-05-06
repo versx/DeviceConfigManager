@@ -19,11 +19,10 @@ const ScheduleManager = require('../models/schedule-manager.js');
 
 
 // Authentication API Route
-router.post('/login', async function(req, res) {
-    var username = req.body.username;
-    var password = req.body.password;
+router.post('/login', async (req, res) => {
+    const {username,password} = req.body;
     if (username && password) {
-        var result = await Account.getAccount(username, password);
+        const result = await Account.getAccount(username, password);
         if (result) {
             req.session.loggedin = true;
             req.session.username = username;
@@ -38,11 +37,9 @@ router.post('/login', async function(req, res) {
     res.redirect('/login');
 });
 
-router.post('/account/change_password/:username', async function(req, res) {
-    var username = req.params.username;
-    var oldPassword = req.body.old_password;
-    var password = req.body.password;
-    var password2 = req.body.password2;
+router.post('/account/change_password/:username', async (req, res) => {
+    const username = req.params.username;
+    const {oldPassword, password, password2} = req.body;
     //console.log('Username:', username, 'Old Password:', oldPassword, 'New Password:', password, 'Confirm Password:', password2);
     // TODO: show error
     if (password !== password2) {
@@ -50,10 +47,10 @@ router.post('/account/change_password/:username', async function(req, res) {
         res.redirect('/account');
         return;
     }
-    var exists = await Account.getAccount(username, oldPassword);
+    const exists = await Account.getAccount(username, oldPassword);
     if (exists) {
         // TODO: Update account in database
-        var result = await Account.changePassword(username, oldPassword, password);
+        const result = await Account.changePassword(username, oldPassword, password);
         if (result) {
             // Success
             console.log(`Successfully changed password for user ${username} from ${oldPassword} to ${password}.`);
@@ -70,9 +67,9 @@ router.post('/account/change_password/:username', async function(req, res) {
 
 
 // Settings API Routes
-router.post('/settings/change_ui', function(req, res) {
-    var data = req.body;
-    var newConfig = config;
+router.post('/settings/change_ui', (req, res) => {
+    const data = req.body;
+    const newConfig = config;
     newConfig.title = data.title;
     newConfig.locale = data.locale;
     newConfig.style = data.style;
@@ -81,9 +78,9 @@ router.post('/settings/change_ui', function(req, res) {
     res.redirect('/settings');
 });
 
-router.post('/settings/change_db', function(req, res) {
-    var data = req.body;
-    var newConfig = config;
+router.post('/settings/change_db', (req, res) => {
+    const data = req.body;
+    const newConfig = config;
     newConfig.db.host = data.host;
     newConfig.db.port = data.port;
     newConfig.db.username = data.username;
@@ -96,15 +93,15 @@ router.post('/settings/change_db', function(req, res) {
 
 
 // Device API Routes
-router.get('/devices', async function(req, res) {
+router.get('/devices', async (req, res) => {
     try {
-        var devices = await Device.getAll();
-        devices.forEach(function(device) {
-            var exists = fs.existsSync(path.join(screenshotsDir, device.uuid + '.png'));
+        const devices = await Device.getAll();
+        devices.forEach(device => {
+            const exists = fs.existsSync(path.join(screenshotsDir, device.uuid + '.png'));
             // Device received a config last 15 minutes
-            var delta = 15 * 60;
-            var isOffline = device.last_seen > (Math.round((new Date()).getTime() / 1000) - delta) ? 0 : 1;
-            var image = exists ? `/screenshots/${device.uuid}.png` : (isOffline ? '/img/offline.png' : '/img/online.png');
+            const delta = 15 * 60;
+            const isOffline = device.last_seen > (Math.round((new Date()).getTime() / 1000) - delta) ? 0 : 1;
+            const image = exists ? `/screenshots/${device.uuid}.png` : (isOffline ? '/img/offline.png' : '/img/online.png');
             device.image = `<a href='${image}' target='_blank'><img src='${image}' width='72' height='96'/></a>`;
             device.last_seen = utils.getDateTime(device.last_seen);
             device.buttons = `
@@ -114,18 +111,18 @@ router.get('/devices', async function(req, res) {
                 <a href='/device/logs/${device.uuid}' class='btn btn-secondary'>Logs</a>
             </div>`;
         });
-        var json = JSON.stringify({ data: { devices: devices } });
+        const json = JSON.stringify({ data: { devices: devices } });
         res.send(json);
     } catch (e) {
         console.error('Devices error:', e);
     }
 });
 
-router.post('/device/new', async function(req, res) {
-    var uuid = req.body.uuid;
-    var config = req.body.config || null;
-    var clientip = req.body.clientip || null;
-    var result = await Device.create(uuid, config, null, clientip);
+router.post('/device/new', async (req, res) => {
+    const uuid = req.body.uuid;
+    const config = req.body.config || null;
+    const clientip = req.body.clientip || null;
+    const result = await Device.create(uuid, config, null, clientip);
     if (result) {
         // Success
     }
@@ -133,9 +130,9 @@ router.post('/device/new', async function(req, res) {
     res.redirect('/devices');
 });
 
-router.post('/device/:uuid/screen', upload.single('file'), function(req, res) {
-    var uuid = req.params.uuid;
-    var fileName = uuid + '.png';
+router.post('/device/:uuid/screen', upload.single('file'), (req, res) => {
+    const uuid = req.params.uuid;
+    const fileName = uuid + '.png';
     const tempPath = req.file.path;
     const targetPath = path.join(screenshotsDir, fileName);
     if (!fs.existsSync(screenshotsDir)) {
@@ -146,7 +143,7 @@ router.post('/device/:uuid/screen', upload.single('file'), function(req, res) {
     if (path.extname(req.file.originalname).toLowerCase() === '.png' ||
         path.extname(req.file.originalname).toLowerCase() === '.jpg' ||
         path.extname(req.file.originalname).toLowerCase() === '.jpeg') {
-        fs.rename(tempPath, targetPath, function(err) {
+        fs.rename(tempPath, targetPath, (err) => {
             if (err) {
                 console.error(err);
                 res.status(500)
@@ -159,7 +156,7 @@ router.post('/device/:uuid/screen', upload.single('file'), function(req, res) {
                 .end('OK');
         });
     } else {
-        fs.unlink(tempPath, function(err) {
+        fs.unlink(tempPath, err => {
             if (err) {
                 console.error(err);
             }
@@ -170,9 +167,9 @@ router.post('/device/:uuid/screen', upload.single('file'), function(req, res) {
     }
 });
 
-router.post('/device/delete/:uuid', async function(req, res) {
-    var uuid = req.params.uuid;
-    var result = await Device.delete(uuid);
+router.post('/device/delete/:uuid', async (req, res) => {
+    const uuid = req.params.uuid;
+    const result = await Device.delete(uuid);
     if (result) {
         // Success
     }
@@ -181,31 +178,31 @@ router.post('/device/delete/:uuid', async function(req, res) {
 
 
 // Config API requests
-router.get('/configs', async function(req, res) {
+router.get('/configs', async (req, res) => {
     try {
-        var configs = await Config.getAll();
-        configs.forEach(function(config) {
+        const configs = await Config.getAll();
+        configs.forEach(config => {
             config.is_default = config.is_default ? 'Yes' : 'No';
             config.buttons = `<a href='/config/edit/${config.name}'><button type='button' class='btn btn-primary'>Edit</button></a>
                               <a href='/config/delete/${config.name}'><button type='button'class='btn btn-danger'>Delete</button></a>`;
         });
-        var json = JSON.stringify({ data: { configs: configs } });
+        const json = JSON.stringify({ data: { configs: configs } });
         res.send(json);
     } catch (e) {
         console.error('Configs error:', e);
     }
 });
 
-router.post('/config', async function(req, res) {
-    var data = req.body;
-    var uuid = data.uuid;
-    var iosVersion = data.ios_version;
-    var ipaVersion = data.ipa_version;
-    var device = await Device.getByName(uuid);
-    var noConfig = false;
-    var assignDefault = false;
+router.post('/config', async (req, res) => {
+    const data = req.body;
+    const uuid = data.uuid;
+    const iosVersion = data.ios_version;
+    const ipaVersion = data.ipa_version;
+    let device = await Device.getByName(uuid);
+    let noConfig = false;
+    let assignDefault = false;
     // Check for a proxied IP before the normal IP and set the first one that exists
-    var clientip = ((req.headers['x-forwarded-for'] || '').split(', ')[0]) || (req.connection.remoteAddress).match('[0-9]+.[0-9].+[0-9]+.[0-9]+$')[0];
+    const clientip = ((req.headers['x-forwarded-for'] || '').split(', ')[0]) || (req.connection.remoteAddress).match('[0-9]+.[0-9].+[0-9]+.[0-9]+$')[0];
     console.log('[' + new Date().toLocaleString() + ']', 'Client', uuid, 'at', clientip, 'is requesting a config.');
 
     // Check if device config is empty, if not provide it as json response
@@ -226,7 +223,7 @@ router.post('/config', async function(req, res) {
     } else {
         console.log('Device does not exist, creating...');
         // Device doesn't exist, create db entry
-        var ts = new Date() / 1000;
+        const ts = new Date() / 1000;
         device = await Device.create(uuid, null, ts, clientip, iosVersion, ipaVersion);
         if (device) {
             // Success, assign default config if there is one.
@@ -238,7 +235,7 @@ router.post('/config', async function(req, res) {
     }
 
     if (assignDefault) {
-        var defaultConfig = await Config.getDefault();
+        const defaultConfig = await Config.getDefault();
         if (defaultConfig !== null) {
             console.log('Assigning device', uuid, 'default config', defaultConfig.name);
             device.config = defaultConfig.name;
@@ -251,7 +248,7 @@ router.post('/config', async function(req, res) {
 
     if (noConfig) {
         console.error('No config assigned to device', uuid, 'and no default config to assign!');
-        var noConfigData = {
+        const noConfigData = {
             status: 'error',
             error: 'Device not assigned to config!'
         };
@@ -259,10 +256,10 @@ router.post('/config', async function(req, res) {
         return;
     }
     
-    var c = await Config.getByName(device.config);
+    const c = await Config.getByName(device.config);
     if (c === null) {
         console.error('Failed to grab config', device.config);
-        var noConfigData2 = {
+        const noConfigData2 = {
             status: 'error',
             error: 'Device not assigned to config!'
         };
@@ -270,7 +267,7 @@ router.post('/config', async function(req, res) {
         return;
     }
     // Build json config
-    var json = utils.buildConfig(
+    const json = utils.buildConfig(
         c.backendUrl,
         c.dataEndpoints,
         c.token,
@@ -286,13 +283,13 @@ router.post('/config', async function(req, res) {
     res.send(json);
 });
 
-router.post('/config/assign/:uuid', async function(req, res) {
-    var uuid = req.params.uuid;
-    var config = req.body.config;
-    var device = await Device.getByName(uuid);
+router.post('/config/assign/:uuid', async (req, res) => {
+    const uuid = req.params.uuid;
+    const config = req.body.config;
+    const device = await Device.getByName(uuid);
     if (device) {
         device.config = config;
-        var result = await device.save();
+        const result = await device.save();
         if (result) {
             // Success
         }
@@ -300,9 +297,9 @@ router.post('/config/assign/:uuid', async function(req, res) {
     res.redirect('/devices');
 });
 
-router.post('/config/new', async function(req, res) {
-    var data = req.body;
-    var result = await Config.create(
+router.post('/config/new', async (req, res) => {
+    const data = req.body;
+    const result = await Config.create(
         data.name,
         data.backend_url,
         data.data_endpoints,
@@ -323,10 +320,10 @@ router.post('/config/new', async function(req, res) {
     res.redirect('/configs');
 });
 
-router.post('/config/edit/:name', async function(req, res) {
-    var oldName = req.params.name;
-    var data = req.body;
-    var c = await Config.getByName(oldName);
+router.post('/config/edit/:name', async (req, res) => {
+    const oldName = req.params.name;
+    const data = req.body;
+    const c = await Config.getByName(oldName);
     c.name = data.name;
     c.backendUrl = data.backend_url;
     c.dataEndpoints = data.data_endpoints;
@@ -347,9 +344,9 @@ router.post('/config/edit/:name', async function(req, res) {
     res.redirect('/configs');
 });
 
-router.post('/config/delete/:name', async function(req, res) {
-    var name = req.params.name;
-    var result = await Config.delete(name);
+router.post('/config/delete/:name', async (req, res) => {
+    const name = req.params.name;
+    const result = await Config.delete(name);
     if (result) {
         // Success
     }
@@ -358,11 +355,11 @@ router.post('/config/delete/:name', async function(req, res) {
 
 
 // Schedule API requests
-router.get('/schedules', async function(req, res) {
-    var schedules = ScheduleManager.getAll();
-    var list = Object.values(schedules);
+router.get('/schedules', async (req, res) => {
+    const schedules = ScheduleManager.getAll();
+    const list = Object.values(schedules);
     if (list) {
-        list.forEach(function(schedule) {
+        list.forEach((schedule) => {
             schedule.buttons = `<a href='/schedule/edit/${schedule.name}'><button type='button' class='btn btn-primary'>Edit</button></a>
                                 <a href='/schedule/delete/${schedule.name}'><button type='button'class='btn btn-danger'>Delete</button></a>`;
             schedule.enabled ? 'Yes' : 'No'; // TODO: Fix yes/no doesn't get set
@@ -371,9 +368,9 @@ router.get('/schedules', async function(req, res) {
     res.send({ data: { schedules: list } });
 });
 
-router.post('/schedule/new', function(req, res) {
-    var data = req.body;
-    var result = ScheduleManager.create(
+router.post('/schedule/new', (req, res) => {
+    const data = req.body;
+    const result = ScheduleManager.create(
         data.name,
         data.config,
         data.devices,
@@ -391,18 +388,19 @@ router.post('/schedule/new', function(req, res) {
     res.redirect('/schedules');
 });
 
-router.post('/schedule/edit/:name', function(req, res) {
-    var data = req.body;
-    var oldName = req.params.name;
-    var name = data.name;
-    var config = data.config;
-    var uuids = data.devices;
-    var startTime = data.start_time;
-    var endTime = data.end_time;
-    var timezone = data.timezone;
-    var nextConfig = data.next_config;
-    var enabled = data.enabled === 'on' ? 1 : 0;
-    var result = ScheduleManager.update(oldName, name, config, uuids, startTime, endTime, timezone, nextConfig, enabled);
+router.post('/schedule/edit/:name', (req, res) => {
+    const oldName = req.params.name;
+    const {
+        name,
+        config,
+        devices,
+        start_time,
+        end_time,
+        timezone,
+        next_config
+    } = req.body.data;
+    const enabled = req.body.enabled === 'on' ? 1 : 0;
+    const result = ScheduleManager.update(oldName, name, config, devices, start_time, end_time, timezone, next_config, enabled);
     if (result) {
         console.log('Schedule', name, 'updated');
     } else {
@@ -411,9 +409,9 @@ router.post('/schedule/edit/:name', function(req, res) {
     res.redirect('/schedules');
 });
 
-router.post('/schedule/delete/:name', function(req, res) {
-    var name = req.params.name;
-    var result = ScheduleManager.delete(name);
+router.post('/schedule/delete/:name', (req, res) => {
+    const name = req.params.name;
+    const result = ScheduleManager.delete(name);
     if (result) {
         // Success
         console.log('Schedule', name, 'deleted');
@@ -421,8 +419,8 @@ router.post('/schedule/delete/:name', function(req, res) {
     res.redirect('/schedules');
 });
 
-router.get('/schedule/delete_all', function(req, res) {
-    var result = ScheduleManager.deleteAll();
+router.get('/schedule/delete_all', (req, res) => {
+    const result = ScheduleManager.deleteAll();
     if (result) {
         // Success
         console.log('All schedules deleted');
@@ -432,9 +430,9 @@ router.get('/schedule/delete_all', function(req, res) {
 
 
 // Logging API requests
-router.get('/logs/:uuid', function(req, res) {
-    var uuid = req.params.uuid;
-    var logs = Log.getByDevice(uuid);
+router.get('/logs/:uuid', (req, res) => {
+    const uuid = req.params.uuid;
+    const logs = Log.getByDevice(uuid);
     res.send({
         uuid: uuid,
         data: {
@@ -443,17 +441,17 @@ router.get('/logs/:uuid', function(req, res) {
     });
 });
 
-router.post('/log/new', function(req, res) {
+router.post('/log/new', (req, res) => {
     if (config.logging === false) {
         // Logs are disabled
         res.send('OK');
         return;
     }
-    var uuid = req.body.uuid;
-    var messages = req.body.messages;
+    const uuid = req.body.uuid;
+    const messages = req.body.messages;
     if (messages) {
-        messages.forEach(function(message) {
-            var result = Log.create(uuid, message);
+        messages.forEach(message => {
+            const result = Log.create(uuid, message);
             if (result) {
                 // Success
             }
@@ -463,17 +461,17 @@ router.post('/log/new', function(req, res) {
     res.send('OK');
 });
 
-router.get('/log/delete/:uuid', function(req, res) {
-    var uuid = req.params.uuid;
-    var result = Log.delete(uuid);
+router.get('/log/delete/:uuid', (req, res) => {
+    const uuid = req.params.uuid;
+    const result = Log.delete(uuid);
     if (result) {
         // Success
     }
     res.redirect('/device/logs/' + uuid);
 });
 
-router.get('/logs/delete_all', function(req, res) {
-    var result = Log.deleteAll();
+router.get('/logs/delete_all', (req, res) => {
+    const result = Log.deleteAll();
     if (result) {
         // Success
     }

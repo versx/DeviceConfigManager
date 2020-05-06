@@ -3,7 +3,6 @@
 const path = require('path');
 const express = require('express');
 const session = require('express-session');
-const bodyParser = require('body-parser');
 const app = express();
 const mustacheExpress = require('mustache-express');
 
@@ -30,16 +29,15 @@ const defaultData = {
 };
 
 // Start database migrator
-var dbMigrator = new Migrator();
+const dbMigrator = new Migrator();
 dbMigrator.load();
 
 // Middleware
 app.set('view engine', 'mustache');
 app.set('views', path.resolve(__dirname, 'views'));
 app.engine('mustache', mustacheExpress());
-app.use(bodyParser.json());
-app.use(bodyParser.urlencoded({ extended: false, limit: '50mb' })); // for parsing application/x-www-form-urlencoded
-//app.use(bodyParser.raw({ type: 'application/x-www-form-urlencoded' }));
+app.use(express.json());
+app.use(express.urlencoded({ extended: true })); // for parsing application/x-www-form-urlencoded
 app.use(express.static(path.resolve(__dirname, '../static')));
 app.use('/screenshots', express.static(path.resolve(__dirname, '../screenshots')));
 
@@ -54,7 +52,7 @@ app.use(session({
 app.use('/api', apiRoutes);
 
 // Login middleware
-app.use(function(req, res, next) {
+app.use((req, res, next) => {
     if (req.path === '/api/login' || req.path === '/login' || req.path.includes('/api/config')) {
         return next();
     }
@@ -67,14 +65,14 @@ app.use(function(req, res, next) {
 });
 
 // UI Routes
-app.get(['/', '/index'], async function(req, res) {
+app.get(['/', '/index'], async (req, res) => {
     if (req.session.loggedin) {
-        var username = req.session.username;
-        var devices = await Device.getAll();
-        var configs = await Config.getAll();
-        var schedules = ScheduleManager.getAll();
-        var metadata = await Migrator.getEntries();
-        var data = defaultData;
+        const username = req.session.username;
+        const devices = await Device.getAll();
+        const configs = await Config.getAll();
+        const schedules = ScheduleManager.getAll();
+        const metadata = await Migrator.getEntries();
+        const data = defaultData;
         data.metadata = metadata;
         data.devices = devices.length;
         data.configs = configs.length;
@@ -84,56 +82,56 @@ app.get(['/', '/index'], async function(req, res) {
     }
 });
 
-app.get('/login', function(req, res) {
-    var data = defaultData;
+app.get('/login', (req, res) => {
+    const data = defaultData;
     data.logged_in = false;
     data.username = null;
     res.render('login', data);
 });
 
-app.get('/logout', function(req, res) {
-    req.session.destroy(function(err) {
+app.get('/logout', (req, res) => {
+    req.session.destroy((err) => {
         if (err) throw err;
         res.redirect('/login');
     });
 });
 
-app.get('/account', function(req, res) {
-    var data = defaultData;
+app.get('/account', (req, res) => {
+    const data = defaultData;
     data.username = req.session.username;
     res.render('account', data);
 });
 
 // Device UI Routes
-app.get('/devices', function(req, res) {
+app.get('/devices', (req, res) => {
     res.render('devices', defaultData);
 });
 
-app.get('/device/new', async function(req, res) {
+app.get('/device/new', async (req, res) => {
     res.render('device-new', defaultData);
 });
 
-app.get('/device/logs/:uuid', async function(req, res) {
-    var uuid = req.params.uuid;
-    var data = defaultData;
+app.get('/device/logs/:uuid', async (req, res) => {
+    const uuid = req.params.uuid;
+    const data = defaultData;
     data.uuid = uuid;
     res.render('device-logs', data);
 });
 
-app.get('/device/delete/:uuid', async function(req, res) {
-    var data = defaultData;
+app.get('/device/delete/:uuid', async (req, res) => {
+    const data = defaultData;
     data.uuid = req.params.uuid;
     res.render('device-delete', data);
 });
 
-app.get('/device/manage/:uuid', async function(req, res) {
-    var uuid = req.params.uuid;
-    var device = await Device.getByName(uuid);
-    var data = defaultData;
+app.get('/device/manage/:uuid', async (req, res) => {
+    const uuid = req.params.uuid;
+    const device = await Device.getByName(uuid);
+    const data = defaultData;
     data.name = uuid;
     if (device) {
         if (device.config) {
-            var c = await Config.getByName(device.config);
+            const c = await Config.getByName(device.config);
             if (c === null) {
                 console.error('Failed to grab config', device.config);
                 return;
@@ -151,17 +149,17 @@ app.get('/device/manage/:uuid', async function(req, res) {
 });
 
 // Config UI Routes
-app.get('/configs', function(req, res) {
+app.get('/configs', (req, res) => {
     res.render('configs', defaultData);
 });
 
-app.get('/config/assign/:uuid', async function(req, res) {
-    var uuid = req.params.uuid;
-    var device = await Device.getByName(uuid);
-    var configs = await Config.getAll();
-    var data = defaultData;
+app.get('/config/assign/:uuid', async (req, res) => {
+    const uuid = req.params.uuid;
+    const device = await Device.getByName(uuid);
+    const configs = await Config.getAll();
+    const data = defaultData;
     if (device.config) {
-        configs.forEach(function(cfg) {
+        configs.forEach(cfg => {
             cfg.selected = (device.config === cfg.name);
         });
     } else {
@@ -172,14 +170,14 @@ app.get('/config/assign/:uuid', async function(req, res) {
     res.render('config-assign', data);
 });
 
-app.get('/config/new', function(req, res) {
+app.get('/config/new', (req, res) => {
     res.render('config-new', defaultData);
 });
 
-app.get('/config/edit/:name', async function(req, res) {
-    var name = req.params.name;
-    var c = await Config.getByName(name);
-    var data = defaultData;
+app.get('/config/edit/:name', async (req, res) => {
+    const name = req.params.name;
+    const c = await Config.getByName(name);
+    const data = defaultData;
     data.title = config.title;
     data.old_name = name;
     data.name = c.name;
@@ -196,41 +194,41 @@ app.get('/config/edit/:name', async function(req, res) {
     res.render('config-edit', data);
 });
 
-app.get('/config/delete/:name', function(req, res) {
-    var data = defaultData;
+app.get('/config/delete/:name', (req, res) => {
+    const data = defaultData;
     data.name = req.params.name;
     res.render('config-delete', data);
 });
 
 // Schedule UI Routes
-app.get('/schedules', function(req, res) {
+app.get('/schedules', (req, res) => {
     res.render('schedules', defaultData);
 });
 
-app.get('/schedule/new', async function(req, res) {
-    var data = defaultData;
-    var configs = await Config.getAll();
-    var devices = await Device.getAll();
+app.get('/schedule/new', async (req, res) => {
+    const data = defaultData;
+    const configs = await Config.getAll();
+    const devices = await Device.getAll();
     data.configs = configs;
     data.devices = devices;
     data.timezones = timezones;
     res.render('schedule-new', data);
 });
 
-app.get('/schedule/edit/:name', async function(req, res) {
-    var name = req.params.name;
-    var data = defaultData;
-    var configs = await Config.getAll();
-    var devices = await Device.getAll();
-    var schedule = ScheduleManager.getByName(name);
+app.get('/schedule/edit/:name', async (req, res) => {
+    const name = req.params.name;
+    const data = defaultData;
+    const configs = await Config.getAll();
+    const devices = await Device.getAll();
+    const schedule = ScheduleManager.getByName(name);
     if (configs) {
-        configs.forEach(function(cfg) {
+        configs.forEach(cfg => {
             cfg.selected = cfg.name === schedule.config;
             cfg.next_config_selected = cfg.name === schedule.next_config;
         });
     }
     if (devices) {
-        devices.forEach(function(device) {
+        devices.forEach(device => {
             device.selected = schedule.uuids.includes(device.uuid);
         });
     }
@@ -243,22 +241,22 @@ app.get('/schedule/edit/:name', async function(req, res) {
     data.timezone = schedule.timezone;
     data.next_config = schedule.next_config;
     data.enabled = schedule.enabled === 1 ? 'checked' : '';
-    timezones.forEach(function(timezone) {
+    timezones.forEach(timezone  => {
         timezone.selected = timezone.value === schedule.timezone;
     });
     data.timezones = timezones;
     res.render('schedule-edit', data);
 });
 
-app.get('/schedule/delete/:name', function(req, res) {
-    var data = defaultData;
+app.get('/schedule/delete/:name', (req, res) => {
+    const data = defaultData;
     data.name = req.params.name;
     res.render('schedule-delete', data);
 });
 
 // Settings UI Routes
-app.get('/settings', function(req, res) {
-    var data = defaultData;
+app.get('/settings', (req, res) => {
+    const data = defaultData;
     data.title = config.title;
     data.host = config.db.host;
     data.port = config.db.port;
@@ -270,14 +268,14 @@ app.get('/settings', function(req, res) {
         { 'name': 'dark' },
         { 'name': 'light' }
     ];
-    data.styles.forEach(function(style) {
+    data.styles.forEach(style => {
         style.selected = style.name === config.style;
     });
     data.languages = [
         { 'name': 'en' },
         { 'name': 'es' }
     ];
-    data.languages.forEach(function(locale) {
+    data.languages.forEach(locale => {
         locale.selected = locale.name === config.locale;
     });
     data.logging = config.logging ? 'checked' : '';

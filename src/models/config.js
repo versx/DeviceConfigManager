@@ -18,23 +18,23 @@ class Config {
         this.isDefault = isDefault;
     }
     static async getAll() {
-        var configs = await query('SELECT * FROM configs');
+        const configs = await query('SELECT * FROM configs');
         return configs;
     }
     static async getByName(name) {
-        var sql = `
+        const sql = `
         SELECT backend_url, data_endpoints, token, heartbeat_max_time, min_delay_logout,
                account_manager, deploy_eggs, nearby_tracker, auto_login, is_default
         FROM configs
         WHERE name = ?
         LIMIT 1`;
-        var args = [name];
-        var result = await query(sql, args);
+        const args = [name];
+        const result = await query(sql, args);
         if (result.length === 0) {
             return null;
         }
-        var c = result[0];
-        var data = new Config(
+        const [c] = result;
+        const data = new Config(
             name,
             c.backend_url,
             c.data_endpoints,
@@ -51,34 +51,34 @@ class Config {
     }
     static async create(name, backendUrl, dataEndpoints, token, heartbeatMaxTime, minDelayLogout,
         accountManager, deployEggs, nearbyTracker, autoLogin, isDefault) {
-        var sql = `
+        const sql = `
         INSERT INTO configs (name, backend_url, data_endpoints, token, heartbeat_max_time, min_delay_logout,
                             account_manager, deploy_eggs, nearby_tracker, auto_login, is_default)
         VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`;
-        var args = [name, backendUrl, dataEndpoints, token, heartbeatMaxTime, minDelayLogout,
+        const args = [name, backendUrl, dataEndpoints, token, heartbeatMaxTime, minDelayLogout,
             accountManager, deployEggs, nearbyTracker, autoLogin, isDefault];
-        var result = await query(sql, args);
+        const result = await query(sql, args);
         return result.affectedRows === 1;
     }
     static async delete(name) {
-        var sql = 'DELETE FROM configs WHERE name = ?';
-        var args = [name];
-        var result = await query(sql, args);
+        const sql = 'DELETE FROM configs WHERE name = ?';
+        const args = [name];
+        const result = await query(sql, args);
         return result.affectedRows === 1;
     }
     static async getDefault() {
-        var sql = `
+        const sql = `
         SELECT name, backend_url, data_endpoints, token, heartbeat_max_time, min_delay_logout,
                account_manager, deploy_eggs, nearby_tracker, auto_login, is_default
         FROM configs
         WHERE is_default = 1
         LIMIT 1`;
-        var result = await query(sql, []);
+        const result = await query(sql, []);
         if (result.length === 0) {
             return null;
         }
-        var c = result[0];
-        var data = new Config(
+        const c = result[0];
+        const data = new Config(
             c.name,
             c.backend_url,
             c.data_endpoints,
@@ -94,20 +94,20 @@ class Config {
         return data;
     }
     static async setDefault(name) {
-        var sql = `
+        const sql = `
         UPDATE dcm.configs
         SET is_default = IF(name = ?, 1, 0);`;
-        var args = [name];
-        var result = await query(sql, args);
+        const args = [name];
+        const result = await query(sql, args);
         return result.affectedRows > 0;
     }
     async save(oldName) {
-        var sql = `
+        const sql = `
         UPDATE configs
         SET name=?, backend_url=?, data_endpoints=?, token=?, heartbeat_max_time=?, min_delay_logout=?,
             account_manager=?, deploy_eggs=?, nearby_tracker=?, auto_login=?, is_default=?
         WHERE name=?`;
-        var args = [
+        const args = [
             this.name,
             this.backendUrl,
             this.dataEndpoints,
@@ -121,7 +121,7 @@ class Config {
             this.isDefault,
             oldName
         ];
-        var result = await query(sql, args);
+        const result = await query(sql, args);
         return result.affectedRows === 1;
     }
 }
