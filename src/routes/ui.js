@@ -78,6 +78,27 @@ router.get('/device/new', async function(req, res) {
     res.render('device-new', defaultData);
 });
 
+router.get('/device/edit/:uuid', async function(req, res) {
+    var uuid = req.params.uuid;
+    var data = defaultData;
+    var configs = await Config.getAll();
+    var device = await Device.getByName(uuid);
+    if (device.config) {
+        configs.forEach(function(config) {
+            config.selected = config.name === device.config;
+        });
+    } else {
+        data.nothing_selected = true;
+    }
+    data.configs = configs;
+    data.uuid = device.uuid;
+    data.old_uuid = device.uuid;
+    data.config = device.config;
+    data.clientip = device.clientip;
+    data.notes = device.notes;
+    res.render('device-edit', data);    
+});
+
 router.get('/device/logs/:uuid', async function(req, res) {
     var uuid = req.params.uuid;
     var data = defaultData;
@@ -119,23 +140,6 @@ router.get('/device/manage/:uuid', async function(req, res) {
 // Config UI Routes
 router.get('/configs', function(req, res) {
     res.render('configs', defaultData);
-});
-
-router.get('/config/assign/:uuid', async function(req, res) {
-    var uuid = req.params.uuid;
-    var device = await Device.getByName(uuid);
-    var configs = await Config.getAll();
-    var data = defaultData;
-    if (device.config) {
-        configs.forEach(function(cfg) {
-            cfg.selected = (device.config === cfg.name);
-        });
-    } else {
-        data.nothing_selected = true;
-    }
-    data.configs = configs;
-    data.device = uuid;
-    res.render('config-assign', data);
 });
 
 router.get('/config/new', function(req, res) {

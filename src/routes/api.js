@@ -126,7 +126,7 @@ router.get('/devices', async function(req, res) {
             device.buttons = `
             <div class='btn-group' role='group'>
                 <a href='/device/manage/${device.uuid}' class='btn btn-success'>Manage</a>
-                <a href='/config/assign/${device.uuid}' class='btn btn-primary'>Assign</a>
+                <a href='/device/edit/${device.uuid}' class='btn btn-primary'>Edit</a>
                 <a href='/device/logs/${device.uuid}' class='btn btn-secondary'>Logs</a>
             </div>`;
         });
@@ -178,6 +178,27 @@ router.post('/device/new', async function(req, res) {
         // Success
     }
     console.log('New device result:', result);
+    res.redirect('/devices');
+});
+
+router.post('/device/edit/:uuid', async function(req, res) {
+    var uuid = req.body.uuid;
+    var config = req.body.config || null;
+    var clientip = req.body.clientip || null;
+    var notes = req.body.notes || null;
+    var device = await Device.getByName(uuid);
+    if (device) {
+        device.config = config;
+        device.clientip = clientip;
+        device.notes = notes;
+        var result = await device.save();
+        if (!result) {
+            console.error('Failed to update device', uuid);
+            return;
+        }
+        console.log('Device', uuid, 'updated');
+        // Success
+    }
     res.redirect('/devices');
 });
 
@@ -274,7 +295,10 @@ router.post('/config', async function(req, res) {
     if (device) {
         // Device exists
         device.lastSeen = new Date() / 1000;
-        device.clientip = clientip;
+        // Only update client IP if it hasn't been set yet.
+        if (device.clientip === null) {
+            device.clientip = clientip;
+        }
         device.iosVersion = iosVersion;
         device.ipaVersion = ipaVersion;
         device.save();
@@ -348,20 +372,6 @@ router.post('/config', async function(req, res) {
     );
     console.log(uuid, 'config response:', json);
     res.send(json);
-});
-
-router.post('/config/assign/:uuid', async function(req, res) {
-    var uuid = req.params.uuid;
-    var config = req.body.config;
-    var device = await Device.getByName(uuid);
-    if (device) {
-        device.config = config;
-        var result = await device.save();
-        if (result) {
-            // Success
-        }
-    }
-    res.redirect('/devices');
 });
 
 router.post('/config/new', async function(req, res) {

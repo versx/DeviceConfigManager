@@ -1,0 +1,44 @@
+<!DOCTYPE html="{{locale}}">
+    {{> header}}
+    <body>
+        {{> navbar}}
+        <br>
+        <h1 align="center" id="header">{{Edit Device}} {{old_uuid}}</h1>
+        <br>
+        <div class="w-75" style="float: none; margin: 0 auto;">
+            <form action="/api/device/edit/{{old_uuid}}" method="post">
+                <div class="form-group">
+                    {{UUID}}
+                    <input type="text" class="form-control" name="uuid" value="{{old_uuid}}" placeholder="iPhone1" readonly required>
+                </div>
+                <div class="form-group">
+                    {{Select Device Config}}
+                    <select class="form-control" name="config">
+                        <option value="" selected disabled hidden>{{Choose a Config}}</option>
+                        {{#configs}}
+                            <option value="{{name}}" {{#selected}}selected{{/selected}}>{{name}}</option>
+                        {{/configs}}
+                    </select>
+                </div>
+                <div class="form-group">
+                    {{Device IP}}
+                    <input type="text" class="form-control" name="clientip" value="{{clientip}}" placeholder="192.168.1.2">
+                </div>
+                <div class="form-group">
+                    {{Notes}}
+                    <input type="text" class="form-control" name="notes" value="{{notes}}" placeholder="">
+                </div>
+                <br>
+                <button type="submit" class="btn btn-primary">{{Save}}</button>
+                <br>
+            </form>
+        </div>
+    </body>
+</html>
+
+<script>
+    if ("{{style}}" === 'dark') {
+        $('body').css('background-color', 'rgb(33, 37, 41)');
+        $('body').css('color', 'rgb(255, 255, 255)');
+    }
+</script>

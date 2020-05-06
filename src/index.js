@@ -23,9 +23,8 @@ DeviceMonitor.checkDevices();
 // TODO: Fix devices scroll with DataTables
 // TODO: Secure /api/config endpoint with token
 // TODO: Change require to import
-// TODO: Edit Device page
-// TODO: Only update device IP if null in database
 // TODO: DCM logs/troubleshoot page
+// TODO: Check schedules switching shortly after
 
 
 run();
@@ -91,14 +90,7 @@ async function run() {
         if (req.session.loggedin) {
             defaultData.logged_in = true;
             return next();
-            //return;
         }
-        /*
-        if (defaultData.csrf === req.csrfToken()) {
-            //console.log("TOKEN GOOD");
-            return next();
-        }
-        */
         res.redirect('/login');
     });
 
