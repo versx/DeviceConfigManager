@@ -24,7 +24,7 @@ class Log {
         }
         var logs = [];
         var data = await utils.readFile(logFile);
-        var split = data.split('\r\n');
+        var split = data.split('\n');
         if (split) {
             split.forEach(function(log) {
                 if (log) {
