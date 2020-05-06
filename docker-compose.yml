@@ -12,6 +12,8 @@ services:
         npm start
     volumes:
       - .:/app
+      - screenshots:/screenshots
+      - logs:/logs
     ports:
       - "9991:9991"
 
@@ -30,3 +32,5 @@ services:
 
 volumes:
   db_data:
+  screenshots:
+  logs:
