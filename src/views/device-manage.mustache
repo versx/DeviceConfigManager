@@ -16,33 +16,38 @@
                 </thead>
                 <tbody>
                     <tr>
+                        <th>Device IP Address</th>
+                        <th><input id='client_ip' type="text" class="form-control" name="clientip" value="{{clientip}}"></th>
+                        <th></th>
+                    </tr>
+                    <tr>
                         <th>{{Get Screenshot}}</th>
-                        <th><button type='button' class='btn btn-success' onclick='get("http://{{clientip}}:8080/screen", "screenshot")'>{{GET}}</button></th>
-                        <th><img id='screenshot' src=''/></div></th>
+                        <th><button type='button' class='btn btn-success' onclick='get("screen")'>{{GET}}</button></th>
+                        <th><img id='screen' src=''/></div></th>
                     </tr>
                     <tr>
                         <th>{{Get Current Location}}</th>
-                        <th><button type='button' class='btn btn-success' onclick='get("http://{{clientip}}:8080/loc", "location")'>{{GET}}</button></th>
-                        <th><div id='location'></div></th>
+                        <th><button type='button' class='btn btn-success' onclick='get("loc")'>{{GET}}</button></th>
+                        <th><div id='loc'></div></th>
                     </tr>
                     <tr>
                         <th>{{Get Current Config Data}}</th>
-                        <th><button type='button' class='btn btn-success' onclick='get("http://{{clientip}}:8080/config", "config")'>{{GET}}</button></th>
+                        <th><button type='button' class='btn btn-success' onclick='get("config")'>{{GET}}</button></th>
                         <th><div id='config'></div></th>
                     </tr>
                     <tr>
                         <th>{{Get Current Account Data}}</th>
-                        <th><button type='button' class='btn btn-success' onclick='get("http://{{clientip}}:8080/account", "account")'>{{GET}}</button></th>
+                        <th><button type='button' class='btn btn-success' onclick='get("account")'>{{GET}}</button></th>
                         <th><div id='account'></div></th>
                     </tr>
                     <tr>
                         <th>{{Get System Information Data}}</th>
-                        <th><button type='button' class='btn btn-success' onclick='get("http://{{clientip}}:8080/system_info", "system_info")'>{{GET}}</button></th>
+                        <th><button type='button' class='btn btn-success' onclick='get("system_info")'>{{GET}}</button></th>
                         <th><div id='system_info'></div></th>
                     </tr>
                     <tr>
                         <th>{{Restart Game}}</th>
-                        <th><button type='button' class='btn btn-success' onclick='get("http://{{clientip}}:8080/restart", "restart")'>{{RESTART}}</button></th>
+                        <th><button type='button' class='btn btn-success' onclick='get("restart")'>{{RESTART}}</button></th>
                         <th><div id='restart'></div></th>
                     </tr>
                     <tr>
@@ -100,7 +105,7 @@
                     </tr>
                     <tr>
                         <th>{{Delete Device}}</th>
-                        <th><button type='button' class='btn btn-danger'><a href='/device/delete/{{name}}'>{{DELETE}}</a></button></th>
+                        <th><button type='button' class='btn btn-danger'><a href='/device/delete/{{name}}' onclick='return confirm("Are you sure you want to delete device {{name}}?")'>{{DELETE}}</a></button></th>
                         <th></th>
                     </tr>
                 </tbody>
@@ -116,18 +121,19 @@
         //$('#header').css('color', 'white');
     }
 
-    function get(url, id) {
+    function get(id) {
+        var clientip = $('#client_ip').val();
+        var url = `http://${clientip}:8080/${id}`;
         var uuid = '{{uuid}}';
         var isScreen = url.includes('/screen');
         var isRestart = url.includes('/restart');
-        var isReboot = url.includes('/reboot');
         $.ajax({
             url: url,
             type: 'GET',
             beforeSend: function (xhr) {
                 xhr.overrideMimeType('text/plain; charset=x-user-defined');
             },
-            dataType: (isScreen || isRestart || isReboot) ? null : 'json',
+            dataType: (isScreen || isRestart) ? null : 'json',
             async: true,
             success: function (result, textStatus, jqXHR) {
                 console.log("Url:", url);
@@ -172,25 +178,30 @@
     }
 
     function reboot() {
-        // TODO: Get listener urls
-        var listeners = '{{listeners}}'.split(',');
+        var listeners = '{{listeners}}'.replace('&#x2F;', '/') // TODO: No mickey mouse
+                                       .replace('&#x2F;', '/')
+                                       .replace('&#x2F;', '/')
+                                       .split(',');
         console.log("Listeners:", listeners);
         for (var i = 0; i < listeners.length; i++) {
+            var url = listeners[i];
+            var data = JSON.stringify({ 'type': 'restart', 'device': '{{name}}' });
+            console.log('Sending reboot request to remote listener at', url);
             $.ajax({
-                url: listeners[i],
+                url: url,
                 type: 'POST',
                 dataType: 'json',
-                data: { 'type': 'reboot', 'device': '{{name}}' },
+                data: data,
                 async: true,
-                success: function (result, textStatus, jqXHR) {
-                    console.log("Result:", result);
-                    $('#reboot').text(result);
+                headers: { 'Accept': 'application/json', 'Content-Type': 'application/json' },
+                success: function(data) {
+                    $('#reboot').text('Rebooted');
+                    console.log("Sent restart command to remote listener", url);
                 },
-                error: function(xhr, textStatus, errorThrown) {
+                error: function(err) {
                     $('#reboot').text('Error');
-                    console.error('Error:', textStatus);
-                    console.error('Error Thrown:', errorThrown);
-                } 
+                    console.error("Failed to send restart command to remote listener", url, "Error:", err);
+                }
             });
         }
     }

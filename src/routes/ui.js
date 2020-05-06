@@ -36,8 +36,12 @@ router.get(['/', '/index'], async function(req, res) {
         data.configs = configs.length;
         data.schedules = Object.keys(schedules).length;
         data.username = username;
-        data.devices_online = devices.filter(x => x.last_seen >= (Math.round((new Date()).getTime() / 1000) - delta)).length;
-        data.devices_offline = devices.filter(x => x.last_seen < (Math.round((new Date()).getTime() / 1000) - delta)).length;
+        data.devices_offline = devices.filter(x => x.last_seen < (Math.round((new Date()).getTime() / 1000) - delta));
+        data.devices_offline.forEach(function(device) {
+            device.last_seen = utils.getDateTime(device.last_seen);
+        });
+        data.devices_online_count = devices.filter(x => x.last_seen >= (Math.round((new Date()).getTime() / 1000) - delta)).length;
+        data.devices_offline_count = data.devices_offline.length;
         data.logs_size = utils.formatBytes(logsSize);
         res.render('index', data);
     }
@@ -72,6 +76,27 @@ router.get('/device/new', async function(req, res) {
     var data = defaultData;
     data.configs = await Config.getAll();
     res.render('device-new', defaultData);
+});
+
+router.get('/device/edit/:uuid', async function(req, res) {
+    var uuid = req.params.uuid;
+    var data = defaultData;
+    var configs = await Config.getAll();
+    var device = await Device.getByName(uuid);
+    if (device.config) {
+        configs.forEach(function(config) {
+            config.selected = config.name === device.config;
+        });
+    } else {
+        data.nothing_selected = true;
+    }
+    data.configs = configs;
+    data.uuid = device.uuid;
+    data.old_uuid = device.uuid;
+    data.config = device.config;
+    data.clientip = device.clientip;
+    data.notes = device.notes;
+    res.render('device-edit', data);    
 });
 
 router.get('/device/logs/:uuid', async function(req, res) {
@@ -115,23 +140,6 @@ router.get('/device/manage/:uuid', async function(req, res) {
 // Config UI Routes
 router.get('/configs', function(req, res) {
     res.render('configs', defaultData);
-});
-
-router.get('/config/assign/:uuid', async function(req, res) {
-    var uuid = req.params.uuid;
-    var device = await Device.getByName(uuid);
-    var configs = await Config.getAll();
-    var data = defaultData;
-    if (device.config) {
-        configs.forEach(function(cfg) {
-            cfg.selected = (device.config === cfg.name);
-        });
-    } else {
-        data.nothing_selected = true;
-    }
-    data.configs = configs;
-    data.device = uuid;
-    res.render('config-assign', data);
 });
 
 router.get('/config/new', function(req, res) {
