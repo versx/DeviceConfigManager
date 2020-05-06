@@ -25,6 +25,7 @@ DeviceMonitor.checkDevices();
 // TODO: Change require to import
 // TODO: Edit Device page
 // TODO: Only update device IP if null in database
+// TODO: DCM logs/troubleshoot page
 
 
 run();
