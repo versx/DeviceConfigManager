@@ -25,7 +25,6 @@ DeviceMonitor.checkDevices();
 // TODO: Change require to import
 // TODO: DCM logs/troubleshoot page
 // TODO: Check schedules switching shortly after
-// TODO: Test docker and create /screenshots and /logs volumes
 // TODO: Front page counts click to pages
 
 

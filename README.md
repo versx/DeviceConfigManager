@@ -24,7 +24,7 @@ You can also pre-create devices and assign configs yourself if needed.
 5.) Run `npm start`  
 6.) Access via http://machineip:port/ using username: `root` and password `pass123!`  
 7.) Change default password via the Settings page  
-8.) (Optional) Setup DCMRemoteListener on the machines the phones are running on to restart the actual device.  
+8.) (Optional) Setup DCMRemoteListener on the machines the phones are running on to restart the actual device. [DCMRemoteListener](https://github.com/versx/DCMRemoteListener)  
 
 ## Updating  
 1.) `git pull`  
