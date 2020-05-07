@@ -25,7 +25,8 @@ DeviceMonitor.checkDevices();
 // TODO: Change require to import
 // TODO: DCM logs/troubleshoot page
 // TODO: Check schedules switching shortly after
-// TODO: Front page counts click to pages
+// TODO: Reboot devices based on config
+// TODO: Make schedules for 00:00:00 to 00:00:01
 
 
 run();
