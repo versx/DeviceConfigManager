@@ -25,6 +25,8 @@ DeviceMonitor.checkDevices();
 // TODO: Change require to import
 // TODO: DCM logs/troubleshoot page
 // TODO: Reboot devices based on config
+// TODO: Show image timestamp
+// TODO: Screenshot/icon toggle
 
 
 run();

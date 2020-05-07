@@ -120,7 +120,7 @@ router.get('/devices', async function(req, res) {
             // Device received a config last 15 minutes
             var delta = 15 * 60;
             var isOffline = device.last_seen > (Math.round((new Date()).getTime() / 1000) - delta) ? 0 : 1;
-            var image = exists ? `/screenshots/${device.uuid}.png` : (isOffline ? '/img/offline.png' : '/img/online.png');
+            var image = isOffline ? '/img/offline.png' : (exists ? `/screenshots/${device.uuid}.png` : '/img/online.png');
             device.image = `<a href='${image}' target='_blank'><img src='${image}' width='96' height='96' style='margin-left: auto;margin-right: auto;display: block;'/></a>`;
             device.last_seen = utils.getDateTime(device.last_seen);
             device.buttons = `
