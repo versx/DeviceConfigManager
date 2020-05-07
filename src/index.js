@@ -52,7 +52,7 @@ async function run() {
 
     // Body parser middlewares
     app.use(express.json());
-    app.use(express.urlencoded({ extended: true }));
+    app.use(express.urlencoded({ extended: true, limit: '50mb' }));
 
     // Initialize localzation handler
     i18n.configure({

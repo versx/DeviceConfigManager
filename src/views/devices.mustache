@@ -14,9 +14,14 @@
                     <a class="dropdown-item" href="/device/new">{{New Device}}</a>
                     <button type='button' class="dropdown-item" onclick='sendMassAction("screenshot")'>{{Get All Screenshots}}</button>
                     <button type='button' class="dropdown-item" onclick='sendMassAction("restart")'>{{Restart All Devices}}</button>
+                    <div class="dropdown-divider"></div>
+                    <div class="form-check dropdown-item">
+                        <input type="checkbox" class="form-check-input" name="enable_screenshots" checked>
+                        <label class="form-check-label" for="enable_screenshots">Show Screenshots</label>
+                    </div>
                 </div>
             </div>
-            <!--<a href="/device/new" role="button" style="float: right;" class="btn btn-success">{{New Device}}</a>-->
+
             <br><br>
             <table id="table" class="table table-{{style}} table-striped table-bordered table-hover dt-responsive nowrap" style="position: center; width:100%">
                 <thead class="thead-dark">
