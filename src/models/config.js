@@ -72,7 +72,7 @@ class Config {
                             logging_url, logging_port, account_manager, deploy_eggs, nearby_tracker, auto_login, is_default)
         VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`;
         var args = [name, provider, backendUrl, dataEndpoints, token, heartbeatMaxTime, minDelayLogout,
-            loggingUrl, loggingPort, accountManager, deployEggs, nearbyTracker, autoLogin, isDefault];
+            loggingUrl || null, loggingPort || null, accountManager, deployEggs, nearbyTracker, autoLogin, isDefault];
         var result = await query(sql, args);
         return result.affectedRows === 1;
     }
@@ -134,8 +134,8 @@ class Config {
             this.token,
             this.heartbeatMaxTime,
             this.minDelayLogout,
-            this.loggingUrl,
-            this.loggingPort,
+            this.loggingUrl || null,
+            this.loggingPort || null,
             this.accountManager,
             this.deployEggs,
             this.nearbyTracker,
