@@ -36,8 +36,13 @@
                 "dataSrc": "data.logs",
                 "async": true
             },
+            "fixedHeader": {
+                "header": true,
+                "headerOffset": $('.navbar').height() + 15
+            },
+            "colReorder": true,
             "stateSave": true,
-            "paging": true,
+            "paging":   true,
             "lengthMenu": [[25, 50, 100, -1], [25, 50, 100, "All"]],
             "pageLength": 100,
             "columns": [
