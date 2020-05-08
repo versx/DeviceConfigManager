@@ -52,7 +52,7 @@ function getDateTime(timestamp) {
 }
 
 function buildConfig(provider, backendUrl, dataEndpoints, token, heartbeatMaxTime, minDelayLogout,
-    accountManager, deployEggs, nearbyTracker, autoLogin) {
+    loggingUrl, loggingPort, accountManager, deployEggs, nearbyTracker, autoLogin) {
     var obj = {};
     switch (provider) {
     case 'GoCheats':
@@ -75,6 +75,18 @@ function buildConfig(provider, backendUrl, dataEndpoints, token, heartbeatMaxTim
             'auto_login': autoLogin
         };
         break;
+    case 'AI':
+        obj = {
+            'backend_url': backendUrl,
+            'data_endpoints': (dataEndpoints || '').split(',') || [],
+            'backend_secret_token': token,
+            'min_delay_logout': minDelayLogout,
+            'logging_url': loggingUrl,
+            'logging_port': loggingPort,
+            'account_manager': accountManager,
+            'deploy_eggs': deployEggs,
+            'nearby_tracker': nearbyTracker
+        };
     }
     var json = JSON.stringify(obj);
     return json;
