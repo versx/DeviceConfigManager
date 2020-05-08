@@ -34,7 +34,6 @@
     if ("{{style}}" === 'dark') {
         $('body').css('background-color', 'rgb(33, 37, 41)');
         $('body').css('color', 'rgb(255, 255, 255)');
-        //$('#header').css('color', 'white');
     }
     $(document).ready(function() {
         const table = $('#table').DataTable( {
@@ -69,7 +68,7 @@
         $('#table').on( 'draw.dt', function () {
             setTimeout( function () {
                 table.ajax.reload(null, false);
-            }, 5000);
+            }, 15 * 1000);
         } );
     } );
 </script>

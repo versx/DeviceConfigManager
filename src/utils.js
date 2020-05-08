@@ -26,14 +26,14 @@ async function fileExists(path) {
     });
 }
 
-async function fileSize(path) {
+async function fileLastModifiedTime(path) {
     return new Promise(function(resolve, reject) {
         try {
             fs.stat(path, function(err, stats) {
                 if (err) {
                     return reject(err);
                 }
-                resolve(stats.size);
+                resolve(stats.mtime);
             });
         } catch (e) {
             return reject(e);
@@ -123,7 +123,7 @@ function todaySeconds() {
 module.exports = {
     readFile,
     fileExists,
-    fileSize,
+    fileLastModifiedTime,
     snooze,
     getDateTime,
     buildConfig,

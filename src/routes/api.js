@@ -160,6 +160,7 @@ router.post('/devices/mass_action', async function(req, res) {
             devices.forEach(function(device) {
                 var ip = device.clientip;
                 if (ip) {
+                    // TODO: Get port via config
                     var host = `http://${ip}:8080/${endpoint}`;
                     get(device.uuid, host);
                 }
