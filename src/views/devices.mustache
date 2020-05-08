@@ -99,9 +99,6 @@
             }],
             "responsive": true
         });
-        table.buttons()
-            .container()
-            .appendTo( '#example_wrapper .col-sm-6:eq(0)' );
         table.on('draw.dt', function() {
             setTimeout(function () {
                 table.ajax.reload(null, false);
