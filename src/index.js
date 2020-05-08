@@ -28,7 +28,7 @@ DeviceMonitor.checkDevices();
 // TODO: Show image timestamp
 // TODO: Screenshot/icon toggle
 // TODO: Center front page icons when smaller screen
-// TODO: Add "AI" provider
+// TODO: Fix front page offline devices table on mobile
 
 
 run();
