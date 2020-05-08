@@ -17,6 +17,7 @@ const timezones = require('../../static/data/timezones.json');
 const providers = [
     { name: 'GoCheats' },
     { name: 'Kevin' },
+    { name: 'AI' }
 ];
 
 // UI Routes
@@ -159,12 +160,17 @@ router.get('/config/edit/:name', async function(req, res) {
     data.providers.forEach(function(provider) {
         provider.selected = provider.name === c.provider;
     });
+    // TODO: Better way
     data.gocheats_selected = c.provider === data.providers[0].name;
+    data.kevin_selected = c.provider === data.providers[1].name;
+    data.ai_selected = c.provider === data.providers[2].name;
     data.backend_url = c.backendUrl;
     data.data_endpoints = c.dataEndpoints;
     data.token = c.token;
     data.heartbeat_max_time = c.heartbeatMaxTime;
     data.min_delay_logout = c.minDelayLogout;
+    data.logging_url = c.loggingUrl;
+    data.logging_port = c.loggingPort;
     data.account_manager = c.accountManager === 1 ? 'checked' : '';
     data.deploy_eggs = c.deployEggs === 1 ? 'checked' : '';
     data.nearby_tracker = c.nearbyTracker === 1 ? 'checked' : '';

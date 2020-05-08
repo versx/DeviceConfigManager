@@ -41,6 +41,17 @@
                     <input type="number" class="form-control" name="min_delay_logout" value="{{min_delay_logout}}" step=1 min="1" max="999" required>
                 </div>
 
+                <div class="form-group external_logging {{^ai_selected}}d-none{{/ai_selected}}">
+                    <div class="form-group">
+                        External Logging Url
+                        <input type="text" class="form-control" name="logging_url" value="{{logging_url}}" placeholder="">
+                    </div>
+                    <div class="form-group">
+                        External Logging Port
+                        <input type="number" class="form-control" name="logging_port" value="{{logging_port}}" step=1 min="1" max="65535">
+                    </div>
+                </div>
+
                 <div class="form-check account_manager {{#gocheats_selected}}d-none{{/gocheats_selected}}">
                     <input type="checkbox" class="form-check-input" name="account_manager" {{account_manager}}>
                     <label class="form-check-label" for="account_manager">{{Account Manager}}</label>
@@ -53,7 +64,7 @@
                     <input type="checkbox" class="form-check-input" name="nearby_tracker" {{nearby_tracker}}>
                     <label class="form-check-label" for="nearby_tracker">{{Nearby Tracker}}</label>
                 </div>
-                <div class="form-check auto_login {{#gocheats_selected}}d-none{{/gocheats_selected}}">
+                <div class="form-check auto_login {{^kevin_selected}}d-none{{/kevin_selected}}">
                     <input type="checkbox" class="form-check-input" name="auto_login" {{auto_login}}>
                     <label class="form-check-label" for="auto_login">{{Auto-Login}}</label>
                 </div>
@@ -75,6 +86,7 @@
         $('body').css('background-color', 'rgb(33, 37, 41)');
         $('body').css('color', 'rgb(255, 255, 255)');
     }
+    // TODO: Switch statement
     $('.provider-select').change(function() {
         if ($(this).val() === 'GoCheats') {
             $('.heartbeat_max_time').addClass('d-none');
@@ -83,13 +95,23 @@
             $('.deploy_eggs').addClass('d-none');
             $('.nearby_tracker').addClass('d-none');
             $('.auto_login').addClass('d-none');
-        } else {
+            $('.external_logging').addClass('d-none');
+        } else if ($(this).val() === 'Kevin') {
             $('.heartbeat_max_time').removeClass('d-none');
             $('.min_delay_logout').removeClass('d-none');
             $('.account_manager').removeClass('d-none');
             $('.deploy_eggs').removeClass('d-none');
             $('.nearby_tracker').removeClass('d-none');
             $('.auto_login').removeClass('d-none');
+            $('.external_logging').addClass('d-none');
+        } else if ($(this).val() === 'AI') {
+            $('.heartbeat_max_time').addClass('d-none');
+            $('.min_delay_logout').removeClass('d-none');
+            $('.account_manager').removeClass('d-none');
+            $('.deploy_eggs').removeClass('d-none');
+            $('.nearby_tracker').removeClass('d-none');
+            $('.auto_login').addClass('d-none');
+            $('.external_logging').removeClass('d-none');
         }
     });
 </script>

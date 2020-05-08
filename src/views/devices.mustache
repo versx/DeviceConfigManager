@@ -14,11 +14,13 @@
                     <a class="dropdown-item" href="/device/new">{{New Device}}</a>
                     <button type='button' class="dropdown-item" onclick='sendMassAction("screenshot")'>{{Get All Screenshots}}</button>
                     <button type='button' class="dropdown-item" onclick='sendMassAction("restart")'>{{Restart All Devices}}</button>
+                    <!--
                     <div class="dropdown-divider"></div>
                     <div class="form-check dropdown-item">
-                        <input type="checkbox" class="form-check-input" name="enable_screenshots" checked>
-                        <label class="form-check-label" for="enable_screenshots">Show Screenshots</label>
+                        <input type="checkbox" class="form-check-input" data-toggle="toggle" onchange="onCheckChanged(this)" checked>
+                        <label class="form-check-label" for="show_screenshots">Show Screenshots</label>
                     </div>
+                    -->
                 </div>
             </div>
 
@@ -48,7 +50,6 @@
     if ("{{style}}" === 'dark') {
         $('body').css('background-color', 'rgb(33, 37, 41)');
         $('body').css('color', 'rgb(255, 255, 255)');
-        //$('#header').css('color', 'white');
     }
     $(document).ready(function() {
         const table = $('#table').DataTable( {
@@ -98,7 +99,7 @@
             data: { 'type': action },
             async: true,
             success: function(result, textStatus, jqXHR) {
-                console.log("Action response:", result);
+                console.log('Action response:', result);
             },
             error: function(xhr, textStatus, errorThrown) {
                 console.error('Error:', textStatus);
@@ -106,7 +107,14 @@
             } 
         });
     }
-    function toggleScreenshots() {
-        //$('#')
+    /*
+    function onCheckChanged(checkbox) {
+        var checked = checkbox.checked;
+        if (checked) {
+            // TODO: Show screenshots
+        } else {
+            // TODO: Show icons
+        }
     }
+    */
 </script>

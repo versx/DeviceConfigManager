@@ -160,6 +160,7 @@ router.post('/devices/mass_action', async function(req, res) {
             devices.forEach(function(device) {
                 var ip = device.clientip;
                 if (ip) {
+                    // TODO: Get port via config
                     var host = `http://${ip}:8080/${endpoint}`;
                     get(device.uuid, host);
                 }
@@ -364,6 +365,8 @@ router.post('/config', async function(req, res) {
         c.token,
         c.heartbeatMaxTime,
         c.minDelayLogout,
+        c.loggingUrl,
+        c.loggingPort,
         c.accountManager,
         c.deployEggs,
         c.nearbyTracker,
@@ -384,6 +387,8 @@ router.post('/config/new', async function(req, res) {
         data.token,
         data.heartbeat_max_time,
         data.min_delay_logout,
+        data.logging_url,
+        data.logging_port,
         data.account_manager === 'on' ? 1 : 0,
         data.deploy_eggs === 'on' ? 1 : 0,
         data.nearby_tracker === 'on' ? 1 : 0,
@@ -413,6 +418,8 @@ router.post('/config/edit/:name', async function(req, res) {
     c.token = data.token;
     c.heartbeatMaxTime = data.heartbeat_max_time;
     c.minDelayLogout = data.min_delay_logout;
+    c.loggingUrl = data.logging_url;
+    c.loggingPort = data.logging_port;
     c.accountManager = data.account_manager === 'on' ? 1 : 0;
     c.deployEggs = data.deploy_eggs === 'on' ? 1 : 0;
     c.nearbyTracker = data.nearby_tracker === 'on' ? 1 : 0;
