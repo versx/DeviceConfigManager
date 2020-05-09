@@ -25,10 +25,10 @@ DeviceMonitor.checkDevices();
 // TODO: Change require to import
 // TODO: DCM logs/troubleshoot page
 // TODO: Reboot devices based on config
-// TODO: Show image timestamp
 // TODO: Screenshot/icon toggle
-// TODO: Center front page icons when smaller screen
 // TODO: Fix front page offline devices table on mobile
+// TODO: Logs create iPhone1.1.log when at max log size
+// TODO: Success/error responses
 
 
 run();

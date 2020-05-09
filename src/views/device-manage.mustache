@@ -58,7 +58,7 @@
                     <tr>
                         <th>{{Send Data for Testing}} (WIP)</th>
                         <th>
-                            <form action="http://{{clientip}}:8080/data" method="post">
+                            <form action="http://{{clientip}}:{{port}}/data" method="post">
                                 <div class="form-group">
                                     <input type="text" class="form-control" name="data_text" placeholder="{}">
                                 </div>
@@ -70,7 +70,7 @@
                     <tr>
                         <th>{{Send Pixel Check Location}} (WIP)</th>
                         <th>
-                            <form action="http://{{clientip}}:8080/pixel" method="post">
+                            <form action="http://{{clientip}}:{{port}}/pixel" method="post">
                                 <div class="form-group">
                                     <input type="text" class="form-control" name="pixel_text" placeholder="{ 'x': 320, 'y': 320 }">
                                 </div>
@@ -82,7 +82,7 @@
                     <tr>
                         <th>{{Send Touch Location}} (WIP)</th>
                         <th>
-                            <form action="http://{{clientip}}:8080/touch" method="post">
+                            <form action="http://{{clientip}}:{{port}}/touch" method="post">
                                 <div class="form-group">
                                     <input type="text" class="form-control" name="touch_text" placeholder="{ 'x': 160, 'y': 160 }">
                                 </div>
@@ -94,7 +94,7 @@
                     <tr>
                         <th>{{Send Typing Data}} (WIP)</th>
                         <th>
-                            <form action="http://{{clientip}}:8080/type" method="post">
+                            <form action="http://{{clientip}}:{{port}}/type" method="post">
                                 <div class="form-group">
                                     <input type="text" class="form-control" name="type_text" placeholder="{ 'text': 'User123' }">
                                 </div>
@@ -118,12 +118,11 @@
     if ("{{style}}" === 'dark') {
         $('body').css('background-color', 'rgb(33, 37, 41)');
         $('body').css('color', 'rgb(255, 255, 255)');
-        //$('#header').css('color', 'white');
     }
 
     function get(id) {
         var clientip = $('#client_ip').val();
-        var url = `http://${clientip}:8080/${id}`;
+        var url = `http://${clientip}:{{port}}/${id}`;
         var uuid = '{{uuid}}';
         var isScreen = url.includes('/screen');
         var isRestart = url.includes('/restart');
