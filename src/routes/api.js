@@ -115,21 +115,26 @@ router.post('/settings/change_db', function(req, res) {
 router.get('/devices', async function(req, res) {
     try {
         var devices = await Device.getAll();
-        devices.forEach(function(device) {
-            var exists = fs.existsSync(path.join(screenshotsDir, device.uuid + '.png'));
-            // Device received a config last 15 minutes
-            var delta = 15 * 60;
-            var isOffline = device.last_seen > (Math.round((new Date()).getTime() / 1000) - delta) ? 0 : 1;
-            var image = isOffline ? '/img/offline.png' : (exists ? `/screenshots/${device.uuid}.png` : '/img/online.png');
-            device.image = `<a href='${image}' target='_blank'><img src='${image}' width='auto' height='96' style='margin-left: auto;margin-right: auto;display: block;'/></a>`;
-            device.last_seen = utils.getDateTime(device.last_seen);
-            device.buttons = `
-            <div class='btn-group' role='group'>
-                <a href='/device/manage/${device.uuid}' class='btn btn-success'>Manage</a>
-                <a href='/device/edit/${device.uuid}' class='btn btn-primary'>Edit</a>
-                <a href='/device/logs/${device.uuid}' class='btn btn-secondary'>Logs</a>
-            </div>`;
-        });
+        if (devices) {
+            for (var i = 0; i < devices.length; i++) {
+                var device = devices[i];
+                var screenshotPath = path.join(screenshotsDir, device.uuid + '.png');
+                var exists = fs.existsSync(screenshotPath);
+                // Device received a config last 15 minutes
+                var delta = 15 * 60;
+                var isOffline = device.last_seen > (Math.round((new Date()).getTime() / 1000) - delta) ? 0 : 1;
+                var image = isOffline ? '/img/offline.png' : (exists ? `/screenshots/${device.uuid}.png` : '/img/online.png');
+                var lastModified = exists && !isOffline ? (await utils.fileLastModifiedTime(screenshotPath)).toLocaleString() : '';
+                device.image = `<a href='${image}' target='_blank'><img src='${image}' width='auto' height='96' style='margin-left: auto;margin-right: auto;display: block;'/></a><div class='text-center'>${lastModified}</div>`;
+                device.last_seen = utils.getDateTime(device.last_seen);
+                device.buttons = `
+                <div class='btn-group' role='group'>
+                    <a href='/device/manage/${device.uuid}' class='btn btn-success'>Manage</a>
+                    <a href='/device/edit/${device.uuid}' class='btn btn-primary'>Edit</a>
+                    <a href='/device/logs/${device.uuid}' class='btn btn-secondary'>Logs</a>
+                </div>`;
+            }
+        }
         var json = JSON.stringify({ data: { devices: devices } });
         res.send(json);
     } catch (e) {
