@@ -34,7 +34,6 @@
     if ("{{style}}" === 'dark') {
         $('body').css('background-color', 'rgb(33, 37, 41)');
         $('body').css('color', 'rgb(255, 255, 255)');
-        //$('#header').css('color', 'white');
     }
     $(document).ready(function() {
         const table = $('#table').DataTable( {
@@ -43,6 +42,18 @@
                 "dataSrc": "data.configs",
                 "async": true
             },
+            "dom": "<'row'<'col-sm-12 col-md-6'B><'col-sm-12 col-md-6'f>>" +
+                   "<'row'<'col-sm-12'tr>>" +
+                   "<'row'<'col-sm-12 col-md-5'i><'col-sm-12 col-md-7'p>>",
+            "fixedHeader": {
+                "header": true,
+                "headerOffset": $('.navbar').height() + 15
+            },
+            "buttons": [
+                "colvis",
+                "pageLength"
+            ],
+            "colReorder": true,
             "stateSave": true,
             "paging":   true,
             "lengthMenu": [[25, 50, 100, -1], [25, 50, 100, "All"]],
@@ -68,7 +79,7 @@
         $('#table').on( 'draw.dt', function () {
             setTimeout( function () {
                 table.ajax.reload(null, false);
-            }, 5000);
+            }, 15 * 1000);
         } );
     } );
 </script>

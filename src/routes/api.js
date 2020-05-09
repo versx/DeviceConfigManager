@@ -120,8 +120,8 @@ router.get('/devices', async function(req, res) {
             // Device received a config last 15 minutes
             var delta = 15 * 60;
             var isOffline = device.last_seen > (Math.round((new Date()).getTime() / 1000) - delta) ? 0 : 1;
-            var image = exists ? `/screenshots/${device.uuid}.png` : (isOffline ? '/img/offline.png' : '/img/online.png');
-            device.image = `<a href='${image}' target='_blank'><img src='${image}' width='96' height='96' style='margin-left: auto;margin-right: auto;display: block;'/></a>`;
+            var image = isOffline ? '/img/offline.png' : (exists ? `/screenshots/${device.uuid}.png` : '/img/online.png');
+            device.image = `<a href='${image}' target='_blank'><img src='${image}' width='auto' height='96' style='margin-left: auto;margin-right: auto;display: block;'/></a>`;
             device.last_seen = utils.getDateTime(device.last_seen);
             device.buttons = `
             <div class='btn-group' role='group'>
@@ -160,6 +160,7 @@ router.post('/devices/mass_action', async function(req, res) {
             devices.forEach(function(device) {
                 var ip = device.clientip;
                 if (ip) {
+                    // TODO: Get port via config
                     var host = `http://${ip}:8080/${endpoint}`;
                     get(device.uuid, host);
                 }
@@ -364,6 +365,8 @@ router.post('/config', async function(req, res) {
         c.token,
         c.heartbeatMaxTime,
         c.minDelayLogout,
+        c.loggingUrl,
+        c.loggingPort,
         c.accountManager,
         c.deployEggs,
         c.nearbyTracker,
@@ -384,6 +387,8 @@ router.post('/config/new', async function(req, res) {
         data.token,
         data.heartbeat_max_time,
         data.min_delay_logout,
+        data.logging_url,
+        data.logging_port,
         data.account_manager === 'on' ? 1 : 0,
         data.deploy_eggs === 'on' ? 1 : 0,
         data.nearby_tracker === 'on' ? 1 : 0,
@@ -413,6 +418,8 @@ router.post('/config/edit/:name', async function(req, res) {
     c.token = data.token;
     c.heartbeatMaxTime = data.heartbeat_max_time;
     c.minDelayLogout = data.min_delay_logout;
+    c.loggingUrl = data.logging_url;
+    c.loggingPort = data.logging_port;
     c.accountManager = data.account_manager === 'on' ? 1 : 0;
     c.deployEggs = data.deploy_eggs === 'on' ? 1 : 0;
     c.nearbyTracker = data.nearby_tracker === 'on' ? 1 : 0;

@@ -27,7 +27,7 @@ class ScheduleManager {
             name: name,
             config: config,
             uuids: uuids,
-            start_time: startTime,
+            start_time: startTime === '00:00:00' ? '00:00:01' : startTime,
             end_time: endTime,
             timezone: parseInt(timezone),
             next_config: nextConfig,
@@ -46,7 +46,8 @@ class ScheduleManager {
     static update(oldName, name, config, uuids, startTime, endTime, timezone, nextConfig, enabled) {
         var result = this.delete(oldName);
         if (result) {
-            result = this.create(name, config, uuids, startTime, endTime, timezone, nextConfig, enabled);
+            var start = startTime === '00:00:00' ? '00:00:01' : startTime;
+            result = this.create(name, config, uuids, start, endTime, timezone, nextConfig, enabled);
             return result;
         }
         return false;

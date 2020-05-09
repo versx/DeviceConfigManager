@@ -149,7 +149,7 @@
                         binary += String.fromCharCode(responseText.charCodeAt(i) & 255)
                     }
                     $('#' + id).attr('src', 'data:image/png;base64,' + btoa(binary));
-                    $('#' + id).attr('width', 84);
+                    $('#' + id).attr('width', 'auto');
                     $('#' + id).attr('height', 128);
                     sendImageData(id, binary);
                 } else if (url.includes('/account')) {

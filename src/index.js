@@ -24,7 +24,11 @@ DeviceMonitor.checkDevices();
 // TODO: Secure /api/config endpoint with token
 // TODO: Change require to import
 // TODO: DCM logs/troubleshoot page
-// TODO: Check schedules switching shortly after
+// TODO: Reboot devices based on config
+// TODO: Show image timestamp
+// TODO: Screenshot/icon toggle
+// TODO: Center front page icons when smaller screen
+// TODO: Fix front page offline devices table on mobile
 
 
 run();
@@ -50,7 +54,7 @@ async function run() {
 
     // Body parser middlewares
     app.use(express.json());
-    app.use(express.urlencoded({ extended: true }));
+    app.use(express.urlencoded({ extended: true, limit: '50mb' }));
 
     // Initialize localzation handler
     i18n.configure({
