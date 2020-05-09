@@ -116,21 +116,10 @@ router.get('/device/delete/:uuid', async function(req, res) {
 router.get('/device/manage/:uuid', async function(req, res) {
     var uuid = req.params.uuid;
     var device = await Device.getByName(uuid);
-    var config = await Config.getByName(device.config);
     var data = defaultData;
     data.name = uuid;
     data.listeners = config.listeners;
-    data.port = config.port || 8080;
     if (device) {
-        if (device.config) {
-            var c = await Config.getByName(device.config);
-            if (c === null) {
-                console.error('Failed to grab config', device.config);
-                return;
-            } else {
-                data.port = c.port;
-            }
-        }
         if (device.clientip) {
             data.clientip = device.clientip;
         } else {
