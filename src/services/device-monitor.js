@@ -46,7 +46,6 @@ class DeviceMonitor {
                                 console.error(error);
                                 return;
                             }
-                            res.statusCode(200).end();
                         }
                     );
                 }
