@@ -128,10 +128,16 @@ router.get('/devices', async function(req, res) {
                 device.image = `<a href='${image}' target='_blank'><img src='${image}' width='auto' height='96' style='margin-left: auto;margin-right: auto;display: block;'/></a><div class='text-center'>${lastModified}</div>`;
                 device.last_seen = utils.getDateTime(device.last_seen);
                 device.buttons = `
-                <div class='btn-group' role='group'>
-                    <a href='/device/manage/${device.uuid}' class='btn btn-success'>Manage</a>
-                    <a href='/device/edit/${device.uuid}' class='btn btn-primary'>Edit</a>
-                    <a href='/device/logs/${device.uuid}' class='btn btn-secondary'>Logs</a>
+                <div class="btn-group" role="group" style="float: right;">
+                    <button id="deviceActionsDropdown" type="button" class="btn btn-primary dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                        Actions
+                    </button>
+                    <div class="dropdown-menu" aria-labelledby="deviceActionsDropdown">
+                        <a href="/device/manage/${device.uuid}" class="dropdown-item">Manage</a>
+                        <div class="dropdown-divider"></div>
+                        <a href="/device/edit/${device.uuid}" class="dropdown-item">Edit</a>
+                        <a href="/device/logs/${device.uuid}" class="dropdown-item">Logs</a>
+                    </div>
                 </div>`;
             }
         }

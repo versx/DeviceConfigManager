@@ -28,6 +28,7 @@ DeviceMonitor.checkDevices();
 // TODO: Screenshot/icon toggle
 // TODO: Fix front page offline devices table on mobile
 // TODO: Logs create iPhone1.1.log when at max log size
+// TODO: Success/error responses
 
 
 run();
