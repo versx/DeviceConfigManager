@@ -29,6 +29,7 @@ DeviceMonitor.checkDevices();
 // TODO: Screenshot/icon toggle
 // TODO: Center front page icons when smaller screen
 // TODO: Fix front page offline devices table on mobile
+// TODO: Remove hardcoded 8080 port in manage device page
 
 
 run();

@@ -39,11 +39,14 @@ class DeviceMonitor {
                     request.post(
                         webhook,
                         obj,
+                        /* eslint-disable no-unused-vars */
                         function(error, res, body) {
+                        /* eslint-enable no-unused-vars */
                             if (error) {
                                 console.error(error);
                                 return;
                             }
+                            res.statusCode(200).end();
                         }
                     );
                 }
