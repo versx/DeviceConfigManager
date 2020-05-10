@@ -162,12 +162,26 @@ router.post('/devices/mass_action', async function(req, res) {
         res.send('Received restart');
         endpoint = 'restart';
         break;
+    case 'restart_config':
+        console.log('Received restart by config mass action')
+        endpoint = 'restart_config';
+        break;
     default:
         res.send('Error Occurred');
     }
     if (endpoint !== '') {
+        if (req.body.config) {
+            var config = req.body.config;
+            // TODO: Restart devices based on config
+        }
         var devices = await Device.getAll();
         if (devices) {
+            var config = req.body.config;
+            // If config was included then filter devices based on config assigned
+            if (config) {
+                console.log("Filtering devices based on config", config);
+                devices = devices.filter(x => x.config === config);
+            }
             devices.forEach(function(device) {
                 var ip = device.clientip;
                 if (ip) {
@@ -280,8 +294,19 @@ router.get('/configs', async function(req, res) {
         var configs = await Config.getAll();
         configs.forEach(function(config) {
             config.is_default = config.is_default ? 'Yes' : 'No';
-            config.buttons = `<a href='/config/edit/${config.name}'><button type='button' class='btn btn-primary'>Edit</button></a>
-                              <a href='/config/delete/${config.name}'><button type='button'class='btn btn-danger'>Delete</button></a>`;
+            config.buttons = `
+            <div class='btn-group' role='group' style='float: right;'>
+                <button id='configActionsDropdown' type='button' class='btn btn-primary dropdown-toggle' data-toggle='dropdown' aria-haspopup='true' aria-expanded='false'>
+                    Actions
+                </button>
+                <div class='dropdown-menu' aria-labelledby='configActionsDropdown'>
+                    <a href='/config/edit/${config.name}' class='dropdown-item btn-primary'>Edit</a>
+                    <a href='/config/delete/${config.name}' class='dropdown-item btn-danger'>Delete</a>
+                    <div class='dropdown-divider'></div>
+                    <button type='button' class='dropdown-item btn btn-danger' onclick='restart("${config.name}")'>Restart Devices</button>
+                </div>
+            </div>
+            `;
         });
         var json = JSON.stringify({ data: { configs: configs } });
         res.send(json);
