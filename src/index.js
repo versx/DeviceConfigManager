@@ -30,6 +30,9 @@ DeviceMonitor.checkDevices();
 // TODO: Logs create iPhone1.1.log when at max log size
 // TODO: Success/error responses
 // TODO: Timezone config option for times
+// TODO: MaxListenersExceededWarning: Possible EventEmitter memory leak detected. 11 uncaughtException listeners added. Use emitter.setMaxListeners() to increase limit
+// TODO: Add logs button to manage page
+// TODO: Remove clickable images from devices page
 
 
 run();

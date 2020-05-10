@@ -125,7 +125,7 @@ router.get('/devices', async function(req, res) {
                 var isOffline = device.last_seen > (Math.round((new Date()).getTime() / 1000) - delta) ? 0 : 1;
                 var image = isOffline ? '/img/offline.png' : (exists ? `/screenshots/${device.uuid}.png` : '/img/online.png');
                 var lastModified = exists && !isOffline ? (await utils.fileLastModifiedTime(screenshotPath)).toLocaleString() : '';
-                device.image = `<a href='${image}' target='_blank'><img src='${image}' width='auto' height='96' style='margin-left: auto;margin-right: auto;display: block;'/></a><div class='text-center'>${lastModified}</div>`;
+                device.image = `<img src='${image}' width='auto' height='96' style='margin-left: auto;margin-right: auto;display: block;'/><br><div class='text-center'>${lastModified}</div>`;
                 device.last_seen = utils.getDateTime(device.last_seen);
                 device.buttons = `
                 <div class="btn-group" role="group" style="float: right;">
@@ -171,7 +171,6 @@ router.post('/devices/mass_action', async function(req, res) {
             devices.forEach(function(device) {
                 var ip = device.clientip;
                 if (ip) {
-                    // TODO: Get port via config
                     var host = `http://${ip}:8080/${endpoint}`;
                     get(device.uuid, host);
                 }
