@@ -56,6 +56,11 @@
                         <th><div id='reboot'></div></th>
                     </tr>
                     <tr>
+                        <th>{{Device Logs}}</th>
+                        <th><a href='/device/logs/{{name}}' type='button' class='btn btn-success'>{{VIEW}}</a></th>
+                        <th><div id='logs'></div></th>
+                    </tr>
+                    <tr>
                         <th>{{Send Data for Testing}} (WIP)</th>
                         <th>
                             <form action="http://{{clientip}}:8080/data" method="post">
