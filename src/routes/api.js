@@ -80,15 +80,26 @@ router.post('/account/change_password/:username', async function(req, res) {
 // Settings API Routes
 router.post('/settings/change_ui', function(req, res) {
     const data = req.body;
-    let newConfig = config;
+    const newConfig = config;
     newConfig.title = data.title;
     newConfig.locale = data.locale;
     newConfig.style = data.style;
     newConfig.logging = {
         enabled: data.logging === 'on',
-        max_size: data.max_size
+        max_size: data.max_size,
+        format: data.log_format
     };
-    fs.writeFileSync(path.resolve(__dirname, '../config.json'), JSON.stringify(newConfig, null, 2));
+    fs.writeFileSync(path.resolve(__dirname, '../config.json'), JSON.stringify(newConfig, null, 4));
+    res.redirect('/settings');
+});
+
+router.post('/settings/change_general', function(req, res) {
+    const data = req.body;
+    const newConfig = config;
+    newConfig.listeners = data.listeners ? data.listeners.split(',') || []: []; // TODO: Better way
+    newConfig.webhooks = data.webhooks ? data.webhooks.split(',') || [] : []; // TODO: Better way
+    fs.writeFileSync(path.resolve(__dirname, '../config.json'), JSON.stringify(newConfig, null, 4));
+    console.log("General settings saved");
     res.redirect('/settings');
 });
 
@@ -101,7 +112,7 @@ router.post('/settings/change_db', function(req, res) {
     newConfig.db.db_password = data.password;
     newConfig.db.database = data.database;
     newConfig.db.charset = data.charset;
-    fs.writeFileSync(path.resolve(__dirname, '../config.json'), JSON.stringify(newConfig, null, 2));
+    fs.writeFileSync(path.resolve(__dirname, '../config.json'), JSON.stringify(newConfig, null, 4));
     res.redirect('/settings');
 });
 

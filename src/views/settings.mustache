@@ -42,6 +42,30 @@
                                 {{Maximum Log File Size (Per Phone)}}
                                 <input type="number" class="form-control" name="max_size" value="{{max_size}}" placeholder="5" required>
                             </div>
+                            <div class="form-group">
+                                {{Log Format}}
+                                <input type="number" class="form-control" name="log_format" value="{{log_format}}" placeholder="YYYY-MM-DD hh:mm:ss A" required>
+                            </div>
+                            <br>
+                            <button type="submit" class="btn btn-primary">{{Save}}</button>
+                            <br>
+                        </form>
+                    </div>
+                </div>
+            </div>
+            <div class="card bg-dark p-1 m-3">
+                <div class="card-header text-center bg-dark"><b>{{General}}</b></div>
+                <div class="card-body">
+                    <div class="container">
+                        <form action="/api/settings/change_general" method="post">
+                            <div class="form-group">
+                                {{Remote Listeners}}
+                                <input type="text" class="form-control" name="listeners" value="{{listeners}}" placeholder="http://127.0.0.1:6542,http://127.0.0.1:6542">
+                            </div>
+                            <div class="form-group">
+                                {{Webhooks}}
+                                <input type="text" class="form-control" name="webhooks" value="{{webhooks}}" placeholder="">
+                            </div>
                             <br>
                             <button type="submit" class="btn btn-primary">{{Save}}</button>
                             <br>

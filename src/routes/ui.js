@@ -234,8 +234,8 @@ router.get('/schedule/delete/:name', function(req, res) {
 router.get('/settings', function(req, res) {
     const data = defaultData;
     data.title = config.title;
-    data.host = config.db.host;
-    data.port = config.db.port;
+    //data.host = config.db.host;
+    //data.port = config.db.port;
     data.db_username = config.db.username;
     data.db_password = config.db.password;
     data.database = config.db.database;
@@ -255,8 +255,11 @@ router.get('/settings', function(req, res) {
     data.languages.forEach(function(locale) {
         locale.selected = locale.name === config.locale;
     });
+    data.listeners = (config.listeners || '').join(',');
+    data.webhooks = (config.webhooks || '').join(',');
     data.logging = config.logging.enabled ? 'checked' : '';
     data.max_size = config.logging.max_size;
+    data.log_format = config.logging.format;
     res.render('settings', data);
 });
 
