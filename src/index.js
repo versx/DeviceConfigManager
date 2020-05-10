@@ -39,7 +39,7 @@ run();
 
 async function run() {
     // Start database migrator
-    var dbMigrator = new Migrator();
+    const dbMigrator = new Migrator();
     dbMigrator.load();
 
     // Wait until migrations are done to proceed
