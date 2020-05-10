@@ -13,16 +13,16 @@ class Device {
         this.notes = notes;
     }
     static async getAll() {
-        var devices = await query('SELECT uuid, config, last_seen, clientip, ios_version, ipa_version, notes FROM devices');
+        const devices = await query('SELECT uuid, config, last_seen, clientip, ios_version, ipa_version, notes FROM devices');
         return devices;
     }
     static async getByName(uuid) {
-        var sql = `
+        const sql = `
         SELECT uuid, config, last_seen, clientip, ios_version, ipa_version, notes
         FROM devices
         WHERE uuid = ?`;
-        var args = [uuid];
-        var result = await query(sql, args);
+        const args = [uuid];
+        const result = await query(sql, args);
         if (result.length === 0) {
             return null;
         }
@@ -37,11 +37,11 @@ class Device {
         );
     }
     static async create(uuid, config = null, lastSeen = null, clientip = null, iosVersion = null, ipaVersion = null, notes = null) {
-        var sql = `
+        const sql = `
         INSERT INTO devices (uuid, config, last_seen, clientip, ios_version, ipa_version, notes)
         VALUES (?, ?, ?, ?, ?, ?, ?)`;
-        var args = [uuid, config, lastSeen, clientip, iosVersion, ipaVersion, notes];
-        var result = await query(sql, args);
+        const args = [uuid, config, lastSeen, clientip, iosVersion, ipaVersion, notes];
+        const result = await query(sql, args);
         if (result.affectedRows === 1) {
             return new Device(
                 uuid,
@@ -56,18 +56,18 @@ class Device {
         return null;
     }
     static async delete(uuid) {
-        var sql = 'DELETE FROM devices WHERE uuid = ?';
-        var args = [uuid];
-        var result = await query(sql, args);
+        const sql = 'DELETE FROM devices WHERE uuid = ?';
+        const args = [uuid];
+        const result = await query(sql, args);
         return result.affectedRows === 1;
     }
     async save() {
-        var sql = `
+        const sql = `
         UPDATE devices
         SET config = ?, last_seen = ?, clientip = ?, ios_version = ?, ipa_version = ?, notes = ?
         WHERE uuid = ?`;
-        var args = [this.config, this.lastSeen, this.clientip, this.iosVersion, this.ipaVersion, this.notes, this.uuid];
-        var result = await query(sql, args);
+        const args = [this.config, this.lastSeen, this.clientip, this.iosVersion, this.ipaVersion, this.notes, this.uuid];
+        const result = await query(sql, args);
         return result.affectedRows === 1;
     }
 }

@@ -16,19 +16,19 @@ class Log {
         this.message = message;
     }
     static async getByDevice(uuid) {
-        var name = uuid + '.log';
-        var logFile = path.resolve(logsDir, name);
-        var exists = await utils.fileExists(logFile);
+        const name = uuid + '.log';
+        const logFile = path.resolve(logsDir, name);
+        const exists = await utils.fileExists(logFile);
         if (!exists) {
             return null;
         }
-        var logs = [];
-        var data = await utils.readFile(logFile);
-        var split = data.split('\n');
+        const logs = [];
+        const data = await utils.readFile(logFile);
+        const split = data.split('\n');
         if (split) {
             split.forEach(function(log) {
                 if (log) {
-                    var l = JSON.parse(log);
+                    const l = JSON.parse(log);
                     logs.push({
                         message: l.message,
                         date: l.timestamp
@@ -39,9 +39,9 @@ class Log {
         return logs;
     }
     static async delete(uuid) {
-        var name = uuid + '.log';
-        var logFile = path.resolve(logsDir, name);
-        var exists = await utils.fileExists(logFile);
+        const name = uuid + '.log';
+        const logFile = path.resolve(logsDir, name);
+        const exists = await utils.fileExists(logFile);
         if (exists) {
             fs.truncate(logFile, 0, function(err) { 
                 if (err) {
@@ -61,7 +61,7 @@ class Log {
                 console.error('Failed to find log directory:', logsDir);
             }
             files.forEach(function(file) {
-                var logFile = path.join(logsDir, file);
+                const logFile = path.join(logsDir, file);
                 fs.truncate(logFile, 0, function(err) { 
                     if (err) {
                         console.error('Failed to clear log file', logFile);
@@ -80,17 +80,17 @@ class Log {
         });
     }
     static async getTotalSize() {
-        var exists = await utils.fileExists(logsDir);
+        const exists = await utils.fileExists(logsDir);
         return new Promise((resolve, reject) => {
             if (!exists) {
                 return reject(total);
             }
-            var total = 0;
-            var files = fs.readdirSync(logsDir);
+            let total = 0;
+            const files = fs.readdirSync(logsDir);
             if (files) {
                 files.forEach(function(file) {
-                    var logFile = path.resolve(logsDir, file);
-                    var stats = fs.statSync(logFile);
+                    const logFile = path.resolve(logsDir, file);
+                    const stats = fs.statSync(logFile);
                     total += stats.size;
                 });
             } else {

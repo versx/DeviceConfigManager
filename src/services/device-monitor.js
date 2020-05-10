@@ -7,12 +7,12 @@ const Device = require('../models/device.js');
 const utils = require('../utils.js');
 const devicesCheckInterval = 5 * 60 * 1000; // Check every 5 minutes
 const delta = 15 * 60;
-var lastUpdate = -2;
+let lastUpdate = -2;
 
 class DeviceMonitor {
     static async checkDevices() {
         //console.log("Checking devices...");
-        var now = utils.todaySeconds();
+        const now = utils.todaySeconds();
         if (lastUpdate === -2) {
             utils.snooze(5000);
             lastUpdate = parseInt(now);
@@ -21,7 +21,7 @@ class DeviceMonitor {
             lastUpdate = -1;
         }
     
-        var devices = await Device.getAll();
+        const devices = await Device.getAll();
         devices.forEach(async function(device) {
             const isOffline = device.last_seen > (Math.round((new Date()).getTime() / 1000) - delta) ? 0 : 1;
             if (isOffline) {
@@ -33,9 +33,9 @@ class DeviceMonitor {
                         last_seen: device.last_seen
                     }
                 };
-                var webhooks = config.webhooks;
+                const webhooks = config.webhooks;
                 for (var i = 0; i < webhooks.length; i++) {
-                    var webhook = webhooks[i];
+                    const webhook = webhooks[i];
                     request.post(
                         webhook,
                         obj,
