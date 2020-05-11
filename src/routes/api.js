@@ -173,7 +173,7 @@ router.post('/devices/mass_action', async function(req, res) {
         break;
     case 'restart_config':
         console.log('Received restart by config mass action')
-        endpoint = 'restart_config';
+        endpoint = 'restart';
         break;
     default:
         res.send('Error Occurred');
