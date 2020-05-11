@@ -23,14 +23,14 @@ const providers = [
 // UI Routes
 router.get(['/', '/index'], async function(req, res) {
     if (req.session.loggedin) {
-        var username = req.session.username;
-        var devices = await Device.getAll();
-        var configs = await Config.getAll();
-        var schedules = ScheduleManager.getAll();
-        var metadata = await Migrator.getEntries();
-        var logsSize = await Log.getTotalSize();
-        var delta = 15 * 60;
-        var data = defaultData;
+        const username = req.session.username;
+        const devices = await Device.getAll();
+        const configs = await Config.getAll();
+        const schedules = ScheduleManager.getAll();
+        const metadata = await Migrator.getEntries();
+        const logsSize = await Log.getTotalSize();
+        const delta = 15 * 60;
+        const data = defaultData;
         data.logged_in = true; // TODO: Workaround
         data.metadata = metadata;
         data.devices = devices.length;
@@ -49,7 +49,7 @@ router.get(['/', '/index'], async function(req, res) {
 });
 
 router.get('/login', function(req, res) {
-    var data = defaultData;
+    const data = defaultData;
     data.logged_in = false;
     data.username = null;
     res.render('login', data);
@@ -63,7 +63,7 @@ router.get('/logout', function(req, res) {
 });
 
 router.get('/account', function(req, res) {
-    var data = defaultData;
+    const data = defaultData;
     data.username = req.session.username;
     res.render('account', data);
 });
@@ -74,16 +74,16 @@ router.get('/devices', function(req, res) {
 });
 
 router.get('/device/new', async function(req, res) {
-    var data = defaultData;
+    const data = defaultData;
     data.configs = await Config.getAll();
     res.render('device-new', defaultData);
 });
 
 router.get('/device/edit/:uuid', async function(req, res) {
-    var uuid = req.params.uuid;
-    var data = defaultData;
-    var configs = await Config.getAll();
-    var device = await Device.getByName(uuid);
+    const uuid = req.params.uuid;
+    const data = defaultData;
+    const configs = await Config.getAll();
+    const device = await Device.getByName(uuid);
     if (device.config) {
         configs.forEach(function(config) {
             config.selected = config.name === device.config;
@@ -101,36 +101,25 @@ router.get('/device/edit/:uuid', async function(req, res) {
 });
 
 router.get('/device/logs/:uuid', async function(req, res) {
-    var uuid = req.params.uuid;
-    var data = defaultData;
+    const uuid = req.params.uuid;
+    const data = defaultData;
     data.uuid = uuid;
     res.render('device-logs', data);
 });
 
 router.get('/device/delete/:uuid', async function(req, res) {
-    var data = defaultData;
+    const data = defaultData;
     data.uuid = req.params.uuid;
     res.render('device-delete', data);
 });
 
 router.get('/device/manage/:uuid', async function(req, res) {
-    var uuid = req.params.uuid;
-    var device = await Device.getByName(uuid);
-    var config = await Config.getByName(device.config);
-    var data = defaultData;
+    const uuid = req.params.uuid;
+    const device = await Device.getByName(uuid);
+    const data = defaultData;
     data.name = uuid;
     data.listeners = config.listeners;
-    data.port = config.port || 8080;
     if (device) {
-        if (device.config) {
-            var c = await Config.getByName(device.config);
-            if (c === null) {
-                console.error('Failed to grab config', device.config);
-                return;
-            } else {
-                data.port = c.port;
-            }
-        }
         if (device.clientip) {
             data.clientip = device.clientip;
         } else {
@@ -146,15 +135,15 @@ router.get('/configs', function(req, res) {
 });
 
 router.get('/config/new', function(req, res) {
-    var data = defaultData;
+    const data = defaultData;
     data.providers = providers;
     res.render('config-new', data);
 });
 
 router.get('/config/edit/:name', async function(req, res) {
-    var name = req.params.name;
-    var c = await Config.getByName(name);
-    var data = defaultData;
+    const name = req.params.name;
+    const c = await Config.getByName(name);
+    const data = defaultData;
     data.title = config.title;
     data.old_name = name;
     data.name = c.name;
@@ -182,7 +171,7 @@ router.get('/config/edit/:name', async function(req, res) {
 });
 
 router.get('/config/delete/:name', function(req, res) {
-    var data = defaultData;
+    const data = defaultData;
     data.name = req.params.name;
     res.render('config-delete', data);
 });
@@ -193,9 +182,9 @@ router.get('/schedules', function(req, res) {
 });
 
 router.get('/schedule/new', async function(req, res) {
-    var data = defaultData;
-    var configs = await Config.getAll();
-    var devices = await Device.getAll();
+    const data = defaultData;
+    const configs = await Config.getAll();
+    const devices = await Device.getAll();
     data.configs = configs;
     data.devices = devices;
     data.timezones = timezones;
@@ -203,11 +192,11 @@ router.get('/schedule/new', async function(req, res) {
 });
 
 router.get('/schedule/edit/:name', async function(req, res) {
-    var name = req.params.name;
-    var data = defaultData;
-    var configs = await Config.getAll();
-    var devices = await Device.getAll();
-    var schedule = ScheduleManager.getByName(name);
+    const name = req.params.name;
+    const data = defaultData;
+    const configs = await Config.getAll();
+    const devices = await Device.getAll();
+    const schedule = ScheduleManager.getByName(name);
     if (configs) {
         configs.forEach(function(cfg) {
             cfg.selected = cfg.name === schedule.config;
@@ -236,17 +225,17 @@ router.get('/schedule/edit/:name', async function(req, res) {
 });
 
 router.get('/schedule/delete/:name', function(req, res) {
-    var data = defaultData;
+    const data = defaultData;
     data.name = req.params.name;
     res.render('schedule-delete', data);
 });
 
 // Settings UI Routes
 router.get('/settings', function(req, res) {
-    var data = defaultData;
+    const data = defaultData;
     data.title = config.title;
-    data.host = config.db.host;
-    data.port = config.db.port;
+    //data.host = config.db.host;
+    //data.port = config.db.port;
     data.db_username = config.db.username;
     data.db_password = config.db.password;
     data.database = config.db.database;
@@ -266,8 +255,11 @@ router.get('/settings', function(req, res) {
     data.languages.forEach(function(locale) {
         locale.selected = locale.name === config.locale;
     });
+    data.listeners = (config.listeners || '').join(',');
+    data.webhooks = (config.webhooks || '').join(',');
     data.logging = config.logging.enabled ? 'checked' : '';
     data.max_size = config.logging.max_size;
+    data.log_format = config.logging.format;
     res.render('settings', data);
 });
 

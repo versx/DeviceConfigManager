@@ -33,8 +33,7 @@ router.use(function(req, res, next) {
 
 // Authentication API Route
 router.post('/login', async function(req, res) {
-    var username = req.body.username;
-    var password = req.body.password;
+    const { username, password } = req.body;
     if (username && password) {
         var result = await Account.getAccount(username, password);
         if (result) {
@@ -52,21 +51,17 @@ router.post('/login', async function(req, res) {
 });
 
 router.post('/account/change_password/:username', async function(req, res) {
-    var username = req.params.username;
-    var oldPassword = req.body.old_password;
-    var password = req.body.password;
-    var password2 = req.body.password2;
-    //console.log('Username:', username, 'Old Password:', oldPassword, 'New Password:', password, 'Confirm Password:', password2);
+    const { username, oldPassword, password, password2 } = req.body;
     // TODO: show error
     if (password !== password2) {
         console.error('Passwords do not match');
         res.redirect('/account');
         return;
     }
-    var exists = await Account.getAccount(username, oldPassword);
+    const exists = await Account.getAccount(username, oldPassword);
     if (exists) {
         // TODO: Update account in database
-        var result = await Account.changePassword(username, oldPassword, password);
+        const result = await Account.changePassword(username, oldPassword, password);
         if (result) {
             // Success
             console.log(`Successfully changed password for user ${username} from ${oldPassword} to ${password}.`);
@@ -84,29 +79,40 @@ router.post('/account/change_password/:username', async function(req, res) {
 
 // Settings API Routes
 router.post('/settings/change_ui', function(req, res) {
-    var data = req.body;
-    var newConfig = config;
+    const data = req.body;
+    const newConfig = config;
     newConfig.title = data.title;
     newConfig.locale = data.locale;
     newConfig.style = data.style;
     newConfig.logging = {
         enabled: data.logging === 'on',
-        max_size: data.max_size
+        max_size: data.max_size,
+        format: data.log_format
     };
-    fs.writeFileSync(path.resolve(__dirname, '../config.json'), JSON.stringify(newConfig, null, 2));
+    fs.writeFileSync(path.resolve(__dirname, '../config.json'), JSON.stringify(newConfig, null, 4));
+    res.redirect('/settings');
+});
+
+router.post('/settings/change_general', function(req, res) {
+    const data = req.body;
+    const newConfig = config;
+    newConfig.listeners = data.listeners ? data.listeners.split(',') || []: []; // TODO: Better way
+    newConfig.webhooks = data.webhooks ? data.webhooks.split(',') || [] : []; // TODO: Better way
+    fs.writeFileSync(path.resolve(__dirname, '../config.json'), JSON.stringify(newConfig, null, 4));
+    console.log("General settings saved");
     res.redirect('/settings');
 });
 
 router.post('/settings/change_db', function(req, res) {
-    var data = req.body;
-    var newConfig = config;
+    const data = req.body;
+    let newConfig = config;
     newConfig.db.host = data.host;
     newConfig.db.port = data.port;
     newConfig.db.db_username = data.username;
     newConfig.db.db_password = data.password;
     newConfig.db.database = data.database;
     newConfig.db.charset = data.charset;
-    fs.writeFileSync(path.resolve(__dirname, '../config.json'), JSON.stringify(newConfig, null, 2));
+    fs.writeFileSync(path.resolve(__dirname, '../config.json'), JSON.stringify(newConfig, null, 4));
     res.redirect('/settings');
 });
 
@@ -114,18 +120,18 @@ router.post('/settings/change_db', function(req, res) {
 // Device API Routes
 router.get('/devices', async function(req, res) {
     try {
-        var devices = await Device.getAll();
+        const devices = await Device.getAll();
         if (devices) {
             for (var i = 0; i < devices.length; i++) {
-                var device = devices[i];
-                var screenshotPath = path.join(screenshotsDir, device.uuid + '.png');
-                var exists = fs.existsSync(screenshotPath);
+                let device = devices[i];
+                const screenshotPath = path.join(screenshotsDir, device.uuid + '.png');
+                const exists = fs.existsSync(screenshotPath);
                 // Device received a config last 15 minutes
-                var delta = 15 * 60;
-                var isOffline = device.last_seen > (Math.round((new Date()).getTime() / 1000) - delta) ? 0 : 1;
-                var image = isOffline ? '/img/offline.png' : (exists ? `/screenshots/${device.uuid}.png` : '/img/online.png');
-                var lastModified = exists && !isOffline ? (await utils.fileLastModifiedTime(screenshotPath)).toLocaleString() : '';
-                device.image = `<a href='${image}' target='_blank'><img src='${image}' width='auto' height='96' style='margin-left: auto;margin-right: auto;display: block;'/></a><div class='text-center'>${lastModified}</div>`;
+                const delta = 15 * 60;
+                const isOffline = device.last_seen > (Math.round((new Date()).getTime() / 1000) - delta) ? 0 : 1;
+                const image = isOffline ? '/img/offline.png' : (exists ? `/screenshots/${device.uuid}.png` : '/img/online.png');
+                const lastModified = exists && !isOffline ? (await utils.fileLastModifiedTime(screenshotPath)).toLocaleString() : '';
+                device.image = `<img src='${image}' width='auto' height='96' style='margin-left: auto;margin-right: auto;display: block;'/><br><div class='text-center'>${lastModified}</div>`;
                 device.last_seen = utils.getDateTime(device.last_seen);
                 device.buttons = `
                 <div class="btn-group" role="group" style="float: right;">
@@ -141,8 +147,11 @@ router.get('/devices', async function(req, res) {
                 </div>`;
             }
         }
-        var json = JSON.stringify({ data: { devices: devices } });
-        res.send(json);
+        res.json({
+            data: {
+                devices: devices
+            }
+        });
     } catch (e) {
         console.error('Devices error:', e);
     }
@@ -162,17 +171,26 @@ router.post('/devices/mass_action', async function(req, res) {
         res.send('Received restart');
         endpoint = 'restart';
         break;
+    case 'restart_config':
+        console.log('Received restart by config mass action')
+        endpoint = 'restart_config';
+        break;
     default:
         res.send('Error Occurred');
     }
     if (endpoint !== '') {
-        var devices = await Device.getAll();
+        let devices = await Device.getAll();
         if (devices) {
+            const config = req.body.config;
+            // If config was included then filter devices based on config assigned
+            if (config) {
+                console.log("Filtering devices based on config", config);
+                devices = devices.filter(x => x.config === config);
+            }
             devices.forEach(function(device) {
-                var ip = device.clientip;
+                const ip = device.clientip;
                 if (ip) {
-                    // TODO: Get port via config
-                    var host = `http://${ip}:8080/${endpoint}`;
+                    const host = `http://${ip}:8080/${endpoint}`;
                     get(device.uuid, host);
                 }
             });
@@ -181,11 +199,13 @@ router.post('/devices/mass_action', async function(req, res) {
 });
 
 router.post('/device/new', async function(req, res) {
-    var uuid = req.body.uuid;
-    var config = req.body.config || null;
-    var clientip = req.body.clientip || null;
-    var notes = req.body.notes || null;
-    var result = await Device.create(uuid, config, null, clientip, null, null, notes);
+    const { 
+        uuid,
+        config,
+        clientip,
+        notes
+    } = req.body;
+    var result = await Device.create(uuid, config || null, null, clientip || null, null, null, notes || null);
     if (result) {
         // Success
     }
@@ -194,16 +214,18 @@ router.post('/device/new', async function(req, res) {
 });
 
 router.post('/device/edit/:uuid', async function(req, res) {
-    var uuid = req.body.uuid;
-    var config = req.body.config || null;
-    var clientip = req.body.clientip || null;
-    var notes = req.body.notes || null;
-    var device = await Device.getByName(uuid);
+    const {
+        uuid,
+        config,
+        clientip,
+        notes
+    } = req.body;
+    let device = await Device.getByName(uuid);
     if (device) {
-        device.config = config;
-        device.clientip = clientip;
-        device.notes = notes;
-        var result = await device.save();
+        device.config = config || null;
+        device.clientip = clientip || null;
+        device.notes = notes || null;
+        const result = await device.save();
         if (!result) {
             console.error('Failed to update device', uuid);
             return;
@@ -216,8 +238,8 @@ router.post('/device/edit/:uuid', async function(req, res) {
 
 // Kevin screenshot support
 router.post('/device/:uuid/screen', upload.single('file'), function(req, res) {
-    var uuid = req.params.uuid;
-    var fileName = uuid + '.png';
+    const uuid = req.params.uuid;
+    const fileName = uuid + '.png';
     const tempPath = req.file.path;
     const targetPath = path.join(screenshotsDir, fileName);
     if (!fs.existsSync(screenshotsDir)) {
@@ -253,10 +275,10 @@ router.post('/device/:uuid/screen', upload.single('file'), function(req, res) {
 });
 
 router.post('/device/screen/:uuid', function(req, res) {
-    var uuid = req.params.uuid;
-    console.log('Received screen');
-    var data = Buffer.from(req.body.body, 'base64');
-    var screenshotFile = path.resolve(__dirname, '../../screenshots/' + uuid + '.png');
+    const uuid = req.params.uuid;
+    console.log('Received screen', uuid);
+    const data = Buffer.from(req.body.body, 'base64');
+    const screenshotFile = path.resolve(__dirname, '../../screenshots/' + uuid + '.png');
     fs.writeFile(screenshotFile, data, function(err) {
         if (err) {
             console.error('Failed to save screenshot');
@@ -266,8 +288,8 @@ router.post('/device/screen/:uuid', function(req, res) {
 });
 
 router.post('/device/delete/:uuid', async function(req, res) {
-    var uuid = req.params.uuid;
-    var result = await Device.delete(uuid);
+    const uuid = req.params.uuid;
+    const result = await Device.delete(uuid);
     if (result) {
         // Success
     }
@@ -278,29 +300,40 @@ router.post('/device/delete/:uuid', async function(req, res) {
 // Config API requests
 router.get('/configs', async function(req, res) {
     try {
-        var configs = await Config.getAll();
+        let configs = await Config.getAll();
         configs.forEach(function(config) {
             config.is_default = config.is_default ? 'Yes' : 'No';
-            config.buttons = `<a href='/config/edit/${config.name}'><button type='button' class='btn btn-primary'>Edit</button></a>
-                              <a href='/config/delete/${config.name}'><button type='button'class='btn btn-danger'>Delete</button></a>`;
+            config.buttons = `
+            <div class='btn-group' role='group' style='float: right;'>
+                <button id='configActionsDropdown' type='button' class='btn btn-primary dropdown-toggle' data-toggle='dropdown' aria-haspopup='true' aria-expanded='false'>
+                    Actions
+                </button>
+                <div class='dropdown-menu' aria-labelledby='configActionsDropdown'>
+                    <a href='/config/edit/${config.name}' class='dropdown-item btn-primary'>Edit</a>
+                    <a href='/config/delete/${config.name}' class='dropdown-item btn-danger'>Delete</a>
+                    <div class='dropdown-divider'></div>
+                    <button type='button' class='dropdown-item btn btn-danger' onclick='restart("${config.name}")'>Restart Devices</button>
+                </div>
+            </div>
+            `;
         });
-        var json = JSON.stringify({ data: { configs: configs } });
-        res.send(json);
+        res.send({
+            data: {
+                configs: configs
+            }
+        });
     } catch (e) {
         console.error('Configs error:', e);
     }
 });
 
 router.post('/config', async function(req, res) {
-    var data = req.body;
-    var uuid = data.uuid;
-    var iosVersion = data.ios_version;
-    var ipaVersion = data.ipa_version;
-    var device = await Device.getByName(uuid);
-    var noConfig = false;
-    var assignDefault = false;
+    const { uuid, ios_version, ipa_version } = req.body;
+    let device = await Device.getByName(uuid);
+    let noConfig = false;
+    let assignDefault = false;
     // Check for a proxied IP before the normal IP and set the first one that exists
-    var clientip = ((req.headers['x-forwarded-for'] || '').split(', ')[0]) || (req.connection.remoteAddress).match('[0-9]+.[0-9].+[0-9]+.[0-9]+$')[0];
+    const clientip = ((req.headers['x-forwarded-for'] || '').split(', ')[0]) || (req.connection.remoteAddress).match('[0-9]+.[0-9].+[0-9]+.[0-9]+$')[0];
     console.log('[' + new Date().toLocaleString() + ']', 'Client', uuid, 'at', clientip, 'is requesting a config.');
 
     // Check if device config is empty, if not provide it as json response
@@ -311,8 +344,8 @@ router.post('/config', async function(req, res) {
         if (device.clientip === null) {
             device.clientip = clientip;
         }
-        device.iosVersion = iosVersion;
-        device.ipaVersion = ipaVersion;
+        device.iosVersion = ios_version;
+        device.ipaVersion = ipa_version;
         device.save();
         if (device.config) {
             // Nothing to do besides respond with config
@@ -324,8 +357,8 @@ router.post('/config', async function(req, res) {
     } else {
         console.log('Device does not exist, creating...');
         // Device doesn't exist, create db entry
-        var ts = new Date() / 1000;
-        device = await Device.create(uuid, null, ts, clientip, iosVersion, ipaVersion);
+        const ts = new Date() / 1000;
+        device = await Device.create(uuid, null, ts, clientip, ios_version, ipa_version);
         if (device) {
             // Success, assign default config if there is one.
             assignDefault = true;
@@ -336,7 +369,7 @@ router.post('/config', async function(req, res) {
     }
 
     if (assignDefault) {
-        var defaultConfig = await Config.getDefault();
+        const defaultConfig = await Config.getDefault();
         if (defaultConfig !== null) {
             console.log('Assigning device', uuid, 'default config', defaultConfig.name);
             device.config = defaultConfig.name;
@@ -349,27 +382,25 @@ router.post('/config', async function(req, res) {
 
     if (noConfig) {
         console.error('No config assigned to device', uuid, 'and no default config to assign!');
-        var noConfigData = {
+        res.json({
             status: 'error',
             error: 'Device not assigned to config!'
-        };
-        res.send(JSON.stringify(noConfigData));
+        });
         return;
     }
     
-    var c = await Config.getByName(device.config);
+    const c = await Config.getByName(device.config);
     if (c === null) {
         console.error('Failed to grab config', device.config);
-        var noConfigData2 = {
+        res.json({
             status: 'error',
             error: 'Device not assigned to config!'
-        };
-        res.send(JSON.stringify(noConfigData2));
+        });
         return;
     }
 
     // Build json config
-    var json = utils.buildConfig(
+    const json = utils.buildConfig(
         c.provider,
         c.backendUrl,
         c.dataEndpoints,
@@ -389,8 +420,8 @@ router.post('/config', async function(req, res) {
 });
 
 router.post('/config/new', async function(req, res) {
-    var data = req.body;
-    var cfg = await Config.create(
+    const data = req.body;
+    const cfg = await Config.create(
         data.name,
         data.provider,
         data.backend_url,
@@ -419,9 +450,9 @@ router.post('/config/new', async function(req, res) {
 });
 
 router.post('/config/edit/:name', async function(req, res) {
-    var oldName = req.params.name;
-    var data = req.body;
-    var c = await Config.getByName(oldName);
+    const oldName = req.params.name;
+    const data = req.body;
+    const c = await Config.getByName(oldName);
     c.name = data.name;
     c.provider = data.provider;
     c.backendUrl = data.backend_url;
@@ -448,8 +479,8 @@ router.post('/config/edit/:name', async function(req, res) {
 });
 
 router.post('/config/delete/:name', async function(req, res) {
-    var name = req.params.name;
-    var result = await Config.delete(name);
+    const name = req.params.name;
+    const result = await Config.delete(name);
     if (result) {
         // Success
     }
@@ -459,8 +490,8 @@ router.post('/config/delete/:name', async function(req, res) {
 
 // Schedule API requests
 router.get('/schedules', async function(req, res) {
-    var schedules = ScheduleManager.getAll();
-    var list = Object.values(schedules);
+    let schedules = ScheduleManager.getAll();
+    const list = Object.values(schedules);
     if (list) {
         list.forEach(function(schedule) {
             schedule.buttons = `<a href='/schedule/edit/${schedule.name}'><button type='button' class='btn btn-primary'>Edit</button></a>
@@ -468,12 +499,12 @@ router.get('/schedules', async function(req, res) {
             schedule.enabled ? 'Yes' : 'No'; // TODO: Fix yes/no doesn't get set
         });
     }
-    res.send({ data: { schedules: list } });
+    res.json({ data: { schedules: list } });
 });
 
 router.post('/schedule/new', function(req, res) {
-    var data = req.body;
-    var result = ScheduleManager.create(
+    const data = req.body;
+    const result = ScheduleManager.create(
         data.name,
         data.config,
         data.devices,
@@ -492,17 +523,17 @@ router.post('/schedule/new', function(req, res) {
 });
 
 router.post('/schedule/edit/:name', function(req, res) {
-    var data = req.body;
-    var oldName = req.params.name;
-    var name = data.name;
-    var config = data.config;
-    var uuids = data.devices;
-    var startTime = data.start_time;
-    var endTime = data.end_time;
-    var timezone = data.timezone;
-    var nextConfig = data.next_config;
-    var enabled = data.enabled === 'on' ? 1 : 0;
-    var result = ScheduleManager.update(oldName, name, config, uuids, startTime, endTime, timezone, nextConfig, enabled);
+    const data = req.body;
+    const oldName = req.params.name;
+    const name = data.name;
+    const config = data.config;
+    const uuids = data.devices;
+    const startTime = data.start_time;
+    const endTime = data.end_time;
+    const timezone = data.timezone;
+    const nextConfig = data.next_config;
+    const enabled = data.enabled === 'on' ? 1 : 0;
+    const result = ScheduleManager.update(oldName, name, config, uuids, startTime, endTime, timezone, nextConfig, enabled);
     if (result) {
         console.log('Schedule', name, 'updated');
     } else {
@@ -512,8 +543,8 @@ router.post('/schedule/edit/:name', function(req, res) {
 });
 
 router.post('/schedule/delete/:name', function(req, res) {
-    var name = req.params.name;
-    var result = ScheduleManager.delete(name);
+    const name = req.params.name;
+    const result = ScheduleManager.delete(name);
     if (result) {
         // Success
         console.log('Schedule', name, 'deleted');
@@ -522,7 +553,7 @@ router.post('/schedule/delete/:name', function(req, res) {
 });
 
 router.get('/schedule/delete_all', function(req, res) {
-    var result = ScheduleManager.deleteAll();
+    const result = ScheduleManager.deleteAll();
     if (result) {
         // Success
         console.log('All schedules deleted');
@@ -533,7 +564,7 @@ router.get('/schedule/delete_all', function(req, res) {
 
 // Logging API requests
 router.get('/logs/delete_all', function(req, res) {
-    var result = Log.deleteAll();
+    const result = Log.deleteAll();
     if (result) {
         // Success
     }
@@ -541,8 +572,8 @@ router.get('/logs/delete_all', function(req, res) {
 });
 
 router.get('/logs/:uuid', async function(req, res) {
-    var uuid = req.params.uuid;
-    var logs = await Log.getByDevice(uuid);
+    const uuid = req.params.uuid;
+    const logs = await Log.getByDevice(uuid);
     res.send({
         uuid: uuid,
         data: {
@@ -559,8 +590,8 @@ router.post('/log/new', async function(req, res) {
     }
 
     // REVIEW: Update device last_seen?
-    var uuid = req.body.uuid;
-    var messages = req.body.messages;
+    const uuid = req.body.uuid;
+    const messages = req.body.messages;
     if (messages) {
         for (var i = messages.length - 1; i >= 0; i--) {
             logger(uuid).info(messages[i]);
@@ -571,8 +602,8 @@ router.post('/log/new', async function(req, res) {
 });
 
 router.get('/log/delete/:uuid', async function(req, res) {
-    var uuid = req.params.uuid;
-    var result = await Log.delete(uuid);
+    const uuid = req.params.uuid;
+    const result = await Log.delete(uuid);
     if (result) {
         // Success
     }
@@ -580,9 +611,9 @@ router.get('/log/delete/:uuid', async function(req, res) {
 });
 
 router.get('/log/export/:uuid', async function(req, res) {
-    var uuid = req.params.uuid;
-    var logText = '';
-    var logs = await Log.getByDevice(uuid);
+    const uuid = req.params.uuid;
+    let logText = '';
+    const logs = await Log.getByDevice(uuid);
     if (logs) {
         logs.forEach(function(log) {
             logText += `${log.timestamp} ${log.uuid} ${log.message}\n`;
@@ -592,10 +623,10 @@ router.get('/log/export/:uuid', async function(req, res) {
 });
 
 async function get(uuid, url) {
-    var isScreen = url.includes('/screen');
+    const isScreen = url.includes('/screen');
     if (isScreen) {
-        var screenshotFile = path.resolve(__dirname, '../../screenshots/' + uuid + '.png');
-        var fileStream = fs.createWriteStream(screenshotFile);
+        const screenshotFile = path.resolve(__dirname, '../../screenshots/' + uuid + '.png');
+        const fileStream = fs.createWriteStream(screenshotFile);
         request
             .get(url)
             .on('error', function(err) {

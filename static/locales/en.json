@@ -116,5 +116,10 @@
     "Get All Screenshots": "Get All Screenshots",
     "Restart All Devices": "Restart All Devices",
     "Notes": "Notes",
-    "Edit Device": "Edit Device"
+    "Edit Device": "Edit Device",
+    "VIEW": "VIEW",
+    "Log Format": "Log Format",
+    "General": "General",
+    "Remote Listeners": "Remote Listeners",
+    "Webhooks": "Webhooks"
 }

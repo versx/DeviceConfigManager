@@ -36,7 +36,7 @@
         $('body').css('color', 'rgb(255, 255, 255)');
     }
     $(document).ready(function() {
-        const table = $('#table').DataTable( {
+        const table = $('#table').DataTable({
             "ajax": {
                 "url": "/api/configs",
                 "dataSrc": "data.configs",
@@ -55,7 +55,7 @@
             ],
             "colReorder": true,
             "stateSave": true,
-            "paging":   true,
+            "paging": true,
             "lengthMenu": [[25, 50, 100, -1], [25, 50, 100, "All"]],
             "columns": [
                 { "data": "name" },
@@ -67,7 +67,7 @@
                 { "data": "is_default" },
                 { "data": "buttons" }
             ],
-            "info":     true,
+            "info": true,
             "order": [[ 0, "asc" ]],
             "search.caseInsensitive": true,
             "columnDefs": [ {
@@ -76,10 +76,42 @@
             }],
             "responsive": true
         });
-        $('#table').on( 'draw.dt', function () {
-            setTimeout( function () {
+        $('#table').on( 'draw.dt', function() {
+            setTimeout(function() {
                 table.ajax.reload(null, false);
             }, 15 * 1000);
-        } );
-    } );
+        });
+    });
+
+    function restart(config) {
+        console.log("Restarting via client side:", config);
+        $.ajax({
+            url: '/api/devices/mass_action',
+            type: 'POST',
+            data: { 'type': 'restart_config', 'config': config },
+            async: true,
+            success: function(result, textStatus, jqXHR) {
+                console.log('Action response:', result);
+            },
+            error: function(xhr, textStatus, errorThrown) {
+                console.error('Error:', textStatus);
+                console.error('Error Thrown:', errorThrown);
+            }
+        })
+    }
+    function sendMassAction(action) {
+        $.ajax({
+            url: '/api/devices/mass_action',
+            type: 'POST',
+            data: { 'type': action },
+            async: true,
+            success: function(result, textStatus, jqXHR) {
+                console.log('Action response:', result);
+            },
+            error: function(xhr, textStatus, errorThrown) {
+                console.error('Error:', textStatus);
+                console.error('Error Thrown:', errorThrown);
+            } 
+        });
+    }
 </script>
