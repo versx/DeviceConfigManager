@@ -6,18 +6,66 @@
         <h1 align="center" id="header">{{Devices}}</h1>
         <br>
         <div style="width:90%; margin-left:calc(5%);">
-            <div class="btn-group" role="group" style="float: right;">
-                <button id="actionsDropdown" type="button" class="btn btn-primary dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                    Actions
-                </button>
-                <div class="dropdown-menu" aria-labelledby="actionsDropdown">
-                    <a class="dropdown-item" href="/device/new">{{New Device}}</a>
-                    <button type='button' class="dropdown-item" onclick='sendMassAction("screenshot")'>{{Get All Screenshots}}</button>
-                    <button type='button' class="dropdown-item" onclick='sendMassAction("restart")'>{{Restart All Devices}}</button>
-                </div>
-            </div>
+			<div class="row">
+				<div class="col-md-1">
+					Preview Size
+				</div>
+				<div class="col-md-1 input-group">
+						<div class="input-group-prepend">
+							<div class="input-group-text" style="border-color:#32383e;background-color:rgb(33, 37, 41)">
+								<input type="radio" aria-label="Small" name="size" value="48" onChange="changePreviewSize(this);">
+							</div>
+						</div>
+						<div class="input-group-append">
+							<label class="input-group-text" style="border-color:#32383e;background-color:rgb(33, 37, 41);color:white">S</label>
+						</div>
+				</div>
+				<div class="col-md-1 input-group">
+						<div class="input-group-prepend">
+							<div class="input-group-text" style="border-color:#32383e;background-color:rgb(33, 37, 41);color:white">
+								<input type="radio" aria-label="Medium" name="size" value="64" onChange="changePreviewSize(this);">
+							</div>
+						</div>
+						<div class="input-group-append">
+							<label class="input-group-text" style="border-color:#32383e;background-color:rgb(33, 37, 41);color:white">M</label>
+						</div>
+				</div>
+				<div class="col-md-1 input-group">
+						<div class="input-group-prepend">
+							<div class="input-group-text" style="border-color:#32383e;background-color:rgb(33, 37, 41);color:white">
+								<input type="radio" aria-label="Large" name="size" value="96" onChange="changePreviewSize(this);" checked>
+							</div>
+						</div>
+						<div class="input-group-append">
+							<label class="input-group-text" style="border-color:#32383e;background-color:rgb(33, 37, 41);color:white">L</label>
+						</div>
+				</div>
+				<div class="col-md-1 input-group">
+						<div class="input-group-prepend">
+							<div class="input-group-text" style="border-color:#32383e;background-color:rgb(33, 37, 41);color:white">
+								<input type="radio" aria-label="XLarge" name="size" value="144" onChange="changePreviewSize(this);">
+							</div>
+						</div>
+						<div class="input-group-append">
+							<label class="input-group-text" style="border-color:#32383e;background-color:rgb(33, 37, 41);color:white">XL</label>
+						</div>
+				</div>
+				<div class="col-md-7">
+					<div class="btn-group" role="group" style="float: right;">
+						<button id="actionsDropdown" type="button" class="btn btn-primary dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+							Actions
+						</button>
+						<div class="dropdown-menu" aria-labelledby="actionsDropdown">
+							<a class="dropdown-item" href="/device/new">{{New Device}}</a>
+							<button type='button' class="dropdown-item" onclick='sendMassAction("screenshot")'>{{Get All Screenshots}}</button>
+							<button type='button' class="dropdown-item" onclick='sendMassAction("restart")'>{{Restart All Devices}}</button>
+						</div>
+					</div>
+				</div>
+			</div>
             <!--<a href="/device/new" role="button" style="float: right;" class="btn btn-success">{{New Device}}</a>-->
             <br><br>
+			
             <table id="table" class="table table-{{style}} table-striped table-bordered table-hover dt-responsive nowrap" style="position: center; width:100%">
                 <thead class="thead-dark">
                 <tr>
@@ -45,6 +93,15 @@
         $('body').css('color', 'rgb(255, 255, 255)');
         //$('#header').css('color', 'white');
     }
+	function changePreviewSize(size){
+		// Get Images by Class
+		var deviceImages = document.getElementsByClassName('deviceImage');
+		
+		for (var i = 0; i < deviceImages.length; i++) {
+			// Change size(s)
+			deviceImages[i].style.width = size.value + 'px';
+		}
+	}
     $(document).ready(function() {
         const table = $('#table').DataTable( {
             "ajax": {
