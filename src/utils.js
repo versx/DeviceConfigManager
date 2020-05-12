@@ -26,14 +26,14 @@ async function fileExists(path) {
     });
 }
 
-async function fileSize(path) {
+async function fileLastModifiedTime(path) {
     return new Promise(function(resolve, reject) {
         try {
             fs.stat(path, function(err, stats) {
                 if (err) {
                     return reject(err);
                 }
-                resolve(stats.size);
+                resolve(stats.mtime);
             });
         } catch (e) {
             return reject(e);
@@ -46,14 +46,14 @@ function snooze(ms) {
 }
 
 function getDateTime(timestamp) {
-    var unixTimestamp = timestamp * 1000;
-    var d = new Date(unixTimestamp);
+    const unixTimestamp = timestamp * 1000;
+    const d = new Date(unixTimestamp);
     return d.toLocaleDateString('en-US') + ' ' + d.toLocaleTimeString('en-US'); // TODO: locale
 }
 
 function buildConfig(provider, backendUrl, dataEndpoints, token, heartbeatMaxTime, minDelayLogout,
-    accountManager, deployEggs, nearbyTracker, autoLogin) {
-    var obj = {};
+    loggingUrl, loggingPort, accountManager, deployEggs, nearbyTracker, autoLogin) {
+    let obj = {};
     switch (provider) {
     case 'GoCheats':
         obj = {
@@ -75,8 +75,20 @@ function buildConfig(provider, backendUrl, dataEndpoints, token, heartbeatMaxTim
             'auto_login': autoLogin
         };
         break;
+    case 'AI':
+        obj = {
+            'backend_url': backendUrl,
+            'data_endpoints': (dataEndpoints || '').split(',') || [],
+            'backend_secret_token': token,
+            'min_delay_logout': minDelayLogout,
+            'logging_url': loggingUrl,
+            'logging_port': loggingPort,
+            'account_manager': accountManager,
+            'deploy_eggs': deployEggs,
+            'nearby_tracker': nearbyTracker
+        };
     }
-    var json = JSON.stringify(obj);
+    const json = JSON.stringify(obj);
     return json;
 }
 
@@ -94,12 +106,12 @@ function formatBytes(bytes) {
 
 function timeToSeconds(time) {
     if (time) {
-        var split = time.split(':');
+        const split = time.split(':');
         if (split.length === 3) {
-            var hours = parseInt(split[0]);
-            var minutes = parseInt(split[1]);
-            var seconds = parseInt(split[2]);
-            var timeNew = parseInt(hours * 3600 + minutes * 60 + seconds);
+            const hours = parseInt(split[0]);
+            const minutes = parseInt(split[1]);
+            const seconds = parseInt(split[2]);
+            let timeNew = parseInt(hours * 3600 + minutes * 60 + seconds);
             return timeNew;
         }
     }
@@ -107,13 +119,13 @@ function timeToSeconds(time) {
 }
 
 function todaySeconds() {
-    var date = moment();
-    var formattedDate = date.format('HH:mm:ss');
-    var split = formattedDate.split(':');
+    const date = moment();
+    const formattedDate = date.format('HH:mm:ss');
+    const split = formattedDate.split(':');
     if (split.length >= 3) {
-        var hour = parseInt(split[0]) || 0;
-        var minute = parseInt(split[1]) || 0;
-        var second = parseInt(split[2]) || 0;
+        const hour = parseInt(split[0]) || 0;
+        const minute = parseInt(split[1]) || 0;
+        const second = parseInt(split[2]) || 0;
         return hour * 3600 + minute * 60 + second;
     } else {
         return 0;
@@ -123,7 +135,7 @@ function todaySeconds() {
 module.exports = {
     readFile,
     fileExists,
-    fileSize,
+    fileLastModifiedTime,
     snooze,
     getDateTime,
     buildConfig,

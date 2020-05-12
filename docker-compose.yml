@@ -3,6 +3,7 @@ version: '3.2'
 services:
   dcm:
     image: node:12.16.2-alpine
+    restart: unless-stopped
     working_dir: /app
     command:
       - sh
@@ -12,6 +13,8 @@ services:
         npm start
     volumes:
       - .:/app
+      - screenshots:/screenshots
+      - logs:/logs
     ports:
       - "9991:9991"
 
@@ -30,3 +33,5 @@ services:
 
 volumes:
   db_data:
+  screenshots:
+  logs:

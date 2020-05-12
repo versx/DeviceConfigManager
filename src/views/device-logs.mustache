@@ -23,12 +23,11 @@
     </body>
 </html>
 
-<script>
+<script type="text/javascript" src="/js/downloader.js"></script>
+<script type="text/javascript">
     if ("{{style}}" === 'dark') {
         $('body').css('background-color', 'rgb(33, 37, 41)');
         $('body').css('color', 'rgb(255, 255, 255)');
-        //$('#header').css('color', 'white');
-        //$('#message').css('color', 'white');
     }
     $(document).ready(function() {
         const table = $('#table').DataTable( {
@@ -37,6 +36,19 @@
                 "dataSrc": "data.logs",
                 "async": true
             },
+            "dom": "<'row'<'col-sm-12 col-md-6'B><'col-sm-12 col-md-6'f>>" +
+                   "<'row'<'col-sm-12'tr>>" +
+                   "<'row'<'col-sm-12 col-md-5'i><'col-sm-12 col-md-7'p>>",
+            "fixedHeader": {
+                "header": true,
+                "headerOffset": $('.navbar').height() + 15
+            },
+            "buttons": [
+                "colvis",
+                "pageLength"
+            ],
+            "colReorder": true,
+            "stateSave": true,
             "paging":   true,
             "lengthMenu": [[25, 50, 100, -1], [25, 50, 100, "All"]],
             "pageLength": 100,
@@ -44,7 +56,7 @@
                 { "data": "date" },
                 { "data": "message" }
             ],
-            "info":     true,
+            "info": true,
             "order": [[ 0, "desc" ]],
             "search.caseInsensitive": true,
             "columnDefs": [ {
@@ -64,7 +76,6 @@
             url: '/api/log/export/{{uuid}}',
             type: 'GET',
             success: function(data, textStatus, jqXHR) {
-                //console.log("RECEIVED:", data);
                 downloader(data, 'html/text', '{{uuid}}.log');
             },
             error: function(jqXHR, textStatus, errorThrown) {
@@ -72,19 +83,5 @@
                 console.error("ERROR THROWN:", errorThrown);
             }
         });
-    }
-
-    function downloader(data, type, name) {
-        let blob = new Blob([data], {type});
-        let url = window.URL.createObjectURL(blob);
-        downloadURI(url, name);
-        window.URL.revokeObjectURL(url);
-    }
-
-    function downloadURI(uri, name) {
-        let link = document.createElement("a");
-        link.download = name;
-        link.href = uri;
-        link.click();
     }
 </script>

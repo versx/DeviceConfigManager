@@ -56,6 +56,11 @@
                         <th><div id='reboot'></div></th>
                     </tr>
                     <tr>
+                        <th>{{Device Logs}}</th>
+                        <th><a href='/device/logs/{{name}}' type='button' class='btn btn-success'>{{VIEW}}</a></th>
+                        <th><div id='logs'></div></th>
+                    </tr>
+                    <tr>
                         <th>{{Send Data for Testing}} (WIP)</th>
                         <th>
                             <form action="http://{{clientip}}:8080/data" method="post">
@@ -118,7 +123,6 @@
     if ("{{style}}" === 'dark') {
         $('body').css('background-color', 'rgb(33, 37, 41)');
         $('body').css('color', 'rgb(255, 255, 255)');
-        //$('#header').css('color', 'white');
     }
 
     function get(id) {
@@ -136,7 +140,6 @@
             dataType: (isScreen || isRestart) ? null : 'json',
             async: true,
             success: function (result, textStatus, jqXHR) {
-                console.log("Url:", url);
                 if (isScreen) {
                     if (result.length < 1) {
                         $('#' + id).attr('src', 'data:image/png;base64,');
@@ -149,7 +152,7 @@
                         binary += String.fromCharCode(responseText.charCodeAt(i) & 255)
                     }
                     $('#' + id).attr('src', 'data:image/png;base64,' + btoa(binary));
-                    $('#' + id).attr('width', 84);
+                    $('#' + id).attr('width', 'auto');
                     $('#' + id).attr('height', 128);
                     sendImageData(id, binary);
                 } else if (url.includes('/account')) {

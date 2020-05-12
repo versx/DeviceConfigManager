@@ -13,8 +13,8 @@ function getLogger(name) {
         return loggers[name];
     }
 
-    var logFilePath = path.resolve(logsDir, name + '.log');
-    var options = {
+    const logFilePath = path.resolve(logsDir, name + '.log');
+    const options = {
         file: {
             level: 'info',
             filename: logFilePath,
@@ -26,7 +26,7 @@ function getLogger(name) {
             timestamp: true
         }
     };
-    var logger = new winston.createLogger({
+    const logger = new winston.createLogger({
         format: winston.format.combine(
             winston.format.timestamp({format: config.logging.format}),
             winston.format.json()

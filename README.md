@@ -24,7 +24,7 @@ You can also pre-create devices and assign configs yourself if needed.
 5.) Run `npm start`  
 6.) Access via http://machineip:port/ using username: `root` and password `pass123!`  
 7.) Change default password via the Settings page  
-8.) (Optional) Setup DCMRemoteListener on the machines the phones are running on to restart the actual device.  
+8.) (Optional) Setup [DCMRemoteListener](https://github.com/versx/DCMRemoteListener) on the machines the phones are running on to restart the actual device.  
 
 ## Updating  
 1.) `git pull`  
@@ -32,7 +32,7 @@ You can also pre-create devices and assign configs yourself if needed.
 3.) Run `npm start`  
 
 ## FAQ
-Q.) Why are devices showing my HAProxy IP address?
+Q.) Why are devices showing my HAProxy IP address?  
 A.) You need to make sure to set `option forwardfor` in your haproxy.cfg file under defaults so the `x-forward-for` header is sent with the request and the real IP is used.  
 
 Q.) Why are devices not connecting to backend or sending data to data endpoints?  
