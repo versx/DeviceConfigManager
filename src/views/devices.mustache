@@ -85,6 +85,7 @@
             localStorage.setItem('previewSize', '96');
 		}
 		$("input[name=size][value=" + previewSize + "]").prop('checked', true);
+              $("input[name='size'][value='" + previewSize + "']").parent().button('toggle');
 		var query = `?previewSize=${previewSize}`;
         const table = $('#table').DataTable( {
             "ajax": {
