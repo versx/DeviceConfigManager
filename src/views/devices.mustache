@@ -107,11 +107,19 @@
 			// Change size(s)
 			deviceImages[i].style.width = size.value + 'px';
 		}
+		localStorage.setItem('previewSize', size.value);
 	}
     $(document).ready(function() {
+        //Localstorage for imagePreview
+		var previewSize = localStorage.getItem('previewSize') !== null ? localStorage.getItem('previewSize') : '96';
+		if (localStorage.getItem('previewSize') == null){
+            localStorage.setItem('previewSize', '96');
+		}
+		$("input[name=size][value=" + previewSize + "]").prop('checked', true);
+		var query = `?previewSize=${previewSize}`;
         const table = $('#table').DataTable( {
             "ajax": {
-                "url": "/api/devices",
+                "url": "/api/devices" + query,
                 "dataSrc": "data.devices",
                 "async": true
             },
@@ -159,6 +167,10 @@
         });
         table.on('draw.dt', function() {
             setTimeout(function () {
+				// On Reload, get the actual preview Size to keep it
+		        previewSize = localStorage.getItem('previewSize') !== null ? localStorage.getItem('previewSize') : '96';
+		        query = `?previewSize=${previewSize}`;
+				table.ajax.url('/api/devices' + query).load();
                 table.ajax.reload(null, false);
             }, 30 * 1000);
         });
