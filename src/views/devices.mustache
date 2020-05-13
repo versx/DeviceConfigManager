@@ -101,12 +101,7 @@
     }
 	function changePreviewSize(size){
 		// Get Images by Class
-		var deviceImages = document.getElementsByClassName('deviceImage');
-		
-		for (var i = 0; i < deviceImages.length; i++) {
-			// Change size(s)
-			deviceImages[i].style.width = size.value + 'px';
-		}
+              $('.deviceImage').width(size.value);
 		localStorage.setItem('previewSize', size.value);
 	}
     $(document).ready(function() {
