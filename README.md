@@ -1,3 +1,4 @@
+![Node.js CI](https://github.com/versx/DeviceConfigManager/workflows/Node.js%20CI/badge.svg)
 # Device Config Manager  
 
 To be used with RealDeviceMap macless solutions.  
