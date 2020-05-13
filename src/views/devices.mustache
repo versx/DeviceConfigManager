@@ -7,49 +7,23 @@
         <br>
         <div style="width:90%; margin-left:calc(5%);">
 			<div class="row">
-				<div class="col-md-1">
-					Preview Size
-				</div>
-				<div class="col-md-1 input-group">
-						<div class="input-group-prepend">
-							<div class="input-group-text" style="border-color:#32383e;background-color:rgb(33, 37, 41)">
-								<input type="radio" aria-label="Small" name="size" value="48" onChange="changePreviewSize(this);">
-							</div>
-						</div>
-						<div class="input-group-append">
-							<label class="input-group-text" style="border-color:#32383e;background-color:rgb(33, 37, 41);color:white">S</label>
-						</div>
-				</div>
-				<div class="col-md-1 input-group">
-						<div class="input-group-prepend">
-							<div class="input-group-text" style="border-color:#32383e;background-color:rgb(33, 37, 41);color:white">
-								<input type="radio" aria-label="Medium" name="size" value="64" onChange="changePreviewSize(this);">
-							</div>
-						</div>
-						<div class="input-group-append">
-							<label class="input-group-text" style="border-color:#32383e;background-color:rgb(33, 37, 41);color:white">M</label>
-						</div>
-				</div>
-				<div class="col-md-1 input-group">
-						<div class="input-group-prepend">
-							<div class="input-group-text" style="border-color:#32383e;background-color:rgb(33, 37, 41);color:white">
-								<input type="radio" aria-label="Large" name="size" value="96" onChange="changePreviewSize(this);" checked>
-							</div>
-						</div>
-						<div class="input-group-append">
-							<label class="input-group-text" style="border-color:#32383e;background-color:rgb(33, 37, 41);color:white">L</label>
-						</div>
-				</div>
-				<div class="col-md-1 input-group">
-						<div class="input-group-prepend">
-							<div class="input-group-text" style="border-color:#32383e;background-color:rgb(33, 37, 41);color:white">
-								<input type="radio" aria-label="XLarge" name="size" value="144" onChange="changePreviewSize(this);">
-							</div>
-						</div>
-						<div class="input-group-append">
-							<label class="input-group-text" style="border-color:#32383e;background-color:rgb(33, 37, 41);color:white">XL</label>
-						</div>
-				</div>
+                <div class="col">
+                    Preview Size
+                    <div class="btn-group btn-group-toggle" data-toggle="buttons">
+                        <label class="btn btn-secondary">
+                            <input type="radio" name="size" value="32" onchange="changePreviewSize(this)" autocomplete="off"> S
+                        </label>
+                        <label class="btn btn-secondary">
+                            <input type="radio" name="size" value="64" onchange="changePreviewSize(this)" autocomplete="off"> M
+                        </label>
+                        <label class="btn btn-secondary">
+                            <input type="radio" name="size" value="96" onchange="changePreviewSize(this)" autocomplete="off"> L
+                        </label>
+                        <label class="btn btn-secondary">
+                            <input type="radio" name="size" value="144" onchange="changePreviewSize(this)" autocomplete="off"> XL
+                        </label>
+                    </div>
+                </div>
 				<div class="col-md-7">
 					<div class="btn-group" role="group" style="float: right;">
 						<button id="actionsDropdown" type="button" class="btn btn-primary dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
