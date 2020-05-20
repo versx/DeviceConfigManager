@@ -6,24 +6,47 @@
         <h1 align="center" id="header">{{Devices}}</h1>
         <br>
         <div style="width:90%; margin-left:calc(5%);">
-            <div class="btn-group" role="group" style="float: right;">
-                <button id="actionsDropdown" type="button" class="btn btn-primary dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                    Actions
-                </button>
-                <div class="dropdown-menu" aria-labelledby="actionsDropdown">
-                    <a class="dropdown-item" href="/device/new">{{New Device}}</a>
-                    <button type='button' class="dropdown-item" onclick='sendMassAction("screenshot")'>{{Get All Screenshots}}</button>
-                    <button type='button' class="dropdown-item" onclick='sendMassAction("restart")'>{{Restart All Devices}}</button>
-                    <!--
-                    <div class="dropdown-divider"></div>
-                    <div class="form-check dropdown-item">
-                        <input type="checkbox" class="form-check-input" data-toggle="toggle" onchange="onCheckChanged(this)" checked>
-                        <label class="form-check-label" for="show_screenshots">Show Screenshots</label>
+			<div class="row">
+                <div class="col">
+                    Preview Size
+                    <div class="btn-group btn-group-toggle" data-toggle="buttons">
+                        <label class="btn btn-secondary">
+                            <input type="radio" name="size" value="32" onchange="changePreviewSize(this)" autocomplete="off"> S
+                        </label>
+                        <label class="btn btn-secondary">
+                            <input type="radio" name="size" value="64" onchange="changePreviewSize(this)" autocomplete="off"> M
+                        </label>
+                        <label class="btn btn-secondary">
+                            <input type="radio" name="size" value="96" onchange="changePreviewSize(this)" autocomplete="off"> L
+                        </label>
+                        <label class="btn btn-secondary">
+                            <input type="radio" name="size" value="144" onchange="changePreviewSize(this)" autocomplete="off"> XL
+                        </label>
                     </div>
-                    -->
                 </div>
-            </div>
+                              <div class="col">
+					<div class="btn-group" role="group" style="float: right;">
+						<button id="actionsDropdown" type="button" class="btn btn-primary dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+							Actions
+						</button>
+						<div class="dropdown-menu" aria-labelledby="actionsDropdown">
+							<a class="dropdown-item" href="/device/new">{{New Device}}</a>
+							<button type='button' class="dropdown-item" onclick='sendMassAction("screenshot")'>{{Get All Screenshots}}</button>
+							<button type='button' class="dropdown-item" onclick='sendMassAction("restart")'>{{Restart All Devices}}</button>
+							<!--
+							<div class="dropdown-divider"></div>
+							<div class="form-check dropdown-item">
+								<input type="checkbox" class="form-check-input" data-toggle="toggle" onchange="onCheckChanged(this)" checked>
+								<label class="form-check-label" for="show_screenshots">Show Screenshots</label>
+							</div>
+							-->
+						</div>
+					</div>
+				</div>
+			</div>
+            <!--<a href="/device/new" role="button" style="float: right;" class="btn btn-success">{{New Device}}</a>-->
             <br><br>
+			
             <table id="table" class="table table-{{style}} table-striped table-bordered table-hover dt-responsive nowrap" style="position: center; width:100%">
                 <thead class="thead-dark">
                 <tr>
@@ -50,10 +73,23 @@
         $('body').css('background-color', 'rgb(33, 37, 41)');
         $('body').css('color', 'rgb(255, 255, 255)');
     }
+	function changePreviewSize(size){
+		// Get Images by Class
+              $('.deviceImage').width(size.value);
+		localStorage.setItem('previewSize', size.value);
+	}
     $(document).ready(function() {
+        //Localstorage for imagePreview
+		var previewSize = localStorage.getItem('previewSize') !== null ? localStorage.getItem('previewSize') : '96';
+		if (localStorage.getItem('previewSize') == null){
+            localStorage.setItem('previewSize', '96');
+		}
+		$("input[name=size][value=" + previewSize + "]").prop('checked', true);
+              $("input[name='size'][value='" + previewSize + "']").parent().button('toggle');
+		var query = `?previewSize=${previewSize}`;
         const table = $('#table').DataTable( {
             "ajax": {
-                "url": "/api/devices",
+                "url": "/api/devices" + query,
                 "dataSrc": "data.devices",
                 "async": true
             },
@@ -101,6 +137,10 @@
         });
         table.on('draw.dt', function() {
             setTimeout(function () {
+				// On Reload, get the actual preview Size to keep it
+		        previewSize = localStorage.getItem('previewSize') !== null ? localStorage.getItem('previewSize') : '96';
+		        query = `?previewSize=${previewSize}`;
+				table.ajax.url('/api/devices' + query).load();
                 table.ajax.reload(null, false);
             }, 30 * 1000);
         });
