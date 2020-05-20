@@ -9,7 +9,7 @@ const utils = require('../utils.js');
 const schedulesFile = path.resolve(__dirname, '../schedules.json');
 const scheduleCheckInterval = 60 * 1000;
 
-var lastUpdate = -2;
+let lastUpdate = -2;
 
 if (!fs.existsSync(schedulesFile)) {
     fs.writeFileSync(schedulesFile, '{}');

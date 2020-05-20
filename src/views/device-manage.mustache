@@ -126,11 +126,11 @@
     }
 
     function get(id) {
-        var clientip = $('#client_ip').val();
-        var url = `http://${clientip}:8080/${id}`;
-        var uuid = '{{uuid}}';
-        var isScreen = url.includes('/screen');
-        var isRestart = url.includes('/restart');
+        const clientip = $('#client_ip').val();
+        const url = `http://${clientip}:8080/${id}`;
+        const uuid = '{{uuid}}';
+        const isScreen = url.includes('/screen');
+        const isRestart = url.includes('/restart');
         $.ajax({
             url: url,
             type: 'GET',
@@ -145,10 +145,10 @@
                         $('#' + id).attr('src', 'data:image/png;base64,');
                         return;
                     }
-                    var binary = "";
-                    var responseText = jqXHR.responseText;
-                    var responseTextLen = responseText.length;
-                    for ( i = 0; i < responseTextLen; i++ ) {
+                    let binary = "";
+                    const responseText = jqXHR.responseText;
+                    const responseTextLen = responseText.length;
+                    for (let i = 0; i < responseTextLen; i++ ) {
                         binary += String.fromCharCode(responseText.charCodeAt(i) & 255)
                     }
                     $('#' + id).attr('src', 'data:image/png;base64,' + btoa(binary));
@@ -156,7 +156,7 @@
                     $('#' + id).attr('height', 128);
                     sendImageData(id, binary);
                 } else if (url.includes('/account')) {
-                    var text = '';
+                    let text = '';
                     if (result.username) {
                         text += 'Username: ' + result.username;
                     }
@@ -166,8 +166,6 @@
                     $('#' + id).text(text);
                 } else if (isRestart) {
                     $('#' + id).text('Restarted');
-                } else if (isReboot) {
-                    $('#' + id).text('Rebooted');
                 } else {
                     $('#' + id).text(JSON.stringify(result, null, 2));
                 }
@@ -181,14 +179,14 @@
     }
 
     function reboot() {
-        var listeners = '{{listeners}}'.replace('&#x2F;', '/') // TODO: No mickey mouse
+        const listeners = '{{listeners}}'.replace('&#x2F;', '/') // TODO: No mickey mouse
                                        .replace('&#x2F;', '/')
                                        .replace('&#x2F;', '/')
                                        .split(',');
         console.log("Listeners:", listeners);
-        for (var i = 0; i < listeners.length; i++) {
-            var url = listeners[i];
-            var data = JSON.stringify({ 'type': 'restart', 'device': '{{name}}' });
+        for (let i = 0; i < listeners.length; i++) {
+            const url = listeners[i];
+            const data = JSON.stringify({ 'type': 'restart', 'device': '{{name}}' });
             console.log('Sending reboot request to remote listener at', url);
             $.ajax({
                 url: url,

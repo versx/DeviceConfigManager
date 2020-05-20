@@ -35,7 +35,7 @@ router.use(function(req, res, next) {
 router.post('/login', async function(req, res) {
     const { username, password } = req.body;
     if (username && password) {
-        var result = await Account.getAccount(username, password);
+        const result = await Account.getAccount(username, password);
         if (result) {
             req.session.loggedin = true;
             req.session.username = username;
@@ -124,7 +124,7 @@ router.get('/devices', async function(req, res) {
         const devices = await Device.getAll();
 		let previewSize = req.query.previewSize;
         if (devices) {
-            for (var i = 0; i < devices.length; i++) {
+            for (let i = 0; i < devices.length; i++) {
                 let device = devices[i];
                 const screenshotPath = path.join(screenshotsDir, device.uuid + '.png');
                 const exists = fs.existsSync(screenshotPath);
@@ -160,8 +160,8 @@ router.get('/devices', async function(req, res) {
 });
 
 router.post('/devices/mass_action', async function(req, res) {
-    var type = req.body.type;
-    var endpoint = '';
+    const type = req.body.type;
+    let endpoint = '';
     switch (type) {
     case 'screenshot':
         console.log('Received screenshot mass action');
@@ -207,7 +207,7 @@ router.post('/device/new', async function(req, res) {
         clientip,
         notes
     } = req.body;
-    var result = await Device.create(uuid, config || null, null, clientip || null, null, null, notes || null);
+    const result = await Device.create(uuid, config || null, null, clientip || null, null, null, notes || null);
     if (result) {
         // Success
     }
@@ -592,10 +592,9 @@ router.post('/log/new', async function(req, res) {
     }
 
     // REVIEW: Update device last_seen?
-    const uuid = req.body.uuid;
-    const messages = req.body.messages;
+    const { uuid, messages } = req.body;
     if (messages) {
-        for (var i = messages.length - 1; i >= 0; i--) {
+        for (let i = messages.length - 1; i >= 0; i--) {
             logger(uuid).info(messages[i]);
             //console.log('[SYSLOG]', messages[i]);
         }

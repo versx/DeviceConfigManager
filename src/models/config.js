@@ -21,7 +21,6 @@ class Config {
         this.isDefault = isDefault;
     }
     static async getAll() {
-        //var configs = await query('SELECT * FROM configs');
         const sql = `
         SELECT name, backend_url, provider, data_endpoints, token, heartbeat_max_time, min_delay_logout,
                logging_url, logging_port, account_manager, deploy_eggs, nearby_tracker, auto_login, is_default, devices

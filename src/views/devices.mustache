@@ -24,7 +24,7 @@
                         </label>
                     </div>
                 </div>
-                              <div class="col">
+                <div class="col">
 					<div class="btn-group" role="group" style="float: right;">
 						<button id="actionsDropdown" type="button" class="btn btn-primary dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
 							Actions
@@ -44,7 +44,6 @@
 					</div>
 				</div>
 			</div>
-            <!--<a href="/device/new" role="button" style="float: right;" class="btn btn-success">{{New Device}}</a>-->
             <br><br>
 			
             <table id="table" class="table table-{{style}} table-striped table-bordered table-hover dt-responsive nowrap" style="position: center; width:100%">
@@ -75,18 +74,17 @@
     }
 	function changePreviewSize(size){
 		// Get Images by Class
-              $('.deviceImage').width(size.value);
+        $('.deviceImage').width(size.value);
 		localStorage.setItem('previewSize', size.value);
 	}
     $(document).ready(function() {
         //Localstorage for imagePreview
-		var previewSize = localStorage.getItem('previewSize') !== null ? localStorage.getItem('previewSize') : '96';
+		let previewSize = localStorage.getItem('previewSize') !== null ? localStorage.getItem('previewSize') : '96';
 		if (localStorage.getItem('previewSize') == null){
             localStorage.setItem('previewSize', '96');
 		}
-		$("input[name=size][value=" + previewSize + "]").prop('checked', true);
-              $("input[name='size'][value='" + previewSize + "']").parent().button('toggle');
-		var query = `?previewSize=${previewSize}`;
+        $("input[name='size'][value='" + previewSize + "']").parent().button('toggle');
+		const query = `?previewSize=${previewSize}`;
         const table = $('#table').DataTable( {
             "ajax": {
                 "url": "/api/devices" + query,
@@ -141,7 +139,6 @@
 		        previewSize = localStorage.getItem('previewSize') !== null ? localStorage.getItem('previewSize') : '96';
 		        query = `?previewSize=${previewSize}`;
 				table.ajax.url('/api/devices' + query).load();
-                table.ajax.reload(null, false);
             }, 30 * 1000);
         });
     });
@@ -162,7 +159,7 @@
     }
     /*
     function onCheckChanged(checkbox) {
-        var checked = checkbox.checked;
+        const checked = checkbox.checked;
         if (checked) {
             // TODO: Show screenshots
         } else {
@@ -170,6 +167,6 @@
         }
     }
     */
-    //var buttons = document.getElementsByClassName('buttons-colvis')[0].innerText = 'Columns';
+    //const buttons = document.getElementsByClassName('buttons-colvis')[0].innerText = 'Columns';
     //$('.buttons-colvis').children()[0].text('Columns');
 </script>
