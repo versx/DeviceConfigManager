@@ -6,7 +6,7 @@ const logger = require('./logger.js');
 const config = require('../config.json');
 const Device = require('../models/device.js');
 const utils = require('../utils.js');
-const devicesCheckInterval = (config.monitor.interval || 5) * 60 * 1000; // Check every 5 minutes
+const devicesCheckInterval = (parseInt(config.monitor.interval) || 5) * 60 * 1000; // Check every 5 minutes
 const delta = 15 * 60;
 let lastUpdate = -2;
 
@@ -27,17 +27,18 @@ class DeviceMonitor {
             if (isOffline) {
                 // If restart for device monitor is enabled, automatically send restart device command if offline.
                 if (config.monitor.restart) {
-                    var listeners = config.listeners;
+                    const listeners = config.listeners;
+                    logger('dcm').info(`Listeners: ${listeners}`);
                     for (let i = 0; i < listeners.length; i++) {
                         const url = listeners[i];
+                        logger('dcm').info(`Sending reboot request to remote listener at ${url}`);
                         const options = {
                             url: url,
                             json: true,
                             method: 'POST',
-                            body: JSON.stringify({ 'type': 'restart', 'device': device.uuid }),
+                            body: { 'type': 'restart', 'device': device.uuid },
                             headers: { 'Accept': 'application/json', 'Content-Type': 'application/json' },
                         };
-                        logger('dcm').info(`Sending reboot request to remote listener at ${url}`);
                         /* eslint-disable no-unused-vars */
                         request(options, (err, res, body) => {
                         /* eslint-enable no-unused-vars */
