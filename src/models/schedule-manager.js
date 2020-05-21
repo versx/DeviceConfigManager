@@ -4,7 +4,7 @@ const fs = require('fs');
 const path = require('path');
 
 const Device = require('./device.js');
-const logger = require('../services/logger.js')
+const logger = require('../services/logger.js');
 const utils = require('../utils.js');
 
 const schedulesFile = path.resolve(__dirname, '../schedules.json');

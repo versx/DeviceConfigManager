@@ -28,8 +28,6 @@ DeviceMonitor.checkDevices();
 // TODO: Fix front page offline devices table on mobile
 // TODO: Success/error responses
 // TODO: Timezone config option for times
-// TODO: Error check clientip
-// TODO: Better mysql error handling
 
 
 run();

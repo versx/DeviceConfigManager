@@ -98,7 +98,7 @@ router.post('/settings/change_general', function(req, res) {
         format: data.log_format
     };
     fs.writeFileSync(path.resolve(__dirname, '../config.json'), JSON.stringify(newConfig, null, 4));
-    logger('dcm').info("General settings saved");
+    logger('dcm').info('General settings saved');
     res.redirect('/settings');
 });
 
@@ -119,9 +119,8 @@ router.post('/settings/change_db', function(req, res) {
 // Device API Routes
 router.get('/devices', async function(req, res) {
     try {
-        
         const devices = await Device.getAll();
-		let previewSize = req.query.previewSize;
+        let previewSize = req.query.previewSize;
         if (devices) {
             for (let i = 0; i < devices.length; i++) {
                 let device = devices[i];
@@ -173,7 +172,7 @@ router.post('/devices/mass_action', async function(req, res) {
         endpoint = 'restart';
         break;
     case 'restart_config':
-        logger('dcm').info('Received restart by config mass action')
+        logger('dcm').info('Received restart by config mass action');
         endpoint = 'restart_config';
         break;
     default:
@@ -200,6 +199,7 @@ router.post('/devices/mass_action', async function(req, res) {
 });
 
 router.post('/device/new', async function(req, res) {
+    const data = req.body;
     const result = await Device.create(
         data.uuid,
         data.config || null,

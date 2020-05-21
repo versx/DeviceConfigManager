@@ -1,6 +1,7 @@
 'use strict';
 
 const mysql = require('mysql');
+const logger = require('./logger.js');
 const config = require('../config.json');
 
 function getConnection() {

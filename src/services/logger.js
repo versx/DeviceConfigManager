@@ -19,7 +19,9 @@ function getLogger(name) {
         //minLength: 4096, // Buffer before writing
         sync: false,
         formatters: {
+            /* eslint-disable no-unused-vars */
             level (label, number) {
+            /* eslint-enable no-unused-vars */
                 return { level: label };
             }
         }
