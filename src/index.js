@@ -28,8 +28,8 @@ DeviceMonitor.checkDevices();
 // TODO: Fix front page offline devices table on mobile
 // TODO: Success/error responses
 // TODO: Timezone config option for times
-// TODO: MaxListenersExceededWarning: Possible EventEmitter memory leak detected. 11 uncaughtException listeners added. Use emitter.setMaxListeners() to increase limit
-// TODO: Add DCM version to front page
+// TODO: Error check clientip
+// TODO: Better mysql error handling
 
 
 run();
