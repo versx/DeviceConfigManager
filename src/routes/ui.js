@@ -123,7 +123,7 @@ router.get('/device/manage/:uuid', async function(req, res) {
         if (device.clientip) {
             data.clientip = device.clientip;
         } else {
-            console.error('Failed to get IP address.');
+            logger('dcm').error('Failed to get IP address.');
         }
     }
     res.render('device-manage', data);
@@ -261,6 +261,10 @@ router.get('/settings', function(req, res) {
     data.max_size = config.logging.max_size;
     data.log_format = config.logging.format;
     res.render('settings', data);
+});
+
+router.get('/logs', function(req, res) {
+    res.render('logs', defaultData);
 });
 
 module.exports = router;

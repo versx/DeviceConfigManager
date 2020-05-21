@@ -15,13 +15,13 @@ function getConnection() {
     
     conn.connect(function(err) {
         if (err) {
-            console.log('Error connecting to database');
+            logger('dcm').info('Error connecting to database');
             return;
         }
     });
     
     conn.on('error', function(err) {
-        console.error('Mysql error:', err);
+        logger('dcm').error('Mysql error:', err);
     });
     return conn;
 }
@@ -42,7 +42,7 @@ function query(sql, args) {
             resolve(rows);
             conn.end(function(err, args) {
                 if (err) {
-                    console.error('Failed to close mysql connection:', args);
+                    logger('dcm').error('Failed to close mysql connection:', args);
                     return;
                 }
             });

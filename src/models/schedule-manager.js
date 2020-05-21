@@ -66,10 +66,10 @@ class ScheduleManager {
         try {
             const json = JSON.stringify(schedules, null, 2);
             fs.writeFileSync(schedulesFile, json);
-            console.log('Schedules list updated');
+            logger('dcm').info('Schedules list updated');
             return true;
         } catch (e) {
-            console.error('save:', e);
+            logger('dcm').error('save:', e);
         }
         return false;
     }
@@ -88,8 +88,8 @@ class ScheduleManager {
         values.forEach(async function(schedule) {
             const startTimeSeconds = utils.timeToSeconds(schedule.start_time);
             const endTimeSeconds = utils.timeToSeconds(schedule.end_time);
-            console.log('Now:', now, 'Last Update:', lastUpdate, 'Start:', startTimeSeconds, 'End:', endTimeSeconds);
-            console.log('Triggering schedule', schedule.name, 'in', startTimeSeconds - now, 'seconds');
+            logger('dcm').info('Now:', now, 'Last Update:', lastUpdate, 'Start:', startTimeSeconds, 'End:', endTimeSeconds);
+            logger('dcm').info('Triggering schedule', schedule.name, 'in', startTimeSeconds - now, 'seconds');
             if (schedule.enabled) {
                 if (startTimeSeconds !== 0 &&
                     endTimeSeconds !== 0 &&
@@ -110,7 +110,7 @@ class ScheduleManager {
         lastUpdate = parseInt(now);
     }
     static async triggerSchedule(schedule, config) {
-        console.log('Running schedule for', schedule, 'to assign config', config);
+        logger('dcm').info('Running schedule for', schedule, 'to assign config', config);
         if (schedule.uuids) {
             const uuids = Array.isArray(schedule.uuids) ? schedule.uuids : [schedule.uuids];
             uuids.forEach(async function(uuid) {
@@ -121,9 +121,9 @@ class ScheduleManager {
                     const result = await device.save();
                     if (result) {
                         // Success
-                        console.log('Device', uuid, 'assigned config', config, 'successfully');
+                        logger('dcm').info('Device', uuid, 'assigned config', config, 'successfully');
                     } else {
-                        console.error('Failed to assign device', uuid, 'config', config);
+                        logger('dcm').error('Failed to assign device', uuid, 'config', config);
                     }
                 }
             });

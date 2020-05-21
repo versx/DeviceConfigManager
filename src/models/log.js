@@ -45,9 +45,9 @@ class Log {
         if (exists) {
             fs.truncate(logFile, 0, function(err) { 
                 if (err) {
-                    console.error('Failed to clear log file', logFile);
+                    logger('dcm').error('Failed to clear log file', logFile);
                 } else {
-                    console.log('Cleared', uuid, 'log file.');
+                    logger('dcm').info('Cleared', uuid, 'log file.');
                 }
             });
             //fs.unlinkSync(logFile);
@@ -58,21 +58,21 @@ class Log {
     static deleteAll() {
         fs.readdir(logsDir, function(err, files) {
             if (err) {
-                console.error('Failed to find log directory:', logsDir);
+                logger('dcm').error('Failed to find log directory:', logsDir);
             }
             files.forEach(function(file) {
                 const logFile = path.join(logsDir, file);
                 fs.truncate(logFile, 0, function(err) { 
                     if (err) {
-                        console.error('Failed to clear log file', logFile);
+                        logger('dcm').error('Failed to clear log file', logFile);
                     } else {
-                        console.log('Cleared', logFile);
+                        logger('dcm').info('Cleared', logFile);
                     }
                 });
                 /*
                 fs.unlink(logFile, function(err) {
                     if (err) {
-                        console.error('Failed to delete log file:', logFile);
+                        logger('dcm').error('Failed to delete log file:', logFile);
                     }
                 });
                 */

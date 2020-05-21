@@ -15,6 +15,7 @@ const Migrator = require('./services/migrator.js');
 const apiRoutes = require('./routes/api.js');
 const uiRoutes = require('./routes/ui.js');
 const defaultData = require('./data/default.js');
+const logger = require('./services/logger.js');
 
 const DeviceMonitor = require('./services/device-monitor.js');
 
@@ -119,5 +120,5 @@ async function run() {
     app.use('/', uiRoutes);
 
     // Start listener
-    app.listen(config.port, config.interface, () => console.log(`Listening on port ${config.port}...`));
+    app.listen(config.port, config.interface, () => logger('dcm').info(`Listening on port ${config.port}...`));
 }

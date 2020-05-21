@@ -3,6 +3,7 @@
 const path = require('path');
 const fs = require('fs');
 const query = require('./db.js');
+const logger = require('./logger.js');
 const utils = require('../utils.js');
 
 const migrationsDir = path.resolve(__dirname, '../../migrations');
@@ -16,7 +17,7 @@ class Migrator {
         let done = false;
         while (!done) {
             if (query === undefined || query === null) {
-                console.error(`[DBController] Failed to connect to database (as root) while initializing. Try: ${count}/10`);
+                logger('dcm').error(`[DBController] Failed to connect to database (as root) while initializing. Try: ${count}/10`);
                 if (count === 10) {
                     process.exit(-1);
                 }
@@ -36,7 +37,7 @@ class Migrator {
         await query(createMetadataTableSQL)
             .then(x => x)
             .catch(err => {
-                console.error(`[DBController] Failed to create metadata table: (${err})`);
+                logger('dcm').error(`[DBController] Failed to create metadata table: (${err})`);
                 process.exit(-1);
             });
         
@@ -48,7 +49,7 @@ class Migrator {
         const results = await query(getDBVersionSQL)
             .then(x => x)
             .catch(err => {
-                console.error(`[DBController] Failed to get current database version: (${err})`);
+                logger('dcm').error(`[DBController] Failed to get current database version: (${err})`);
                 process.exit(-1);
             });
         if (results.length > 0) {
@@ -58,7 +59,7 @@ class Migrator {
         }
     
         const newestVersion = this.getNewestDbVersion();
-        console.log('[DbController] Current:', version, 'Latest:', newestVersion);
+        logger('dcm').info('[DbController] Current:', version, 'Latest:', newestVersion);
         this.migrate(version, newestVersion);
     }
     static async getEntries() {
@@ -69,34 +70,34 @@ class Migrator {
     async migrate(fromVersion, toVersion) {
         if (fromVersion < toVersion) {
             // Wait 30 seconds and let user know we are about to migrate the database and for them to make a backup until we handle backups and rollbacks.
-            console.log('[DBController] MIGRATION IS ABOUT TO START IN 30 SECONDS, PLEASE MAKE SURE YOU HAVE A BACKUP!!!');
+            logger('dcm').info('[DBController] MIGRATION IS ABOUT TO START IN 30 SECONDS, PLEASE MAKE SURE YOU HAVE A BACKUP!!!');
             await utils.snooze(30 * 1000);
-            console.log(`[DBController] Migrating database to version ${(fromVersion + 1)}`);
+            logger('dcm').info(`[DBController] Migrating database to version ${(fromVersion + 1)}`);
             let migrateSQL;
             try {
-                var sqlFile = `${migrationsDir}${path.sep}${fromVersion + 1}.sql`;
+                const sqlFile = `${migrationsDir}${path.sep}${fromVersion + 1}.sql`;
                 migrateSQL = await utils.readFile(sqlFile);
                 migrateSQL.replace('\r', '').replace('\n', '');
             } catch (err) {
-                console.error('[DBController] Migration failed:', err);
+                logger('dcm').error('[DBController] Migration failed:', err);
                 process.exit(-1);
             }
             const sqlSplit = migrateSQL.split(';');
             sqlSplit.forEach(async sql => {
-                var msql = sql.replace('&semi', ';').trim();
+                const msql = sql.replace('&semi', ';').trim();
                 if (msql !== '') {
-                    console.log('[DBController] Executing:', msql);
-                    var result = await query(msql)
+                    logger('dcm').info('[DBController] Executing:', msql);
+                    const result = await query(msql)
                         .then(x => x)
                         .catch(async err => {
-                            console.error('[DBController] Migration failed:', err);
+                            logger('dcm').error('[DBController] Migration failed:', err);
                             /*
                             if (noBackup === undefined || noBackup === null || noBackup === false) {
                                 for (let i = 0; i < 10; i++) {
                                     logger.warn(`[DBController] Rolling back migration in ${(10 - i)} seconds`);
                                     await utils.snooze(1000);
                                 }
-                                console.log('[DBController] Rolling back migration now. Do not kill RDM!');
+                                logger('dcm').info('[DBController] Rolling back migration now. Do not kill RDM!');
                             rollback(
                                 backupFileSchema.path.toString(), 
                                 backupFileTrigger.path.toString(), 
@@ -107,7 +108,7 @@ class Migrator {
                             return null;
                             */
                         });
-                    console.log('[DBController] Migration execution result:', result);
+                    logger('dcm').info('[DBController] Migration execution result:', result);
                     await utils.snooze(2000);
                 }
             });
@@ -120,14 +121,14 @@ class Migrator {
             await query(updateVersionSQL)
                 .then(x => x)
                 .catch(err => {
-                    console.error('[DBController] Migration failed:', err);
+                    logger('dcm').error('[DBController] Migration failed:', err);
                     process.exit(-1);
                 });
-            console.log('[DBController] Migration successful');
+            logger('dcm').info('[DBController] Migration successful');
             this.migrate(newVersion, toVersion);
         }
         if (fromVersion === toVersion) {
-            console.log('[DBController] Migration done');
+            logger('dcm').info('[DBController] Migration done');
             this.done = true;
         }
     }
@@ -177,7 +178,7 @@ class Migrator {
             .then(x => x)
             .catch(err => {
                 let message = `Failed to execute query. (${err})`
-                console.error("[DBController] " + message);
+                logger('dcm').error("[DBController] " + message);
                 process.exit(-1);
             });
             let tableKeys = Object.keys(results);
@@ -189,7 +190,7 @@ class Migrator {
                 }
             });
     
-            console.log("[DBController] Creating backup", uuidString);
+            logger('dcm').info("[DBController] Creating backup", uuidString);
             let mysqldumpCommand;
             if (os.type().toLowerCase() === "darwin") {
                 mysqldumpCommand = "/usr/local/opt/mysql@5.7/bin/mysqldump"
@@ -201,21 +202,21 @@ class Migrator {
             let args = ["-c", mysqldumpCommand + ` --set-gtid-purged=OFF --skip-triggers --add-drop-table --skip-routines --no-data ${database} ${tablesShema} -h ${host} -P ${port} -u ${rootUsername} -p${rootPassword.replace("\"", "\\\"") || ""} > ${backupFileSchema.path}`];
             let cmd = executeCommand("bash", args);
             if (cmd) {
-                console.error("[DBController] Failed to create Command Backup: " + cmd);
+                logger('dcm').error("[DBController] Failed to create Command Backup: " + cmd);
                 process.exit(-1);
             }
             // Trigger
             args = ["-c", mysqldumpCommand + ` --set-gtid-purged=OFF --triggers --no-create-info --no-data --skip-routines ${database} ${tablesShema}  -h ${host} -P ${port} -u ${rootUsername} -p${rootPassword.replace("\"", "\\\"") || ""} > ${backupFileTrigger.path}`];
             cmd = executeCommand("bash", args);
             if (cmd) {
-                console.error("[DBController] Failed to create Command Backup: " + cmd);
+                logger('dcm').error("[DBController] Failed to create Command Backup: " + cmd);
                 process.exit(-1);
             }
             // Data
             args = ["-c", mysqldumpCommand + ` --set-gtid-purged=OFF --skip-triggers --skip-routines --no-create-info --skip-routines ${database} ${tablesData}  -h ${host} -P ${port} -u ${rootUsername} -p${rootPassword.replace("\"", "\\\"") || ""} > ${backupFileData.path}`];
             cmd = executeCommand("bash", args);
             if (cmd) {
-                console.error("[DBController] Failed to create Data Backup: " + cmd);
+                logger('dcm').error("[DBController] Failed to create Data Backup: " + cmd);
                 process.exit(-1);
             }
         }
@@ -246,7 +247,7 @@ class Migrator {
         const results = await query(sql, args)
             .then(x => x)
             .catch(err => {
-                console.error('[DbController] Error:', err);
+                logger('dcm').error('[DbController] Error:', err);
                 return null;
             });
         if (results.length === 0) {
@@ -265,10 +266,10 @@ class Migrator {
         const results = await query(sql, args)
             .then(x => x)
             .catch(err => {
-                console.error('[DbController] Error:', err);
+                logger('dcm').error('[DbController] Error:', err);
                 return null;
             });
-        console.log('[DbController] SetValueForKey:', results);
+        logger('dcm').info('[DbController] SetValueForKey:', results);
     }
 }
 

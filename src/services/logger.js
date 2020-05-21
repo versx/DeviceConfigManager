@@ -1,9 +1,8 @@
 'use strict';
 
-const winston = require('winston');
 const pino = require('pino');
 const path = require('path');
-const config = require('../config.json');
+//const config = require('../config.json');
 const logsDir = path.resolve(__dirname, '../../logs');
 
 const loggers = {};
@@ -18,7 +17,12 @@ function getLogger(name) {
     const logger = pino(pino.destination({
         dest: logFilePath,
         //minLength: 4096, // Buffer before writing
-        sync: false
+        sync: false,
+        formatters: {
+            level (label, number) {
+                return { level: label };
+            }
+        }
     }));
     /*
     const options = {

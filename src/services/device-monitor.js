@@ -43,7 +43,7 @@ class DeviceMonitor {
                         function(error, res, body) {
                         /* eslint-enable no-unused-vars */
                             if (error) {
-                                console.error(error);
+                                logger('dcm').error(error);
                                 return;
                             }
                         }
