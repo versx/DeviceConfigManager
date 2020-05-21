@@ -124,7 +124,7 @@ router.get('/device/manage/:uuid', async function(req, res) {
         if (device.clientip) {
             data.clientip = device.clientip;
         } else {
-            logger('dcm').error('Failed to get IP address.');
+            logger('dcm').error(`Failed to get IP address for device ${uuid}`);
         }
     }
     res.render('device-manage', data);
