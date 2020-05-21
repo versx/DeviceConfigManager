@@ -15,6 +15,7 @@
     ],
     "monitor": {
         "enabled": false,
+        "interval": 5,
         "webhooks": [],
         "reboot": false
     },

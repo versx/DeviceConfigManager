@@ -6,7 +6,7 @@ const logger = require('./logger.js');
 const config = require('../config.json');
 const Device = require('../models/device.js');
 const utils = require('../utils.js');
-const devicesCheckInterval = 5 * 60 * 1000; // Check every 5 minutes
+const devicesCheckInterval = (config.monitor.interval || 5) * 60 * 1000; // Check every 5 minutes
 const delta = 15 * 60;
 let lastUpdate = -2;
 
