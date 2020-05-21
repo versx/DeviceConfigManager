@@ -38,7 +38,9 @@ class DeviceMonitor {
                             headers: { 'Accept': 'application/json', 'Content-Type': 'application/json' },
                         };
                         logger('dcm').info(`Sending reboot request to remote listener at ${url}`);
+                        /* eslint-disable no-unused-vars */
                         request(options, (err, res, body) => {
+                        /* eslint-enable no-unused-vars */
                             if (err) {
                                 logger('dcm').error(`Failed to send restart command to remote listener ${url}. Error: ${err}`);
                             }
