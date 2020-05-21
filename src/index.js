@@ -29,6 +29,7 @@ DeviceMonitor.checkDevices();
 // TODO: Timezone config option for times
 // TODO: Fix gap above datatable colvis buttons and prevew buttons
 // TODO: Test/fix schedules changing days
+// TODO: Auto restart devices after 15 minutes of no config. Attempt x amount of times, if failed wait x amount of hours before trying again
 
 
 run();
