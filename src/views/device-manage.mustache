@@ -179,10 +179,7 @@
     }
 
     function reboot() {
-        const listeners = '{{listeners}}'.replace('&#x2F;', '/') // TODO: No mickey mouse
-                                       .replace('&#x2F;', '/')
-                                       .replace('&#x2F;', '/')
-                                       .split(',');
+        var listeners = '{{listeners}}'.replace(/&#x2F;/g, '/').split(',');
         console.log("Listeners:", listeners);
         for (let i = 0; i < listeners.length; i++) {
             const url = listeners[i];

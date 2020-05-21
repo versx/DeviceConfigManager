@@ -60,7 +60,6 @@ router.post('/account/change_password/:username', async function(req, res) {
     }
     const exists = await Account.getAccount(username, oldPassword);
     if (exists) {
-        // TODO: Update account in database
         const result = await Account.changePassword(username, oldPassword, password);
         if (result) {
             // Success
