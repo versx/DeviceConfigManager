@@ -135,4 +135,13 @@
         $('.darkInvert').css('filter', 'invert(100%)');
 		$('.card-body').css('color', 'white')
     }
+    $(document).ready(function() {
+        const table = $('#table').DataTable({
+            "paging": false,
+            "info": false,
+            "order": [[ 0, "asc" ]],
+            "searching": false,
+            "responsive": true
+        });
+    });
 </script>
