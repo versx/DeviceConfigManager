@@ -6,116 +6,148 @@
         <h1 align="center" id="header">{{Settings}}</h1>
         <br>
         <div class="w-75" style="float: none; margin: 0 auto;">
-            <div class="card bg-dark p-1 m-3">
-                <div class="card-header text-center bg-dark"><b>{{User Interface}}</b></div>
-                <div class="card-body">
-                    <div class="container">
-                        <form action="/api/settings/change_ui" method="post">
-                            <div class="form-group">
-                                {{Title}}
-                                <input type="text" class="form-control" name="title" value="{{title}}" placeholder="Device Config Manager" required>
+            <ul class="nav nav-pills justify-content-center">
+                <li class="nav-item">
+                    <a class="nav-link active" data-toggle="pill" href="#general">General</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" data-toggle="pill" href="#ui">User Interface</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" data-toggle="pill" href="#db">Database</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" data-toggle="pill" href="#utilities">Utilities</a>
+                </li>
+            </ul>
+            <div class="tab-content">
+                <!-- Start General Tab -->
+                <div class="tab-pane container active" id="general">
+                    <div class="card bg-dark p-1 m-3">
+                        <div class="card-header text-center bg-dark"><b>{{General}}</b></div>
+                        <div class="card-body">
+                            <div class="container">
+                                <form action="/api/settings/change_general" method="post">
+                                    <div class="form-group">
+                                        {{Remote Listeners}}
+                                        <input type="text" class="form-control" name="listeners" value="{{listeners}}" placeholder="http://127.0.0.1:6542,http://127.0.0.1:6542">
+                                    </div>
+                                    <div class="form-group">
+                                        {{Webhooks}}
+                                        <input type="text" class="form-control" name="webhooks" value="{{webhooks}}" placeholder="">
+                                    </div>
+                                    <br>
+                                    <div class="form-check">
+                                        <input type="checkbox" class="form-check-input" name="logging" {{logging}}>
+                                        <label class="form-check-label" for="logging">{{Enable Device Logging}}</label>
+                                    </div>
+                                    <div class="form-group">
+                                        {{Maximum Log File Size (Per Phone)}}
+                                        <input type="number" class="form-control" name="max_size" value="{{max_size}}" placeholder="5" required>
+                                    </div>
+                                    <div class="form-group">
+                                        {{Log Format}}
+                                        <input type="text" class="form-control" name="log_format" value="{{log_format}}" placeholder="YYYY-MM-DD hh:mm:ss A" required>
+                                    </div>
+                                    <br>
+                                    <button type="submit" class="btn btn-primary">{{Save}}</button>
+                                    <br>
+                                </form>
                             </div>
-                            <div class="form-group">
-                                {{Locale}}
-                                <select class="form-control" name="locale">
-                                    <option value="" {{#nothing_selected}}selected{{/nothing_selected}} disabled hidden>{{Choose a Locale}}</option>
-                                    {{#languages}}
-                                    <option value="{{name}}" {{#selected}}selected{{/selected}}>{{name}}</option>
-                                    {{/languages}}
-                                </select>
-                            </div>
-                            <div class="form-group">
-                                {{Theme}}
-                                <select class="form-control" name="style">
-                                    <option value="" {{#nothing_selected}}selected{{/nothing_selected}} disabled hidden>{{Choose a Theme}}</option>
-                                    {{#styles}}
-                                    <option value="{{name}}" {{#selected}}selected{{/selected}}>{{name}}</option>
-                                    {{/styles}}
-                                </select>
-                            </div>
-                            <br>
-                            <div class="form-check">
-                                <input type="checkbox" class="form-check-input" name="logging" {{logging}}>
-                                <label class="form-check-label" for="logging">{{Enable Device Logging}}</label>
-                            </div>
-                            <div class="form-group">
-                                {{Maximum Log File Size (Per Phone)}}
-                                <input type="number" class="form-control" name="max_size" value="{{max_size}}" placeholder="5" required>
-                            </div>
-                            <div class="form-group">
-                                {{Log Format}}
-                                <input type="text" class="form-control" name="log_format" value="{{log_format}}" placeholder="YYYY-MM-DD hh:mm:ss A" required>
-                            </div>
-                            <br>
-                            <button type="submit" class="btn btn-primary">{{Save}}</button>
-                            <br>
-                        </form>
+                        </div>
                     </div>
                 </div>
-            </div>
-            <div class="card bg-dark p-1 m-3">
-                <div class="card-header text-center bg-dark"><b>{{General}}</b></div>
-                <div class="card-body">
-                    <div class="container">
-                        <form action="/api/settings/change_general" method="post">
-                            <div class="form-group">
-                                {{Remote Listeners}}
-                                <input type="text" class="form-control" name="listeners" value="{{listeners}}" placeholder="http://127.0.0.1:6542,http://127.0.0.1:6542">
+                <!-- End General Tab -->
+                <!-- Start UI Tab -->
+                <div class="tab-pane container" id="ui">
+                    <div class="card bg-dark p-1 m-3">
+                        <div class="card-header text-center bg-dark"><b>{{User Interface}}</b></div>
+                        <div class="card-body">
+                            <div class="container">
+                                <form action="/api/settings/change_ui" method="post">
+                                    <div class="form-group">
+                                        {{Title}}
+                                        <input type="text" class="form-control" name="title" value="{{title}}" placeholder="Device Config Manager" required>
+                                    </div>
+                                    <div class="form-group">
+                                        {{Locale}}
+                                        <select class="form-control" name="locale">
+                                            <option value="" {{#nothing_selected}}selected{{/nothing_selected}} disabled hidden>{{Choose a Locale}}</option>
+                                            {{#languages}}
+                                            <option value="{{name}}" {{#selected}}selected{{/selected}}>{{name}}</option>
+                                            {{/languages}}
+                                        </select>
+                                    </div>
+                                    <div class="form-group">
+                                        {{Theme}}
+                                        <select class="form-control" name="style">
+                                            <option value="" {{#nothing_selected}}selected{{/nothing_selected}} disabled hidden>{{Choose a Theme}}</option>
+                                            {{#styles}}
+                                            <option value="{{name}}" {{#selected}}selected{{/selected}}>{{name}}</option>
+                                            {{/styles}}
+                                        </select>
+                                    </div>
+                                    <br>
+                                    <button type="submit" class="btn btn-primary">{{Save}}</button>
+                                    <br>
+                                </form>
                             </div>
-                            <div class="form-group">
-                                {{Webhooks}}
-                                <input type="text" class="form-control" name="webhooks" value="{{webhooks}}" placeholder="">
-                            </div>
-                            <br>
-                            <button type="submit" class="btn btn-primary">{{Save}}</button>
-                            <br>
-                        </form>
+                        </div>
                     </div>
                 </div>
-            </div>
-            <div class="card bg-dark p-1 m-3">
-                <div class="card-header text-center bg-dark"><b>{{Database}}</b></div>
-                <div class="card-body">
-                    <div class="container">
-                        <form action="/api/settings/change_db" method="post">
-                            <div class="form-group">
-                                {{Host}}
-                                <input type="text" class="form-control" name="host" value="{{host}}" placeholder="127.0.0.1" required>
+                <!-- End UI Tab -->
+                <!-- Start Database Tab -->
+                <div class="tab-pane container" id="db">
+                    <div class="card bg-dark p-1 m-3">
+                        <div class="card-header text-center bg-dark"><b>{{Database}}</b></div>
+                        <div class="card-body">
+                            <div class="container">
+                                <form action="/api/settings/change_db" method="post">
+                                    <div class="form-group">
+                                        {{Host}}
+                                        <input type="text" class="form-control" name="host" value="{{host}}" placeholder="127.0.0.1" required>
+                                    </div>
+                                    <div class="form-group">
+                                        Port
+                                        <input type="number" class="form-control" name="port" value="{{port}}" placeholder="3306" required>
+                                    </div>
+                                    <div class="form-group">
+                                        {{Username}}
+                                        <input type="text" class="form-control" name="db_username" value="{{db_username}}" placeholder="" required>
+                                    </div>
+                                    <div class="form-group">
+                                        {{Password}}
+                                        <input type="password" class="form-control" name="db_password" value="{{db_password}}" placeholder="" required>
+                                    </div>
+                                    <div class="form-group">
+                                        {{Database}}
+                                        <input type="text" class="form-control" name="database" value="{{database}}" placeholder="dcm" required>
+                                    </div>
+                                    <div class="form-group">
+                                        {{Character Set}}
+                                        <input type="text" class="form-control" name="charset" value="{{charset}}" placeholder="utf8mb4" required>
+                                    </div>
+                                    <br>
+                                    <button type="submit" class="btn btn-primary">{{Save}}</button>
+                                    <br>
+                                </form>
                             </div>
-                            <div class="form-group">
-                                Port
-                                <input type="number" class="form-control" name="port" value="{{port}}" placeholder="3306" required>
-                            </div>
-                            <div class="form-group">
-                                {{Username}}
-                                <input type="text" class="form-control" name="db_username" value="{{db_username}}" placeholder="" required>
-                            </div>
-                            <div class="form-group">
-                                {{Password}}
-                                <input type="password" class="form-control" name="db_password" value="{{db_password}}" placeholder="" required>
-                            </div>
-                            <div class="form-group">
-                                {{Database}}
-                                <input type="text" class="form-control" name="database" value="{{database}}" placeholder="dcm" required>
-                            </div>
-                            <div class="form-group">
-                                {{Character Set}}
-                                <input type="text" class="form-control" name="charset" value="{{charset}}" placeholder="utf8mb4" required>
-                            </div>
-                            <br>
-                            <button type="submit" class="btn btn-primary">{{Save}}</button>
-                            <br>
-                        </form>
+                        </div>
                     </div>
                 </div>
-            </div>
-            <div class="card bg-dark p-1 m-3">
-                <div class="card-header text-center bg-dark"><b>Utilities</b></div>
-                <div class="card-body">
-                    <div class="container">
-                        <button type="submit" class="btn btn-danger"><a href="/api/logs/delete_all">Delete All Logs</a></button>
+                <!-- End Database Tab -->
+                <!-- Start Utilities Tab -->
+                <div class="tab-pane container" id="utilities">
+                    <div class="card bg-dark p-1 m-3">
+                        <div class="card-header text-center bg-dark"><b>Utilities</b></div>
+                        <div class="card-body">
+                            <div class="container">
+                                <button type="submit" class="btn btn-danger"><a href="/api/logs/delete_all">Delete All Logs</a></button>
+                            </div>
+                        </div>
                     </div>
                 </div>
+                <!-- End Utilities Tab -->
             </div>
         </div>
     </body>

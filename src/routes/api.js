@@ -84,11 +84,6 @@ router.post('/settings/change_ui', function(req, res) {
     newConfig.title = data.title;
     newConfig.locale = data.locale;
     newConfig.style = data.style;
-    newConfig.logging = {
-        enabled: data.logging === 'on',
-        max_size: data.max_size,
-        format: data.log_format
-    };
     fs.writeFileSync(path.resolve(__dirname, '../config.json'), JSON.stringify(newConfig, null, 4));
     res.redirect('/settings');
 });
@@ -96,8 +91,13 @@ router.post('/settings/change_ui', function(req, res) {
 router.post('/settings/change_general', function(req, res) {
     const data = req.body;
     const newConfig = config;
-    newConfig.listeners = data.listeners ? data.listeners.split(',') || []: []; // TODO: Better way
-    newConfig.webhooks = data.webhooks ? data.webhooks.split(',') || [] : []; // TODO: Better way
+    newConfig.listeners = data.listeners ? data.listeners.split(',') || []: [];
+    newConfig.webhooks = data.webhooks ? data.webhooks.split(',') || [] : [];
+    newConfig.logging = {
+        enabled: data.logging === 'on',
+        max_size: data.max_size,
+        format: data.log_format
+    };
     fs.writeFileSync(path.resolve(__dirname, '../config.json'), JSON.stringify(newConfig, null, 4));
     console.log("General settings saved");
     res.redirect('/settings');
