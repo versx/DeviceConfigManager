@@ -16,6 +16,7 @@ You can also pre-create devices and assign configs yourself if needed.
 ## Supported Providers  
 - GoCheats  
 - Kevin  
+- AI  
 
 ## Installation
 1.) Clone repository `git clone https://github.com/versx/DeviceConfigManager`  

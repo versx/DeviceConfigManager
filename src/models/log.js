@@ -20,10 +20,10 @@ class Log {
         const name = uuid + '.log';
         const logFile = path.resolve(logsDir, name);
         const exists = await utils.fileExists(logFile);
-        if (!exists) {
-            return null;
-        }
         const logs = [];
+        if (!exists) {
+            return logs;
+        }
         const data = await utils.readFile(logFile);
         const split = data.split('\n');
         if (split) {
@@ -32,7 +32,7 @@ class Log {
                     const l = JSON.parse(log);
                     logs.push({
                         message: l.msg,
-                        date: utils.getDateTime(l.time / 1000)
+                        date: utils.getDateTime(l.time)
                     });
                 }
             });

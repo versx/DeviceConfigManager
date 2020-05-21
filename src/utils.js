@@ -2,6 +2,7 @@
 
 const fs = require('fs');
 const moment = require('moment');
+const config = require('./config.json');
 
 async function readFile(path) {
     return new Promise(function(resolve, reject) {
@@ -45,10 +46,10 @@ function snooze(ms) {
     return new Promise(resolve => setTimeout(resolve, ms));
 }
 
-function getDateTime(timestamp) {
-    const unixTimestamp = timestamp * 1000;
-    const d = new Date(unixTimestamp);
-    return d.toLocaleDateString('en-US') + ' ' + d.toLocaleTimeString('en-US'); // TODO: locale
+function getDateTime(date) {
+    const momentDate = moment(date);
+    const formatted = momentDate.format(config.logging.format);
+    return formatted;
 }
 
 function buildConfig(provider, backendUrl, dataEndpoints, token, heartbeatMaxTime, minDelayLogout,
