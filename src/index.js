@@ -28,7 +28,6 @@ DeviceMonitor.checkDevices();
 // TODO: Fix front page offline devices table on mobile
 // TODO: Success/error responses
 // TODO: Timezone config option for times
-// TODO: Listener down, subtle error message instead of stack
 
 
 run();

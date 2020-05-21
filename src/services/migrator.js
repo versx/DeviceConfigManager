@@ -59,7 +59,7 @@ class Migrator {
         }
     
         const newestVersion = this.getNewestDbVersion();
-        logger('dcm').info('[DbController] Current:', version, 'Latest:', newestVersion);
+        logger('dcm').info(`[DbController] Current: ${version}, Latest: ${newestVersion}`);
         this.migrate(version, newestVersion);
     }
     static async getEntries() {
@@ -79,18 +79,18 @@ class Migrator {
                 migrateSQL = await utils.readFile(sqlFile);
                 migrateSQL.replace('\r', '').replace('\n', '');
             } catch (err) {
-                logger('dcm').error('[DBController] Migration failed:', err);
+                logger('dcm').error(`[DBController] Migration failed: ${err}`);
                 process.exit(-1);
             }
             const sqlSplit = migrateSQL.split(';');
             sqlSplit.forEach(async sql => {
                 const msql = sql.replace('&semi', ';').trim();
                 if (msql !== '') {
-                    logger('dcm').info('[DBController] Executing:', msql);
+                    logger('dcm').info(`[DBController] Executing: ${msql}`);
                     const result = await query(msql)
                         .then(x => x)
                         .catch(async err => {
-                            logger('dcm').error('[DBController] Migration failed:', err);
+                            logger('dcm').error(`[DBController] Migration failed: ${err}`);
                             /*
                             if (noBackup === undefined || noBackup === null || noBackup === false) {
                                 for (let i = 0; i < 10; i++) {
@@ -108,7 +108,7 @@ class Migrator {
                             return null;
                             */
                         });
-                    logger('dcm').info('[DBController] Migration execution result:', result);
+                    logger('dcm').info(`[DBController] Migration execution result: ${result}`);
                     await utils.snooze(2000);
                 }
             });
@@ -121,7 +121,7 @@ class Migrator {
             await query(updateVersionSQL)
                 .then(x => x)
                 .catch(err => {
-                    logger('dcm').error('[DBController] Migration failed:', err);
+                    logger('dcm').error(`[DBController] Migration failed: ${err}`);
                     process.exit(-1);
                 });
             logger('dcm').info('[DBController] Migration successful');
@@ -178,7 +178,7 @@ class Migrator {
             .then(x => x)
             .catch(err => {
                 let message = `Failed to execute query. (${err})`
-                logger('dcm').error("[DBController] " + message);
+                logger('dcm').error(`[DBController] ${message}`);
                 process.exit(-1);
             });
             let tableKeys = Object.keys(results);
@@ -190,7 +190,7 @@ class Migrator {
                 }
             });
     
-            logger('dcm').info("[DBController] Creating backup", uuidString);
+            logger('dcm').info(`[DBController] Creating backup ${uuidString}`);
             let mysqldumpCommand;
             if (os.type().toLowerCase() === "darwin") {
                 mysqldumpCommand = "/usr/local/opt/mysql@5.7/bin/mysqldump"
@@ -202,21 +202,21 @@ class Migrator {
             let args = ["-c", mysqldumpCommand + ` --set-gtid-purged=OFF --skip-triggers --add-drop-table --skip-routines --no-data ${database} ${tablesShema} -h ${host} -P ${port} -u ${rootUsername} -p${rootPassword.replace("\"", "\\\"") || ""} > ${backupFileSchema.path}`];
             let cmd = executeCommand("bash", args);
             if (cmd) {
-                logger('dcm').error("[DBController] Failed to create Command Backup: " + cmd);
+                logger('dcm').error(`[DBController] Failed to create Command Backup: ${cmd}`);
                 process.exit(-1);
             }
             // Trigger
             args = ["-c", mysqldumpCommand + ` --set-gtid-purged=OFF --triggers --no-create-info --no-data --skip-routines ${database} ${tablesShema}  -h ${host} -P ${port} -u ${rootUsername} -p${rootPassword.replace("\"", "\\\"") || ""} > ${backupFileTrigger.path}`];
             cmd = executeCommand("bash", args);
             if (cmd) {
-                logger('dcm').error("[DBController] Failed to create Command Backup: " + cmd);
+                logger('dcm').error(`[DBController] Failed to create Command Backup: ${cmd}`);
                 process.exit(-1);
             }
             // Data
             args = ["-c", mysqldumpCommand + ` --set-gtid-purged=OFF --skip-triggers --skip-routines --no-create-info --skip-routines ${database} ${tablesData}  -h ${host} -P ${port} -u ${rootUsername} -p${rootPassword.replace("\"", "\\\"") || ""} > ${backupFileData.path}`];
             cmd = executeCommand("bash", args);
             if (cmd) {
-                logger('dcm').error("[DBController] Failed to create Data Backup: " + cmd);
+                logger('dcm').error(`[DBController] Failed to create Data Backup: ${cmd}`);
                 process.exit(-1);
             }
         }
@@ -247,7 +247,7 @@ class Migrator {
         const results = await query(sql, args)
             .then(x => x)
             .catch(err => {
-                logger('dcm').error('[DbController] Error:', err);
+                logger('dcm').error(`[DbController] Error: ${err}`);
                 return null;
             });
         if (results.length === 0) {
@@ -266,10 +266,10 @@ class Migrator {
         const results = await query(sql, args)
             .then(x => x)
             .catch(err => {
-                logger('dcm').error('[DbController] Error:', err);
+                logger('dcm').error(`[DbController] Error: ${err}`);
                 return null;
             });
-        logger('dcm').info('[DbController] SetValueForKey:', results);
+        logger('dcm').info(`[DbController] SetValueForKey: ${results}`);
     }
 }
 

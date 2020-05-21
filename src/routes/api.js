@@ -60,7 +60,6 @@ router.post('/account/change_password/:username', async function(req, res) {
     }
     const exists = await Account.getAccount(username, oldPassword);
     if (exists) {
-        // TODO: Update account in database
         const result = await Account.changePassword(username, oldPassword, password);
         if (result) {
             // Success
@@ -99,7 +98,7 @@ router.post('/settings/change_general', function(req, res) {
         format: data.log_format
     };
     fs.writeFileSync(path.resolve(__dirname, '../config.json'), JSON.stringify(newConfig, null, 4));
-    logger('dcm').info("General settings saved");
+    logger('dcm').info('General settings saved');
     res.redirect('/settings');
 });
 
@@ -120,9 +119,8 @@ router.post('/settings/change_db', function(req, res) {
 // Device API Routes
 router.get('/devices', async function(req, res) {
     try {
-        
         const devices = await Device.getAll();
-		let previewSize = req.query.previewSize;
+        let previewSize = req.query.previewSize;
         if (devices) {
             for (let i = 0; i < devices.length; i++) {
                 let device = devices[i];
@@ -155,7 +153,7 @@ router.get('/devices', async function(req, res) {
             }
         });
     } catch (e) {
-        logger('dcm').error('Devices error:', e);
+        logger('dcm').error(`Devices error: ${e}`);
     }
 });
 
@@ -174,7 +172,7 @@ router.post('/devices/mass_action', async function(req, res) {
         endpoint = 'restart';
         break;
     case 'restart_config':
-        logger('dcm').info('Received restart by config mass action')
+        logger('dcm').info('Received restart by config mass action');
         endpoint = 'restart_config';
         break;
     default:
@@ -186,7 +184,7 @@ router.post('/devices/mass_action', async function(req, res) {
             const config = req.body.config;
             // If config was included then filter devices based on config assigned
             if (config) {
-                logger('dcm').info("Filtering devices based on config", config);
+                logger('dcm').info(`Filtering devices based on config ${config}`);
                 devices = devices.filter(x => x.config === config);
             }
             devices.forEach(function(device) {
@@ -201,6 +199,7 @@ router.post('/devices/mass_action', async function(req, res) {
 });
 
 router.post('/device/new', async function(req, res) {
+    const data = req.body;
     const result = await Device.create(
         data.uuid,
         data.config || null,
@@ -213,7 +212,7 @@ router.post('/device/new', async function(req, res) {
     if (result) {
         // Success
     }
-    logger('dcm').info('New device result:', result);
+    logger('dcm').info(`New device result: ${result}`);
     res.redirect('/devices');
 });
 
@@ -231,10 +230,10 @@ router.post('/device/edit/:uuid', async function(req, res) {
         device.notes = notes || null;
         const result = await device.save();
         if (!result) {
-            logger('dcm').error('Failed to update device', uuid);
+            logger('dcm').error(`Failed to update device ${uuid}`);
             return;
         }
-        logger('dcm').info('Device', uuid, 'updated');
+        logger('dcm').info(`Device ${uuid} updated`);
         // Success
     }
     res.redirect('/devices');
@@ -280,7 +279,7 @@ router.post('/device/:uuid/screen', upload.single('file'), function(req, res) {
 
 router.post('/device/screen/:uuid', function(req, res) {
     const uuid = req.params.uuid;
-    logger('dcm').info('Received screen', uuid);
+    logger('dcm').info(`Received screen ${uuid}`);
     const data = Buffer.from(req.body.body, 'base64');
     const screenshotFile = path.resolve(__dirname, '../../screenshots/' + uuid + '.png');
     fs.writeFile(screenshotFile, data, function(err) {
@@ -327,7 +326,7 @@ router.get('/configs', async function(req, res) {
             }
         });
     } catch (e) {
-        logger('dcm').error('Configs error:', e);
+        logger('dcm').error(`Configs error: ${e}`);
     }
 });
 
@@ -338,7 +337,7 @@ router.post('/config', async function(req, res) {
     let assignDefault = false;
     // Check for a proxied IP before the normal IP and set the first one that exists
     const clientip = ((req.headers['x-forwarded-for'] || '').split(', ')[0]) || (req.connection.remoteAddress).match('[0-9]+.[0-9].+[0-9]+.[0-9]+$')[0];
-    logger('dcm').info('[' + new Date().toLocaleString() + ']', 'Client', uuid, 'at', clientip, 'is requesting a config.');
+    logger('dcm').info(`[${new Date().toLocaleString()}] Client ${uuid} at ${clientip} is requesting a config.`);
 
     // Check if device config is empty, if not provide it as json response
     if (device) {
@@ -354,7 +353,7 @@ router.post('/config', async function(req, res) {
         if (device.config) {
             // Nothing to do besides respond with config
         } else {
-            logger('dcm').info('Device', uuid, 'not assigned a config, attempting to assign the default config if one is set...');
+            logger('dcm').info(`Device ${uuid} not assigned a config, attempting to assign the default config if one is set...`);
             // Not assigned a config
             assignDefault = true;
         }
@@ -375,7 +374,7 @@ router.post('/config', async function(req, res) {
     if (assignDefault) {
         const defaultConfig = await Config.getDefault();
         if (defaultConfig !== null) {
-            logger('dcm').info('Assigning device', uuid, 'default config', defaultConfig.name);
+            logger('dcm').info(`Assigning device ${uuid} default config ${defaultConfig.name}`);
             device.config = defaultConfig.name;
             device.save();
         } else {    
@@ -385,7 +384,7 @@ router.post('/config', async function(req, res) {
     }
 
     if (noConfig) {
-        logger('dcm').error('No config assigned to device', uuid, 'and no default config to assign!');
+        logger('dcm').error(`No config assigned to device ${uuid} and no default config to assign!`);
         res.json({
             status: 'error',
             error: 'Device not assigned to config!'
@@ -395,7 +394,7 @@ router.post('/config', async function(req, res) {
     
     const c = await Config.getByName(device.config);
     if (c === null) {
-        logger('dcm').error('Failed to grab config', device.config);
+        logger('dcm').error(`Failed to grab config ${device.config}`);
         res.json({
             status: 'error',
             error: 'Device not assigned to config!'
@@ -419,7 +418,7 @@ router.post('/config', async function(req, res) {
         c.autoLogin,
         c.isDefault
     );
-    logger('dcm').info(uuid, 'config response:', json);
+    logger('dcm').info(`${uuid} config response: ${json}`);
     res.send(json);
 });
 
@@ -444,7 +443,7 @@ router.post('/config/new', async function(req, res) {
     if (cfg) {
         logger('dcm').info('Config inserted');
         if (cfg.isDefault) {
-            logger('dcm').info('Setting default config:', data.name);
+            logger('dcm').info(`Setting default config: ${data.name}`);
             await Config.setDefault(data.name);
         }
     } else {
@@ -475,7 +474,7 @@ router.post('/config/edit/:name', async function(req, res) {
         logger('dcm').info('Config saved');
         // Success
         if (c.isDefault) {
-            logger('dcm').info('Setting default config:', c.name);
+            logger('dcm').info(`Setting default config: ${c.name}`);
             await Config.setDefault(c.name);
         }
     }
@@ -543,7 +542,7 @@ router.post('/schedule/edit/:name', function(req, res) {
     if (result) {
         logger('dcm').info('Schedule', data.name, 'updated');
     } else {
-        logger('dcm').error('Failed to update schedule', oldName);
+        logger('dcm').error(`Failed to update schedule ${oldName}`);
     }
     res.redirect('/schedules');
 });
@@ -553,7 +552,7 @@ router.post('/schedule/delete/:name', function(req, res) {
     const result = ScheduleManager.delete(name);
     if (result) {
         // Success
-        logger('dcm').info('Schedule', name, 'deleted');
+        logger('dcm').info(`Schedule ${name} deleted`);
     }
     res.redirect('/schedules');
 });
@@ -635,16 +634,16 @@ async function get(uuid, url) {
         request
             .get(url)
             .on('error', function(err) {
-                logger('dcm').error('Failed to get screenshot for', uuid, 'at', url, 'Are you sure the device is up?', err.code);
+                logger('dcm').error(`Failed to get screenshot for ${uuid} at ${url}. Are you sure the device is up? ${err.code}`);
             })
             .pipe(fileStream);
     } else {
         request.get(url, function(err) {
             if (err) {
-                logger('dcm').error('Error:', err);
+                logger('dcm').error(`Error: ${err}`);
             }
         }).on('error', function(err) {
-            logger('dcm').error('Error occurred:', err);
+            logger('dcm').error(`Error occurred: ${err}`);
         });
     }
 }

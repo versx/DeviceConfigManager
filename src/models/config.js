@@ -72,7 +72,7 @@ class Config {
         VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`;
         const args = [name, provider, backendUrl, dataEndpoints, token, heartbeatMaxTime, minDelayLogout,
             loggingUrl || null, loggingPort || null, accountManager, deployEggs, nearbyTracker, autoLogin, isDefault];
-            const result = await query(sql, args);
+        const result = await query(sql, args);
         return result.affectedRows === 1;
     }
     static async delete(name) {

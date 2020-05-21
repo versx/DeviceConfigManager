@@ -4,6 +4,7 @@ const fs = require('fs');
 const path = require('path');
 
 const Device = require('./device.js');
+const logger = require('../services/logger.js');
 const utils = require('../utils.js');
 
 const schedulesFile = path.resolve(__dirname, '../schedules.json');
@@ -69,7 +70,7 @@ class ScheduleManager {
             logger('dcm').info('Schedules list updated');
             return true;
         } catch (e) {
-            logger('dcm').error('save:', e);
+            logger('dcm').error(`save: ${e}`);
         }
         return false;
     }
@@ -88,8 +89,8 @@ class ScheduleManager {
         values.forEach(async function(schedule) {
             const startTimeSeconds = utils.timeToSeconds(schedule.start_time);
             const endTimeSeconds = utils.timeToSeconds(schedule.end_time);
-            logger('dcm').info('Now:', now, 'Last Update:', lastUpdate, 'Start:', startTimeSeconds, 'End:', endTimeSeconds);
-            logger('dcm').info('Triggering schedule', schedule.name, 'in', startTimeSeconds - now, 'seconds');
+            logger('dcm').info(`Now: ${now} Last Update: ${lastUpdate} Start: ${startTimeSeconds} End: ${endTimeSeconds}`);
+            logger('dcm').info(`Triggering schedule ${schedule.name} in ${startTimeSeconds - now} seconds`);
             if (schedule.enabled) {
                 if (startTimeSeconds !== 0 &&
                     endTimeSeconds !== 0 &&
@@ -110,7 +111,7 @@ class ScheduleManager {
         lastUpdate = parseInt(now);
     }
     static async triggerSchedule(schedule, config) {
-        logger('dcm').info('Running schedule for', schedule, 'to assign config', config);
+        logger('dcm').info(`Running schedule for ${schedule} to assign config ${config}`);
         if (schedule.uuids) {
             const uuids = Array.isArray(schedule.uuids) ? schedule.uuids : [schedule.uuids];
             uuids.forEach(async function(uuid) {
@@ -121,9 +122,9 @@ class ScheduleManager {
                     const result = await device.save();
                     if (result) {
                         // Success
-                        logger('dcm').info('Device', uuid, 'assigned config', config, 'successfully');
+                        logger('dcm').info(`Device ${uuid} assigned config ${config} successfully`);
                     } else {
-                        logger('dcm').error('Failed to assign device', uuid, 'config', config);
+                        logger('dcm').error(`Failed to assign device ${uuid} config ${config}`);
                     }
                 }
             });

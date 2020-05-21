@@ -5,12 +5,13 @@ const router = express.Router();
 
 const config = require('../config.json');
 const utils = require('../utils.js');
-const Device = require('../models/device.js');
+const defaultData = require('../data/default.js');
 const Config = require('../models/config.js');
+const Device = require('../models/device.js');
 const Log = require('../models/log.js');
 const ScheduleManager = require('../models/schedule-manager.js');
+const logger = require('../services/logger.js');
 const Migrator = require('../services/migrator.js');
-const defaultData = require('../data/default.js');
 
 const timezones = require('../../static/data/timezones.json');
 
@@ -124,7 +125,7 @@ router.get('/device/manage/:uuid', async function(req, res) {
         if (device.clientip) {
             data.clientip = device.clientip;
         } else {
-            logger('dcm').error('Failed to get IP address.');
+            logger('dcm').error(`Failed to get IP address for device ${uuid}`);
         }
     }
     res.render('device-manage', data);

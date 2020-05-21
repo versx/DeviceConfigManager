@@ -1,6 +1,7 @@
 'use strict';
 
 const mysql = require('mysql');
+const logger = require('./logger.js');
 const config = require('../config.json');
 
 function getConnection() {
@@ -21,7 +22,7 @@ function getConnection() {
     });
     
     conn.on('error', function(err) {
-        logger('dcm').error('Mysql error:', err);
+        logger('dcm').error(`Mysql error: ${err}`);
     });
     return conn;
 }
@@ -42,7 +43,7 @@ function query(sql, args) {
             resolve(rows);
             conn.end(function(err, args) {
                 if (err) {
-                    logger('dcm').error('Failed to close mysql connection:', args);
+                    logger('dcm').error(`Failed to close mysql connection: ${args}`);
                     return;
                 }
             });

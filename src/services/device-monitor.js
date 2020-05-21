@@ -2,6 +2,7 @@
 
 const request = require('request');
 
+const logger = require('./logger.js');
 const config = require('../config.json');
 const Device = require('../models/device.js');
 const utils = require('../utils.js');
