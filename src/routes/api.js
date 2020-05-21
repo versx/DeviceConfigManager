@@ -497,6 +497,7 @@ router.get('/schedules', async function(req, res) {
     const list = Object.values(schedules);
     if (list) {
         list.forEach(function(schedule) {
+            schedule.uuids = (schedule.uuids || []).join(',');
             schedule.buttons = `<a href='/schedule/edit/${schedule.name}'><button type='button' class='btn btn-primary'>Edit</button></a>
                                 <a href='/schedule/delete/${schedule.name}'><button type='button'class='btn btn-danger'>Delete</button></a>`;
             schedule.enabled ? 'Yes' : 'No'; // TODO: Fix yes/no doesn't get set

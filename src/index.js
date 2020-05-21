@@ -27,6 +27,8 @@ DeviceMonitor.checkDevices();
 // TODO: Screenshot/icon toggle
 // TODO: Success/error responses
 // TODO: Timezone config option for times
+// TODO: Fix gap above datatable colvis buttons and prevew buttons
+// TODO: Test/fix schedules changing days
 
 
 run();
