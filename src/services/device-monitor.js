@@ -12,7 +12,6 @@ let lastUpdate = -2;
 
 class DeviceMonitor {
     static async checkDevices() {
-        //console.log("Checking devices...");
         const now = utils.todaySeconds();
         if (lastUpdate === -2) {
             utils.snooze(5000);
@@ -26,6 +25,28 @@ class DeviceMonitor {
         devices.forEach(async function(device) {
             const isOffline = device.last_seen > (Math.round((new Date()).getTime() / 1000) - delta) ? 0 : 1;
             if (isOffline) {
+                // If restart for device monitor is enabled, automatically send restart device command if offline.
+                if (config.monitor.restart) {
+                    var listeners = config.listeners;
+                    for (let i = 0; i < listeners.length; i++) {
+                        const url = listeners[i];
+                        const options = {
+                            url: url,
+                            json: true,
+                            method: 'POST',
+                            body: JSON.stringify({ 'type': 'restart', 'device': device.uuid }),
+                            headers: { 'Accept': 'application/json', 'Content-Type': 'application/json' },
+                        };
+                        logger('dcm').info(`Sending reboot request to remote listener at ${url}`);
+                        request(options, (err, res, body) => {
+                            if (err) {
+                                logger('dcm').error(`Failed to send restart command to remote listener ${url}. Error: ${err}`);
+                            }
+                            logger('dcm').info(`Sent restart command to remote listener ${url}`);
+                        });
+                    }
+                }
+
                 const obj = {
                     type: 'device_offline',
                     data: {
@@ -34,7 +55,7 @@ class DeviceMonitor {
                         last_seen: device.last_seen
                     }
                 };
-                const webhooks = config.webhooks;
+                const webhooks = config.monitor.webhooks;
                 for (let i = 0; i < webhooks.length; i++) {
                     const webhook = webhooks[i];
                     request.post(
@@ -59,7 +80,7 @@ class DeviceMonitor {
 }
 
 // Only start the device monitor if there are webhooks in the config
-if (config.webhooks.length > 0) {
+if (config.monitor.webhooks.length > 0) {
     setInterval(DeviceMonitor.checkDevices, devicesCheckInterval);
 }
 

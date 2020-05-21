@@ -19,8 +19,6 @@ const logger = require('./services/logger.js');
 
 const DeviceMonitor = require('./services/device-monitor.js');
 
-DeviceMonitor.checkDevices();
-
 // TODO: Fix devices scroll with DataTables
 // TODO: Secure /api/config endpoint with token
 // TODO: Change require to import
@@ -29,7 +27,7 @@ DeviceMonitor.checkDevices();
 // TODO: Timezone config option for times
 // TODO: Fix gap above datatable colvis buttons and prevew buttons
 // TODO: Test/fix schedules changing days
-// TODO: Auto restart devices after 15 minutes of no config. Attempt x amount of times, if failed wait x amount of hours before trying again
+// TODO: Reboot aware, x amount of times, last reboot, etc
 
 
 run();
@@ -120,4 +118,8 @@ async function run() {
 
     // Start listener
     app.listen(config.port, config.interface, () => logger('dcm').info(`Listening on port ${config.port}...`));
+
+    if (config.monitor.enabled) {
+        DeviceMonitor.checkDevices();
+    }
 }

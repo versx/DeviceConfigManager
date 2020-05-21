@@ -91,7 +91,7 @@ router.post('/settings/change_general', function(req, res) {
     const data = req.body;
     const newConfig = config;
     newConfig.listeners = data.listeners ? data.listeners.split(',') || []: [];
-    newConfig.webhooks = data.webhooks ? data.webhooks.split(',') || [] : [];
+    newConfig.monitor.webhooks = data.webhooks ? data.webhooks.split(',') || [] : [];
     newConfig.logging = {
         enabled: data.logging === 'on',
         max_size: data.max_size,

@@ -258,7 +258,7 @@ router.get('/settings', function(req, res) {
         locale.selected = locale.name === config.locale;
     });
     data.listeners = (config.listeners || '').join(',');
-    data.webhooks = (config.webhooks || '').join(',');
+    data.webhooks = (config.monitor.webhooks || '').join(',');
     data.logging = config.logging.enabled ? 'checked' : '';
     data.max_size = config.logging.max_size;
     data.log_format = config.logging.format;
