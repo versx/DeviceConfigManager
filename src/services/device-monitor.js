@@ -34,7 +34,7 @@ class DeviceMonitor {
                     }
                 };
                 const webhooks = config.webhooks;
-                for (var i = 0; i < webhooks.length; i++) {
+                for (let i = 0; i < webhooks.length; i++) {
                     const webhook = webhooks[i];
                     request.post(
                         webhook,

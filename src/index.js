@@ -24,13 +24,11 @@ DeviceMonitor.checkDevices();
 // TODO: Fix devices scroll with DataTables
 // TODO: Secure /api/config endpoint with token
 // TODO: Change require to import
-// TODO: DCM logs/troubleshoot page
 // TODO: Screenshot/icon toggle
 // TODO: Fix front page offline devices table on mobile
-// TODO: Logs create iPhone1.1.log when at max log size
 // TODO: Success/error responses
 // TODO: Timezone config option for times
-// TODO: MaxListenersExceededWarning: Possible EventEmitter memory leak detected. 11 uncaughtException listeners added. Use emitter.setMaxListeners() to increase limit
+// TODO: Listener down, subtle error message instead of stack
 
 
 run();

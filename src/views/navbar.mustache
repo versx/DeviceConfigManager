@@ -49,7 +49,7 @@
     //console.log("CSRF:", "{{csrf}}");
     $(document).ready(function() {
           // Get current URL path and assign 'active' class
-        var pathname = window.location.pathname;
+        const pathname = window.location.pathname;
         $('#navbar > ul > li > a[href="'+pathname+'"]').parent().addClass('active');
     });
 </script>

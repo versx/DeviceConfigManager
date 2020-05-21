@@ -44,6 +44,7 @@ router.get(['/', '/index'], async function(req, res) {
         data.devices_online_count = devices.filter(x => x.last_seen >= (Math.round((new Date()).getTime() / 1000) - delta)).length;
         data.devices_offline_count = data.devices_offline.length;
         data.logs_size = utils.formatBytes(logsSize);
+        data.version = require('../../package.json').version;
         res.render('index', data);
     }
 });
