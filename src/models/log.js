@@ -30,8 +30,8 @@ class Log {
                 if (log) {
                     const l = JSON.parse(log);
                     logs.push({
-                        message: l.message,
-                        date: l.timestamp
+                        message: l.msg,
+                        date: utils.getDateTime(l.time / 1000)
                     });
                 }
             });

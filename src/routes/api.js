@@ -201,13 +201,15 @@ router.post('/devices/mass_action', async function(req, res) {
 });
 
 router.post('/device/new', async function(req, res) {
-    const { 
-        uuid,
-        config,
-        clientip,
-        notes
-    } = req.body;
-    const result = await Device.create(uuid, config || null, null, clientip || null, null, null, notes || null);
+    const result = await Device.create(
+        data.uuid,
+        data.config || null,
+        null,
+        data.clientip || null,
+        null,
+        null,
+        data.notes || null
+    );
     if (result) {
         // Success
     }
@@ -527,17 +529,19 @@ router.post('/schedule/new', function(req, res) {
 router.post('/schedule/edit/:name', function(req, res) {
     const data = req.body;
     const oldName = req.params.name;
-    const name = data.name;
-    const config = data.config;
-    const uuids = data.devices;
-    const startTime = data.start_time;
-    const endTime = data.end_time;
-    const timezone = data.timezone;
-    const nextConfig = data.next_config;
-    const enabled = data.enabled === 'on' ? 1 : 0;
-    const result = ScheduleManager.update(oldName, name, config, uuids, startTime, endTime, timezone, nextConfig, enabled);
+    const result = ScheduleManager.update(
+        oldName,
+        data.name,
+        data.config,
+        data.devices,
+        data.start_time,
+        data.end_time,
+        data.timezone,
+        data.next_config,
+        data.enabled === 'on' ? 1 : 0
+    );
     if (result) {
-        console.log('Schedule', name, 'updated');
+        console.log('Schedule', data.name, 'updated');
     } else {
         console.error('Failed to update schedule', oldName);
     }
