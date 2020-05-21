@@ -2,8 +2,12 @@
 
 const pino = require('pino');
 const path = require('path');
-//const config = require('../config.json');
+const logrotate = require('logrotator');
+const config = require('../config.json');
 const logsDir = path.resolve(__dirname, '../../logs');
+
+// Global log rotator
+const rotator = logrotate.rotator;
 
 const loggers = {};
 
@@ -20,12 +24,23 @@ function getLogger(name) {
         sync: false,
         formatters: {
             /* eslint-disable no-unused-vars */
-            level (label, number) {
+            level: (label, number) => {
             /* eslint-enable no-unused-vars */
                 return { level: label };
             }
         }
     }));
+
+    // Check file rotation every 5 minutes, and rotate the file if its size exceeds max log size in mb, keep only 3 rotated files
+    rotator.register(logFilePath, { schedule: '5m', size: config.logging.max_size + 'm', compress: false, count: 3 });
+    rotator.on('error', function(err) {
+        logger('dcm').error(err);
+    });  
+    // 'rotate' event is invoked whenever a registered file gets rotated
+    rotator.on('rotate', function(file) {
+        logger('dcm').info(`Log file ${file} was rotated.`);
+    });
+
     /*
     const options = {
         file: {

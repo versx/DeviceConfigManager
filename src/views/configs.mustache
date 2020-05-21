@@ -1,3 +1,8 @@
+<style>
+    table.dataTable tbody td {
+        vertical-align: middle;
+    }
+</style>
 <!DOCTYPE html="{{locale}}">
     {{> header}}
     <body>
@@ -11,14 +16,14 @@
             <table id="table" class="table table-{{style}} table-striped table-bordered table-hover dt-responsive nowrap" style="position: center; width:100%">
                 <thead class="thead-dark">
                 <tr>
-                    <th>{{Name}}</th>
-                    <th>{{Provider}}</th>
-                    <th>{{Backend}}</th>
-                    <th>{{Data Endpoints}}</th>
-                    <th>{{Token}}</th>
-                    <th>{{Devices}}</th>
-                    <th>{{Is Default}}</th>
-                    <th width="5%"></th>
+                    <th class="all">{{Name}}</th>
+                    <th class="all">{{Provider}}</th>
+                    <th class="all">{{Backend}}</th>
+                    <th class="min-desktop">{{Data Endpoints}}</th>
+                    <th class="min-desktop">{{Token}}</th>
+                    <th class="all">{{Devices}}</th>
+                    <th class="all">{{Is Default}}</th>
+                    <th class="all" width="5%"></th>
                 </tr>
                 </thead>
                 <tbody>

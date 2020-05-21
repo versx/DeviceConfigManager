@@ -1,3 +1,8 @@
+<style>
+    table.dataTable tbody td {
+        vertical-align: middle;
+    }
+</style>
 <!DOCTYPE html="{{locale}}">
     {{> header}}
     <body>
@@ -31,6 +36,8 @@
 						</button>
 						<div class="dropdown-menu" aria-labelledby="actionsDropdown">
 							<a class="dropdown-item" href="/device/new">{{New Device}}</a>
+                            <div class="dropdown-divider"></div>
+                            <h6 class="dropdown-header">Device Actions</h6>
 							<button type='button' class="dropdown-item" onclick='sendMassAction("screenshot")'>{{Get All Screenshots}}</button>
 							<button type='button' class="dropdown-item" onclick='sendMassAction("restart")'>{{Restart All Devices}}</button>
 							<!--
@@ -49,14 +56,14 @@
             <table id="table" class="table table-{{style}} table-striped table-bordered table-hover dt-responsive nowrap" style="position: center; width:100%">
                 <thead class="thead-dark">
                 <tr>
-                    <th>{{Preview}}</th>
-                    <th>{{UUID}}</th>
-                    <th>{{Config}}</th>
-                    <th>{{iOS Version}}</th>
-                    <th>{{IPA Version}}</th>
-                    <th>{{Last Config}}</th>
-                    <th>{{Notes}}</th>
-                    <th width="5%"></th>
+                    <th class="all">{{Preview}}</th>
+                    <th class="all">{{UUID}}</th>
+                    <th class="all">{{Config}}</th>
+                    <th class="min-desktop">{{iOS Version}}</th>
+                    <th class="min-desktop">{{IPA Version}}</th>
+                    <th class="all">{{Last Config}}</th>
+                    <th class="min-desktop">{{Notes}}</th>
+                    <th class="all" width="5%"></th>
                 </tr>
                 </thead>
                 <tbody>

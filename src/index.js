@@ -25,9 +25,10 @@ DeviceMonitor.checkDevices();
 // TODO: Secure /api/config endpoint with token
 // TODO: Change require to import
 // TODO: Screenshot/icon toggle
-// TODO: Fix front page offline devices table on mobile
 // TODO: Success/error responses
 // TODO: Timezone config option for times
+// TODO: Fix gap above datatable colvis buttons and prevew buttons
+// TODO: Test/fix schedules changing days
 
 
 run();

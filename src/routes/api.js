@@ -132,7 +132,7 @@ router.get('/devices', async function(req, res) {
                 const image = isOffline ? '/img/offline.png' : (exists ? `/screenshots/${device.uuid}.png` : '/img/online.png');
                 const lastModified = exists && !isOffline ? (await utils.fileLastModifiedTime(screenshotPath)).toLocaleString() : '';
                 device.image = `<img src='${image}' width='${previewSize}' height='auto' style='margin-left: auto;margin-right: auto;display: block;' class='deviceImage' /><br><div class='text-center'>${lastModified}</div>`;
-                device.last_seen = utils.getDateTime(device.last_seen);
+                device.last_seen = utils.getDateTime(device.last_seen * 1000);
                 device.buttons = `
                 <div class="btn-group" role="group" style="float: right;">
                     <button id="deviceActionsDropdown" type="button" class="btn btn-primary dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
@@ -337,7 +337,7 @@ router.post('/config', async function(req, res) {
     let assignDefault = false;
     // Check for a proxied IP before the normal IP and set the first one that exists
     const clientip = ((req.headers['x-forwarded-for'] || '').split(', ')[0]) || (req.connection.remoteAddress).match('[0-9]+.[0-9].+[0-9]+.[0-9]+$')[0];
-    logger('dcm').info(`[${new Date().toLocaleString()}] Client ${uuid} at ${clientip} is requesting a config.`);
+    logger('dcm').info(`Client ${uuid} at ${clientip} is requesting a config.`);
 
     // Check if device config is empty, if not provide it as json response
     if (device) {
@@ -497,6 +497,7 @@ router.get('/schedules', async function(req, res) {
     const list = Object.values(schedules);
     if (list) {
         list.forEach(function(schedule) {
+            schedule.uuids = (schedule.uuids || []).join(',');
             schedule.buttons = `<a href='/schedule/edit/${schedule.name}'><button type='button' class='btn btn-primary'>Edit</button></a>
                                 <a href='/schedule/delete/${schedule.name}'><button type='button'class='btn btn-danger'>Delete</button></a>`;
             schedule.enabled ? 'Yes' : 'No'; // TODO: Fix yes/no doesn't get set
