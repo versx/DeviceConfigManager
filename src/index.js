@@ -21,10 +21,7 @@ const DeviceMonitor = require('./services/device-monitor.js');
 
 // TODO: Fix devices scroll with DataTables
 // TODO: Secure /api/config endpoint with token
-// TODO: Change require to import
-// TODO: Screenshot/icon toggle
 // TODO: Success/error responses
-// TODO: Timezone config option for times
 // TODO: Test/fix schedules changing days
 
 

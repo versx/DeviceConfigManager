@@ -20,8 +20,6 @@ function start() {
 }
 
 async function checkDevices() {
-
-
     const devices = await Device.getAll();
     if (!(devices && devices.length > 0)) {
         return;
@@ -100,7 +98,6 @@ async function checkDevices() {
     }
 
     utils.snooze(5000);
-    lastUpdate = parseInt(now);
 }
 
 module.exports = { start };
