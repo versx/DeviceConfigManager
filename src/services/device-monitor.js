@@ -13,7 +13,7 @@ let lastUpdate = -2;
 function start() {
     // Only start the device monitor if it's enabled in the config
     if (config.monitor.enabled) {
-        console.log("Enabling device monitor every", devicesCheckInterval / 1000, "seconds");
+        logger('dcm').info(`Enabling device monitor every ${devicesCheckInterval / 1000} seconds`);
         setInterval(checkDevices, devicesCheckInterval);
     }
 }
