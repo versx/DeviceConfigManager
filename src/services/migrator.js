@@ -8,7 +8,7 @@ const utils = require('./utils.js');
 
 const migrationsDir = path.resolve(__dirname, '../../migrations');
 
-export class Migrator {
+class Migrator {
     constructor() {
         this.done = false;
     }
@@ -272,3 +272,5 @@ export class Migrator {
         logger('dcm').info(`[DbController] SetValueForKey: ${results}`);
     }
 }
+
+module.exports = Migrator;

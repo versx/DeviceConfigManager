@@ -23,9 +23,7 @@ const utils = require('./services/utils.js');
 // TODO: Success/error responses
 // TODO: Test/fix schedules changing days
 
-emiter.setMaxListeners(Number.MAX_SAFE_INTEGER);
-
-run();
+require('events').defaultMaxListeners = 300;
 
 const run = async () => {
     // Start database migrator
@@ -117,4 +115,10 @@ const run = async () => {
     if (config.monitor.enabled) {
         DeviceMonitor.start();
     }
-}
+};
+
+run().then(x => {
+    console.log('Initialized');
+}).catch(err => {
+    console.error('Error:', err);
+});

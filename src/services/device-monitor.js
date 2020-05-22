@@ -11,13 +11,13 @@ const delta = (config.monitor.threshold || 15) * 60; // Amount of time in second
 const maxRebootCount = 10;
 const devicesRebooted = {};
 
-export const start = () => {
+const start = () => {
     // Only start the device monitor if it's enabled in the config
     if (config.monitor.enabled) {
         logger('dcm').info(`Enabling device monitor every ${devicesCheckInterval / 1000} seconds`);
         setInterval(checkDevices, devicesCheckInterval);
     }
-}
+};
 
 const checkDevices = async () => {
     const devices = await Device.getAll();
@@ -98,4 +98,6 @@ const checkDevices = async () => {
     }
 
     await utils.snooze(5000);
-}
+};
+
+module.exports = { start };

@@ -4,7 +4,7 @@ const fs = require('fs');
 const moment = require('moment');
 const config = require('../config.json');
 
-export const readFile = async (path) => {
+const readFile = async (path) => {
     return new Promise((resolve, reject) => {
         fs.readFile(path, (err, data) => {
             if (err) {
@@ -13,9 +13,9 @@ export const readFile = async (path) => {
             resolve(data.toString('utf8'));
         });
     });
-}
+};
 
-export const fileExists = async (path) => {
+const fileExists = async (path) => {
     return new Promise((resolve, reject) => {
         try {
             fs.exists(path, (exists) => {
@@ -25,9 +25,9 @@ export const fileExists = async (path) => {
             return reject(e);
         }
     });
-}
+};
 
-export const fileLastModifiedTime = async (path) => {
+const fileLastModifiedTime = async (path) => {
     return new Promise((resolve, reject) => {
         try {
             fs.stat(path, (err, stats) => {
@@ -40,19 +40,19 @@ export const fileLastModifiedTime = async (path) => {
             return reject(e);
         }
     });
-}
+};
 
-export const snooze = async (ms) => {
+const snooze = async (ms) => {
     return new Promise(resolve => setTimeout(resolve, ms));
-}
+};
 
-export const getDateTime = (date) => {
+const getDateTime = (date) => {
     const momentDate = moment(date);
     const formatted = momentDate.format(config.logging.format);
     return formatted;
-}
+};
 
-export const buildConfig = (provider, backendUrl, dataEndpoints, token, heartbeatMaxTime, minDelayLogout,
+const buildConfig = (provider, backendUrl, dataEndpoints, token, heartbeatMaxTime, minDelayLogout,
     loggingUrl, loggingPort, accountManager, deployEggs, nearbyTracker, autoLogin) => {
     let obj = {};
     switch (provider) {
@@ -91,9 +91,9 @@ export const buildConfig = (provider, backendUrl, dataEndpoints, token, heartbea
     }
     const json = JSON.stringify(obj);
     return json;
-}
+};
 
-export const formatBytes = (bytes) => {
+const formatBytes = (bytes) => {
     const sizes = ['Bytes', 'KB', 'MB', 'GB', 'TB'];
     if (bytes === 0) {
         return 0;
@@ -103,9 +103,9 @@ export const formatBytes = (bytes) => {
         return bytes + ' ' + sizes[index];
     }
     return (bytes / Math.pow(1024, index)).toFixed(1) + ' ' + sizes[index];
-}
+};
 
-export const timeToSeconds = (time) => {
+const timeToSeconds = (time) => {
     if (time) {
         const split = time.split(':');
         if (split.length === 3) {
@@ -117,9 +117,9 @@ export const timeToSeconds = (time) => {
         }
     }
     return 0;
-}
+};
 
-export const todaySeconds = () => {
+const todaySeconds = () => {
     const date = moment();
     const formattedDate = date.format('HH:mm:ss');
     const split = formattedDate.split(':');
@@ -131,4 +131,16 @@ export const todaySeconds = () => {
     } else {
         return 0;
     }
-}
+};
+
+module.exports = {
+    readFile,
+    fileExists,
+    fileLastModifiedTime,
+    snooze,
+    getDateTime,
+    buildConfig,
+    formatBytes,
+    timeToSeconds,
+    todaySeconds
+};

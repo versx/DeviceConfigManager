@@ -640,6 +640,6 @@ const get = async (uuid, url) => {
             logger('dcm').error(`Error occurred: ${err}`);
         });
     }
-}
+};
 
 module.exports = router;

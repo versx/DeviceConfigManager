@@ -10,7 +10,7 @@ const logsDir = path.resolve(__dirname, '../../logs');
 const rotator = logrotate.rotator;
 const loggers = {};
 
-export const getLogger = (name) => {
+const getLogger = (name) => {
     // Logger with name was already created, no need to create another.
     if (loggers[name]) {
         return loggers[name];
@@ -47,4 +47,6 @@ export const getLogger = (name) => {
 
     loggers[name] = logger;
     return logger;
-}
+};
+
+module.exports = getLogger;

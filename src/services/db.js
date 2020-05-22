@@ -25,9 +25,9 @@ const getConnection = () => {
         logger('dcm').error(`Mysql error: ${err}`);
     });
     return conn;
-}
+};
 
-export const query = async (sql, args) => {
+const query = async (sql, args) => {
     return new Promise((resolve, reject) => {
         // The Promise constructor should catch any errors thrown on
         // this tick. Alternately, try/catch and reject(err) on catch.
@@ -49,4 +49,6 @@ export const query = async (sql, args) => {
             });
         });
     });
-}
+};
+
+module.exports = query;
