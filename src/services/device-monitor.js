@@ -8,7 +8,8 @@ const Device = require('../models/device.js');
 const utils = require('../utils.js');
 const devicesCheckInterval = (config.monitor.interval || 5) * 60 * 1000; // Check every 5 minutes
 const delta = 15 * 60;
-let lastUpdate = -2;
+const maxRebootCount = 10;
+const devicesRebooted = {};
 
 function start() {
     // Only start the device monitor if it's enabled in the config
@@ -19,14 +20,7 @@ function start() {
 }
 
 async function checkDevices() {
-    const now = utils.todaySeconds();
-    if (lastUpdate === -2) {
-        utils.snooze(5000);
-        lastUpdate = parseInt(now);
-        //return;
-    } else if (lastUpdate > now) {
-        lastUpdate = -1;
-    }
+
 
     const devices = await Device.getAll();
     if (!(devices && devices.length > 0)) {
@@ -44,6 +38,12 @@ async function checkDevices() {
         if (config.monitor.reboot && config.listeners.length > 0) {
             const listeners = config.listeners;
             for (let i = 0; i < listeners.length; i++) {
+                if (devicesRebooted[device.uuid]) {
+                    if (devicesRebooted[device.uuid] > maxRebootCount) {
+                        // Skip rebooting devices we've already rebooted passed the maximum count
+                        continue;
+                    }
+                }
                 const url = listeners[i];
                 const options = {
                     url: url,
@@ -61,6 +61,11 @@ async function checkDevices() {
                     }
                     logger('dcm').info(`Sent restart command to remote listener ${url}`);
                 });
+                if (devicesRebooted[device.uuid]) {
+                    devicesRebooted[device.uuid]++;
+                } else {
+                    devicesRebooted[device.uuid] = 1;
+                }
             }
         }
 

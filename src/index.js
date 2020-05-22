@@ -26,7 +26,6 @@ const DeviceMonitor = require('./services/device-monitor.js');
 // TODO: Success/error responses
 // TODO: Timezone config option for times
 // TODO: Test/fix schedules changing days
-// TODO: Reboot aware, x amount of times, last reboot, etc
 
 
 run();
