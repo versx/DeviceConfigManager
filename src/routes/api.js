@@ -11,13 +11,13 @@ const screenshotsDir = path.resolve(__dirname, '../../screenshots');
 const upload = multer({ dest: screenshotsDir });
 
 const config = require('../config.json');
-const utils = require('../utils.js');
 const Account = require('../models/account.js');
 const Config = require('../models/config.js');
 const Device = require('../models/device.js');
 const Log = require('../models/log.js');
 const ScheduleManager = require('../models/schedule-manager.js');
 const logger = require('../services/logger.js');
+const utils = require('../services/utils.js');
 
 router.use(function(req, res, next) {
     if (req.path === '/api/login' || req.path === '/login' ||

@@ -2,7 +2,7 @@
 
 const fs = require('fs');
 const moment = require('moment');
-const config = require('./config.json');
+const config = require('../config.json');
 
 async function readFile(path) {
     return new Promise(function(resolve, reject) {

@@ -10,14 +10,13 @@ const mustacheExpress = require('mustache-express');
 const i18n = require('i18n');
 
 const config = require('./config.json');
-const utils = require('./utils.js');
-const Migrator = require('./services/migrator.js');
+const defaultData = require('./data/default.js');
 const apiRoutes = require('./routes/api.js');
 const uiRoutes = require('./routes/ui.js');
-const defaultData = require('./data/default.js');
 const logger = require('./services/logger.js');
-
+const Migrator = require('./services/migrator.js');
 const DeviceMonitor = require('./services/device-monitor.js');
+const utils = require('./services/utils.js');
 
 // TODO: Fix devices scroll with DataTables
 // TODO: Secure /api/config endpoint with token
