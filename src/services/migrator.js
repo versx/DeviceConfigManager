@@ -4,7 +4,7 @@ const path = require('path');
 const fs = require('fs');
 const query = require('./db.js');
 const logger = require('./logger.js');
-const utils = require('../utils.js');
+const utils = require('./utils.js');
 
 const migrationsDir = path.resolve(__dirname, '../../migrations');
 

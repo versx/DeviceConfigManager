@@ -2,8 +2,8 @@
 
 const fs = require('fs');
 const path = require('path');
-const utils = require('../utils.js');
 const logger = require('../services/logger.js');
+const utils = require('../services/utils.js');
 
 const logsDir = path.resolve(__dirname, '../../logs');
 if (!fs.existsSync(logsDir)) {

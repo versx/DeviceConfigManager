@@ -10,24 +10,18 @@ const mustacheExpress = require('mustache-express');
 const i18n = require('i18n');
 
 const config = require('./config.json');
-const utils = require('./utils.js');
-const Migrator = require('./services/migrator.js');
+const defaultData = require('./data/default.js');
 const apiRoutes = require('./routes/api.js');
 const uiRoutes = require('./routes/ui.js');
-const defaultData = require('./data/default.js');
 const logger = require('./services/logger.js');
-
+const Migrator = require('./services/migrator.js');
 const DeviceMonitor = require('./services/device-monitor.js');
+const utils = require('./services/utils.js');
 
 // TODO: Fix devices scroll with DataTables
 // TODO: Secure /api/config endpoint with token
-// TODO: Change require to import
-// TODO: Screenshot/icon toggle
 // TODO: Success/error responses
-// TODO: Timezone config option for times
-// TODO: Fix gap above datatable colvis buttons and prevew buttons
 // TODO: Test/fix schedules changing days
-// TODO: Reboot aware, x amount of times, last reboot, etc
 
 
 run();
@@ -120,6 +114,6 @@ async function run() {
     app.listen(config.port, config.interface, () => logger('dcm').info(`Listening on port ${config.port}...`));
 
     if (config.monitor.enabled) {
-        DeviceMonitor.checkDevices();
+        DeviceMonitor.start();
     }
 }

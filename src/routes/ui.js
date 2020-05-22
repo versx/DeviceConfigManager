@@ -4,7 +4,6 @@ const express = require('express');
 const router = express.Router();
 
 const config = require('../config.json');
-const utils = require('../utils.js');
 const defaultData = require('../data/default.js');
 const Config = require('../models/config.js');
 const Device = require('../models/device.js');
@@ -12,6 +11,7 @@ const Log = require('../models/log.js');
 const ScheduleManager = require('../models/schedule-manager.js');
 const logger = require('../services/logger.js');
 const Migrator = require('../services/migrator.js');
+const utils = require('../services/utils.js');
 
 const timezones = require('../../static/data/timezones.json');
 
@@ -236,8 +236,8 @@ router.get('/schedule/delete/:name', function(req, res) {
 router.get('/settings', function(req, res) {
     const data = defaultData;
     data.title = config.title;
-    //data.host = config.db.host;
-    //data.port = config.db.port;
+    data.host = config.db.host;
+    data.port = config.db.port;
     data.db_username = config.db.username;
     data.db_password = config.db.password;
     data.database = config.db.database;
@@ -258,7 +258,11 @@ router.get('/settings', function(req, res) {
         locale.selected = locale.name === config.locale;
     });
     data.listeners = (config.listeners || '').join(',');
-    data.webhooks = (config.monitor.webhooks || '').join(',');
+    data.monitor_enabled = config.monitor.enabled ? 'checked' : '';
+    data.monitor_interval = config.monitor.interval;
+    data.monitor_threshold = config.monitor.threshold;
+    data.monitor_webhooks = (config.monitor.webhooks || '').join(',');
+    data.monitor_reboot = config.monitor.reboot ? 'checked' : '';
     data.logging = config.logging.enabled ? 'checked' : '';
     data.max_size = config.logging.max_size;
     data.log_format = config.logging.format;

@@ -5,7 +5,7 @@ const path = require('path');
 
 const Device = require('./device.js');
 const logger = require('../services/logger.js');
-const utils = require('../utils.js');
+const utils = require('../services/utils.js');
 
 const schedulesFile = path.resolve(__dirname, '../schedules.json');
 const scheduleCheckInterval = 60 * 1000;

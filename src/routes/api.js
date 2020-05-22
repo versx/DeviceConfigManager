@@ -11,13 +11,13 @@ const screenshotsDir = path.resolve(__dirname, '../../screenshots');
 const upload = multer({ dest: screenshotsDir });
 
 const config = require('../config.json');
-const utils = require('../utils.js');
 const Account = require('../models/account.js');
 const Config = require('../models/config.js');
 const Device = require('../models/device.js');
 const Log = require('../models/log.js');
 const ScheduleManager = require('../models/schedule-manager.js');
 const logger = require('../services/logger.js');
+const utils = require('../services/utils.js');
 
 router.use(function(req, res, next) {
     if (req.path === '/api/login' || req.path === '/login' ||
@@ -77,40 +77,33 @@ router.post('/account/change_password/:username', async function(req, res) {
 
 
 // Settings API Routes
-router.post('/settings/change_ui', function(req, res) {
+router.post('/settings/change', function(req, res) {
     const data = req.body;
     const newConfig = config;
     newConfig.title = data.title;
     newConfig.locale = data.locale;
     newConfig.style = data.style;
-    fs.writeFileSync(path.resolve(__dirname, '../config.json'), JSON.stringify(newConfig, null, 4));
-    res.redirect('/settings');
-});
-
-router.post('/settings/change_general', function(req, res) {
-    const data = req.body;
-    const newConfig = config;
     newConfig.listeners = data.listeners ? data.listeners.split(',') || []: [];
-    newConfig.monitor.webhooks = data.webhooks ? data.webhooks.split(',') || [] : [];
+    newConfig.monitor = {
+        enabled: data.monitor_enabled === 'on',
+        threshold: data.monitor_threshold,
+        interval: data.monitor_interval,
+        webhooks: data.monitor_webhooks ? data.webhooks.split(',') || [] : [],
+        reboot: data.monitor_reboot === 'on'
+    };
     newConfig.logging = {
         enabled: data.logging === 'on',
         max_size: data.max_size,
         format: data.log_format
     };
-    fs.writeFileSync(path.resolve(__dirname, '../config.json'), JSON.stringify(newConfig, null, 4));
-    logger('dcm').info('General settings saved');
-    res.redirect('/settings');
-});
-
-router.post('/settings/change_db', function(req, res) {
-    const data = req.body;
-    let newConfig = config;
-    newConfig.db.host = data.host;
-    newConfig.db.port = data.port;
-    newConfig.db.db_username = data.username;
-    newConfig.db.db_password = data.password;
-    newConfig.db.database = data.database;
-    newConfig.db.charset = data.charset;
+    newConfig.db = {
+        host: data.host,
+        port: data.port,
+        username: data.db_username,
+        password: data.db_password,
+        database: data.database,
+        charset: data.charset
+    };
     fs.writeFileSync(path.resolve(__dirname, '../config.json'), JSON.stringify(newConfig, null, 4));
     res.redirect('/settings');
 });
