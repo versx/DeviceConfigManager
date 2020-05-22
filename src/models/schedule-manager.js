@@ -86,7 +86,7 @@ class ScheduleManager {
     
         const schedules = ScheduleManager.getAll();
         const values = Object.values(schedules);
-        values.forEach(async function(schedule) {
+        values.forEach(async (schedule) => {
             const startTimeSeconds = utils.timeToSeconds(schedule.start_time);
             const endTimeSeconds = utils.timeToSeconds(schedule.end_time);
             logger('dcm').info(`Now: ${now} Last Update: ${lastUpdate} Start: ${startTimeSeconds} End: ${endTimeSeconds}`);
@@ -114,7 +114,7 @@ class ScheduleManager {
         logger('dcm').info(`Running schedule for ${schedule} to assign config ${config}`);
         if (schedule.uuids) {
             const uuids = Array.isArray(schedule.uuids) ? schedule.uuids : [schedule.uuids];
-            uuids.forEach(async function(uuid) {
+            uuids.forEach(async (uuid) => {
                 const device = await Device.getByName(uuid);
                 // Check if the device config is not already set to the scheduled config to assign.
                 if (device.config !== config) {

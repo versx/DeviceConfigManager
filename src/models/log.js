@@ -27,7 +27,7 @@ class Log {
         const data = await utils.readFile(logFile);
         const split = data.split('\n');
         if (split) {
-            split.forEach(function(log) {
+            split.forEach((log) => {
                 if (log) {
                     const l = JSON.parse(log);
                     logs.push({
@@ -44,7 +44,7 @@ class Log {
         const logFile = path.resolve(logsDir, name);
         const exists = await utils.fileExists(logFile);
         if (exists) {
-            fs.truncate(logFile, 0, function(err) { 
+            fs.truncate(logFile, 0, (err)  =>{ 
                 if (err) {
                     logger('dcm').error(`Failed to clear log file ${logFile}`);
                 } else {
@@ -57,13 +57,13 @@ class Log {
         return false;
     }
     static deleteAll() {
-        fs.readdir(logsDir, function(err, files) {
+        fs.readdir(logsDir, (err, files) => {
             if (err) {
                 logger('dcm').error(`Failed to find log directory: ${logsDir}`);
             }
-            files.forEach(function(file) {
+            files.forEach((file) => {
                 const logFile = path.join(logsDir, file);
-                fs.truncate(logFile, 0, function(err) { 
+                fs.truncate(logFile, 0, (err) => { 
                     if (err) {
                         logger('dcm').error(`Failed to clear log file ${logFile}`);
                     } else {
@@ -71,7 +71,7 @@ class Log {
                     }
                 });
                 /*
-                fs.unlink(logFile, function(err) {
+                fs.unlink(logFile, (err) => {
                     if (err) {
                         logger('dcm').error('Failed to delete log file:', logFile);
                     }
@@ -89,7 +89,7 @@ class Log {
             let total = 0;
             const files = fs.readdirSync(logsDir);
             if (files) {
-                files.forEach(function(file) {
+                files.forEach((file) => {
                     const logFile = path.resolve(logsDir, file);
                     const stats = fs.statSync(logFile);
                     total += stats.size;
