@@ -39,11 +39,11 @@ function getLogger(name) {
         count: 3
     });
     rotator.on('error', (err) => {
-        logger('dcm').error(err);
+        console.log('Log rotate error:', err);
     });  
     // 'rotate' event is invoked whenever a registered file gets rotated
     rotator.on('rotate', (file) => {
-        logger('dcm').info(`Log file ${file} was rotated.`);
+        console.log('Log file rotated:', file);
     });
 
     loggers[name] = logger;
