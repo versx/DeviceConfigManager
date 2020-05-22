@@ -99,6 +99,7 @@ router.get('/device/edit/:uuid', async (req, res) => {
     data.config = device.config;
     data.clientip = device.clientip;
     data.notes = device.notes;
+    data.enabled = device.enabled;
     res.render('device-edit', data);    
 });
 

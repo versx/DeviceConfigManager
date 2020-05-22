@@ -50,14 +50,14 @@ const checkDevices = async () => {
                     body: { 'type': 'restart', 'device': device.uuid },
                     headers: { 'Accept': 'application/json', 'Content-Type': 'application/json' },
                 };
-                logger('dcm').info(`Sending reboot request to remote listener at ${url}`);
+                logger('dcm').info(`Sending reboot request for ${device.uuid} to remote listener at ${url}`);
                 /* eslint-disable no-unused-vars */
                 request(options, (err, res, body) => {
                 /* eslint-enable no-unused-vars */
                     if (err) {
                         logger('dcm').error(`Failed to send restart command to remote listener ${url}. Error: ${err}`);
                     }
-                    logger('dcm').info(`Sent restart command to remote listener ${url}`);
+                    logger('dcm').info(`Sent restart command for ${device.uuid} to remote listener ${url}`);
                 });
                 if (devicesRebooted[device.uuid]) {
                     devicesRebooted[device.uuid]++;

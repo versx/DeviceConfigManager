@@ -200,7 +200,8 @@ router.post('/device/new', async (req, res) => {
         data.clientip || null,
         null,
         null,
-        data.notes || null
+        data.notes || null,
+        data.enabled || null
     );
     if (result) {
         // Success
@@ -214,13 +215,15 @@ router.post('/device/edit/:uuid', async (req, res) => {
         uuid,
         config,
         clientip,
-        notes
+        notes,
+        enabled
     } = req.body;
     let device = await Device.getByName(uuid);
     if (device) {
         device.config = config || null;
         device.clientip = clientip || null;
         device.notes = notes || null;
+        device.enabled = enabled || null;
         const result = await device.save();
         if (!result) {
             logger('dcm').error(`Failed to update device ${uuid}`);
