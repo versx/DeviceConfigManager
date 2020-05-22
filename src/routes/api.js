@@ -367,6 +367,15 @@ router.post('/config', async (req, res) => {
         }
     }
 
+    if (!device.enabled) {
+        logger('dcm').error(`Device ${uuid} not enabled!`);
+        res.json({
+            status: 'error',
+            error: 'Device not enabled!'
+        });
+        return;
+    }  
+
     if (assignDefault) {
         const defaultConfig = await Config.getDefault();
         if (defaultConfig !== null) {
