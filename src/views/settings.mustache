@@ -8,63 +8,65 @@
         <div class="w-75" style="float: none; margin: 0 auto;">
             <ul class="nav nav-pills justify-content-center">
                 <li class="nav-item">
-                    <a class="nav-link active" data-toggle="pill" href="#general">General</a>
+                    <a class="nav-link active" data-toggle="pill" href="#general">{{General}}</a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link" data-toggle="pill" href="#ui">User Interface</a>
+                    <a class="nav-link" data-toggle="pill" href="#ui">{{User Interface}}</a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link" data-toggle="pill" href="#db">Database</a>
+                    <a class="nav-link" data-toggle="pill" href="#db">{{Database}}</a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link" data-toggle="pill" href="#utilities">Utilities</a>
+                    <a class="nav-link" data-toggle="pill" href="#logging">{{Logging}}</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" data-toggle="pill" href="#utilities">{{Utilities}}</a>
                 </li>
             </ul>
-            <div class="tab-content">
-                <!-- Start General Tab -->
-                <div class="tab-pane container active" id="general">
-                    <div class="card bg-dark p-1 m-3">
-                        <div class="card-header text-center bg-dark"><b>{{General}}</b></div>
-                        <div class="card-body">
-                            <div class="container">
-                                <form action="/api/settings/change_general" method="post">
+            <form action="/api/settings/change" method="post" novalidate>
+                <div class="tab-content">
+                    <!-- Start General Tab -->
+                    <div class="tab-pane container active" id="general">
+                        <div class="card bg-dark p-1 m-3">
+                            <div class="card-header text-center bg-dark"><b>{{General}}</b></div>
+                            <div class="card-body">
+                                <div class="container">
                                     <div class="form-group">
                                         {{Remote Listeners}}
                                         <input type="text" class="form-control" name="listeners" value="{{listeners}}" placeholder="http://127.0.0.1:6542,http://127.0.0.1:6542">
                                     </div>
-                                    <div class="form-group">
-                                        {{Webhooks}}
-                                        <input type="text" class="form-control" name="webhooks" value="{{webhooks}}" placeholder="">
-                                    </div>
                                     <br>
                                     <div class="form-check">
-                                        <input type="checkbox" class="form-check-input" name="logging" {{logging}}>
-                                        <label class="form-check-label" for="logging">{{Enable Device Logging}}</label>
+                                        <input type="checkbox" class="form-check-input" name="monitor_enabled" {{monitor_enabled}}>
+                                        <label class="form-check-label" for="monitor_enabled">{{Enable Device Monitoring}}</label>
                                     </div>
                                     <div class="form-group">
-                                        {{Maximum Log File Size (Per Phone)}}
-                                        <input type="number" class="form-control" name="max_size" value="{{max_size}}" placeholder="5" required>
+                                        {{Device Check Interval}}
+                                        <input type="number" class="form-control" name="monitor_interval" value="{{monitor_interval}}" placeholder="5" required>
                                     </div>
                                     <div class="form-group">
-                                        {{Log Format}}
-                                        <input type="text" class="form-control" name="log_format" value="{{log_format}}" placeholder="YYYY-MM-DD hh:mm:ss A" required>
+                                        {{Offline Threshold}}
+                                        <input type="number" class="form-control" name="monitor_threshold" value="{{monitor_threshold}}" placeholder="15" required>
                                     </div>
-                                    <br>
-                                    <button type="submit" class="btn btn-primary">{{Save}}</button>
-                                    <br>
-                                </form>
+                                    <div class="form-group">
+                                        {{Webhooks}}
+                                        <input type="text" class="form-control" name="monitor_webhooks" value="{{monitor_webhooks}}" placeholder="">
+                                    </div>
+                                    <div class="form-check">
+                                        <input type="checkbox" class="form-check-input" name="monitor_reboot" {{monitor_reboot}}>
+                                        <label class="form-check-label" for="monitor_reboot">{{Enable Device Reboot}}</label>
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     </div>
-                </div>
-                <!-- End General Tab -->
-                <!-- Start UI Tab -->
-                <div class="tab-pane container" id="ui">
-                    <div class="card bg-dark p-1 m-3">
-                        <div class="card-header text-center bg-dark"><b>{{User Interface}}</b></div>
-                        <div class="card-body">
-                            <div class="container">
-                                <form action="/api/settings/change_ui" method="post">
+                    <!-- End General Tab -->
+                    <!-- Start UI Tab -->
+                    <div class="tab-pane container" id="ui">
+                        <div class="card bg-dark p-1 m-3">
+                            <div class="card-header text-center bg-dark"><b>{{User Interface}}</b></div>
+                            <div class="card-body">
+                                <div class="container">
                                     <div class="form-group">
                                         {{Title}}
                                         <input type="text" class="form-control" name="title" value="{{title}}" placeholder="Device Config Manager" required>
@@ -87,22 +89,17 @@
                                             {{/styles}}
                                         </select>
                                     </div>
-                                    <br>
-                                    <button type="submit" class="btn btn-primary">{{Save}}</button>
-                                    <br>
-                                </form>
+                                </div>
                             </div>
                         </div>
                     </div>
-                </div>
-                <!-- End UI Tab -->
-                <!-- Start Database Tab -->
-                <div class="tab-pane container" id="db">
-                    <div class="card bg-dark p-1 m-3">
-                        <div class="card-header text-center bg-dark"><b>{{Database}}</b></div>
-                        <div class="card-body">
-                            <div class="container">
-                                <form action="/api/settings/change_db" method="post">
+                    <!-- End UI Tab -->
+                    <!-- Start Database Tab -->
+                    <div class="tab-pane container" id="db">
+                        <div class="card bg-dark p-1 m-3">
+                            <div class="card-header text-center bg-dark"><b>{{Database}}</b></div>
+                            <div class="card-body">
+                                <div class="container">
                                     <div class="form-group">
                                         {{Host}}
                                         <input type="text" class="form-control" name="host" value="{{host}}" placeholder="127.0.0.1" required>
@@ -127,28 +124,54 @@
                                         {{Character Set}}
                                         <input type="text" class="form-control" name="charset" value="{{charset}}" placeholder="utf8mb4" required>
                                     </div>
-                                    <br>
-                                    <button type="submit" class="btn btn-primary">{{Save}}</button>
-                                    <br>
-                                </form>
+                                </div>
                             </div>
                         </div>
                     </div>
-                </div>
-                <!-- End Database Tab -->
-                <!-- Start Utilities Tab -->
-                <div class="tab-pane container" id="utilities">
-                    <div class="card bg-dark p-1 m-3">
-                        <div class="card-header text-center bg-dark"><b>Utilities</b></div>
-                        <div class="card-body">
-                            <div class="container">
-                                <button type="submit" class="btn btn-danger"><a href="/api/logs/delete_all">Delete All Logs</a></button>
+                    <!-- End Database Tab -->
+                    <!-- Start Logging Tab -->
+                    <div class="tab-pane container" id="logging">
+                        <div class="card bg-dark p-1 m-3">
+                            <div class="card-header text-center bg-dark"><b>{{Logging}}</b></div>
+                            <div class="card-body">
+                                <div class="container">
+                                    <div class="form-check">
+                                        <input type="checkbox" class="form-check-input" name="logging" {{logging}}>
+                                        <label class="form-check-label" for="logging">{{Enable Device Logging}}</label>
+                                    </div>
+                                    <br>
+                                    <div class="form-group">
+                                        {{Maximum Log File Size (Per Phone)}}
+                                        <input type="number" class="form-control" name="max_size" value="{{max_size}}" placeholder="5" required>
+                                    </div>
+                                    <div class="form-group">
+                                        {{Log Format}}
+                                        <input type="text" class="form-control" name="log_format" value="{{log_format}}" placeholder="YYYY-MM-DD hh:mm:ss A" required>
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     </div>
+                    <!-- End Logging Tab -->
+                    <!-- Start Utilities Tab -->
+                    <div class="tab-pane container" id="utilities">
+                        <div class="card bg-dark p-1 m-3">
+                            <div class="card-header text-center bg-dark"><b>{{Utilities}}</b></div>
+                            <div class="card-body">
+                                <div class="container text-center">
+                                    <button type="submit" class="btn btn-danger"><a href="/api/logs/delete_all">{{Delete All Logs}}</a></button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- End Utilities Tab -->
+                <br>
+                <div class="text-center">
+                    <button type="submit" class="btn btn-primary" style="align:center;">{{Save}}</button>
                 </div>
-                <!-- End Utilities Tab -->
-            </div>
+                <br>
+                </div>
+            </form>
         </div>
     </body>
 </html>
