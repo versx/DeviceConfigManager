@@ -13,8 +13,13 @@
     "listeners": [
         "http://127.0.0.1:6542/"
     ],
-    "webhooks": [
-    ],
+    "monitor": {
+        "enabled": false,
+        "interval": 5,
+        "threshold": 15,
+        "webhooks": [],
+        "reboot": false
+    },
     "db": {
         "host": "127.0.0.1",
         "port": 3306,

@@ -11,13 +11,13 @@ const screenshotsDir = path.resolve(__dirname, '../../screenshots');
 const upload = multer({ dest: screenshotsDir });
 
 const config = require('../config.json');
-const utils = require('../utils.js');
 const Account = require('../models/account.js');
 const Config = require('../models/config.js');
 const Device = require('../models/device.js');
 const Log = require('../models/log.js');
 const ScheduleManager = require('../models/schedule-manager.js');
 const logger = require('../services/logger.js');
+const utils = require('../services/utils.js');
 
 router.use(function(req, res, next) {
     if (req.path === '/api/login' || req.path === '/login' ||
@@ -91,7 +91,7 @@ router.post('/settings/change_general', function(req, res) {
     const data = req.body;
     const newConfig = config;
     newConfig.listeners = data.listeners ? data.listeners.split(',') || []: [];
-    newConfig.webhooks = data.webhooks ? data.webhooks.split(',') || [] : [];
+    newConfig.monitor.webhooks = data.webhooks ? data.webhooks.split(',') || [] : [];
     newConfig.logging = {
         enabled: data.logging === 'on',
         max_size: data.max_size,
@@ -131,7 +131,7 @@ router.get('/devices', async function(req, res) {
                 const isOffline = device.last_seen > (Math.round((new Date()).getTime() / 1000) - delta) ? 0 : 1;
                 const image = isOffline ? '/img/offline.png' : (exists ? `/screenshots/${device.uuid}.png` : '/img/online.png');
                 const lastModified = exists && !isOffline ? (await utils.fileLastModifiedTime(screenshotPath)).toLocaleString() : '';
-                device.image = `<img src='${image}' width='${previewSize}' height='auto' style='margin-left: auto;margin-right: auto;display: block;' class='deviceImage' /><br><div class='text-center'>${lastModified}</div>`;
+                device.image = `<img src='${image}' width='${previewSize}' height='auto' style='margin-left: auto;margin-right: auto;display: block;' class='deviceImage' /><br><div class='text-center'><small>${lastModified}</small></div>`;
                 device.last_seen = utils.getDateTime(device.last_seen * 1000);
                 device.buttons = `
                 <div class="btn-group" role="group" style="float: right;">

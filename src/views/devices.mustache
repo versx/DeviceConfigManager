@@ -11,45 +11,50 @@
         <h1 align="center" id="header">{{Devices}}</h1>
         <br>
         <div style="width:90%; margin-left:calc(5%);">
-			<div class="row">
-                <div class="col">
-                    Preview Size
-                    <div class="btn-group btn-group-toggle" data-toggle="buttons">
-                        <label class="btn btn-secondary">
-                            <input type="radio" name="size" value="32" onchange="changePreviewSize(this)" autocomplete="off"> S
-                        </label>
-                        <label class="btn btn-secondary">
-                            <input type="radio" name="size" value="64" onchange="changePreviewSize(this)" autocomplete="off"> M
-                        </label>
-                        <label class="btn btn-secondary">
-                            <input type="radio" name="size" value="96" onchange="changePreviewSize(this)" autocomplete="off"> L
-                        </label>
-                        <label class="btn btn-secondary">
-                            <input type="radio" name="size" value="144" onchange="changePreviewSize(this)" autocomplete="off"> XL
-                        </label>
-                    </div>
+            <div class="btn-group" role="group" style="float: right;">
+                <button id="actionsDropdown" type="button" class="btn btn-primary dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                    Actions
+                </button>
+                <div class="dropdown-menu" aria-labelledby="actionsDropdown">
+                    <a class="dropdown-item" href="/device/new">{{New Device}}</a>
+                    <div class="dropdown-divider"></div>
+                    <h6 class="dropdown-header">Device Actions</h6>
+                    <button type='button' class="dropdown-item" onclick='sendMassAction("screenshot")'>{{Get All Screenshots}}</button>
+                    <button type='button' class="dropdown-item" onclick='sendMassAction("restart")'>{{Restart All Devices}}</button>
                 </div>
-                <div class="col">
-					<div class="btn-group" role="group" style="float: right;">
-						<button id="actionsDropdown" type="button" class="btn btn-primary dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-							Actions
-						</button>
-						<div class="dropdown-menu" aria-labelledby="actionsDropdown">
-							<a class="dropdown-item" href="/device/new">{{New Device}}</a>
-                            <div class="dropdown-divider"></div>
-                            <h6 class="dropdown-header">Device Actions</h6>
-							<button type='button' class="dropdown-item" onclick='sendMassAction("screenshot")'>{{Get All Screenshots}}</button>
-							<button type='button' class="dropdown-item" onclick='sendMassAction("restart")'>{{Restart All Devices}}</button>
-							<!--
-							<div class="dropdown-divider"></div>
-							<div class="form-check dropdown-item">
-								<input type="checkbox" class="form-check-input" data-toggle="toggle" onchange="onCheckChanged(this)" checked>
-								<label class="form-check-label" for="show_screenshots">Show Screenshots</label>
-							</div>
-							-->
-						</div>
-					</div>
-				</div>
+			</div>
+            <div class="btn-group" role="group" style="float: left;">
+                <button id="actionsDropdown" type="button" class="btn btn-primary dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                    Settings
+                </button>
+                <div class="dropdown-menu" aria-labelledby="actionsDropdown">
+                    <h6 class="dropdown-header">Display Settings</h6>
+                    <button type='button' class="dropdown-item">
+                        Preview Size
+                        <br>
+                        <div class="btn-group btn-group-toggle" data-toggle="buttons">
+                            <label class="btn btn-secondary">
+                                <input type="radio" name="size" value="32" onchange="changePreviewSize(this)" autocomplete="off"> S
+                            </label>
+                            <label class="btn btn-secondary">
+                                <input type="radio" name="size" value="64" onchange="changePreviewSize(this)" autocomplete="off"> M
+                            </label>
+                            <label class="btn btn-secondary">
+                                <input type="radio" name="size" value="96" onchange="changePreviewSize(this)" autocomplete="off"> L
+                            </label>
+                            <label class="btn btn-secondary">
+                                <input type="radio" name="size" value="144" onchange="changePreviewSize(this)" autocomplete="off"> XL
+                            </label>
+                        </div>
+                    </button>
+                    <!--
+                    <div class="dropdown-divider"></div>
+                    <div class="form-check dropdown-item">
+                        <input type="checkbox" class="form-check-input" data-toggle="toggle" onchange="onCheckChanged(this)" checked>
+                        <label class="form-check-label" for="show_screenshots">Show Screenshots</label>
+                    </div>
+                    -->
+                </div>
 			</div>
             <br><br>
 			
