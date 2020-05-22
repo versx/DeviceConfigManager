@@ -94,7 +94,7 @@ router.post('/settings/change', (req, res) => {
     newConfig.logging = {
         enabled: data.logging === 'on',
         max_size: data.max_size,
-        format: data.log_format
+        format: data.log_format || 'YYYY-MM-DD hh:mm:ss A'
     };
     newConfig.db = {
         host: data.host,

@@ -265,7 +265,7 @@ router.get('/settings', (req, res) => {
     data.monitor_reboot = config.monitor.reboot ? 'checked' : '';
     data.logging = config.logging.enabled ? 'checked' : '';
     data.max_size = config.logging.max_size;
-    data.log_format = config.logging.format;
+    data.log_format = config.logging.format || 'YYYY-MM-DD hh:mm:ss A';
     res.render('settings', data);
 });
 
