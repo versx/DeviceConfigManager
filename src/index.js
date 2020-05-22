@@ -119,6 +119,6 @@ async function run() {
     app.listen(config.port, config.interface, () => logger('dcm').info(`Listening on port ${config.port}...`));
 
     if (config.monitor.enabled) {
-        DeviceMonitor.checkDevices();
+        DeviceMonitor.start();
     }
 }
