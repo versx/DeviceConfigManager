@@ -23,6 +23,7 @@ const utils = require('./services/utils.js');
 // TODO: Success/error responses
 // TODO: Test/fix schedules changing days
 // TODO: Restart offline devices via front page offline device list (add button)
+// TODO: Webhook for device reboots
 
 require('events').defaultMaxListeners = 300;
 

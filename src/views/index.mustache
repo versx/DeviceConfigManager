@@ -82,9 +82,10 @@
                     <table id="table" class="table table-{{style}} table-striped table-bordered table-hover dt-responsive nowrap" style="position: center; width:100%">
                         <thead class="thead-dark">
                         <tr>
-                            <th>{{Name}}</th>
-                            <th>{{Config}}</th>
-                            <th>{{Last Config}}</th>
+                            <th class="all">{{Name}}</th>
+                            <th class="all">{{Config}}</th>
+                            <th class="min-desktop">{{Last Config}}</th>
+                            <th class="all" width="5%"></th>
                         </tr>
                         </thead>
                         <tbody>
@@ -93,7 +94,7 @@
                                 <td>{{{uuid}}}</td>
                                 <td>{{config}}</td>
                                 <td>{{last_seen}}</td>
-                                <td>{{buttons}}</td>
+                                <td>{{{buttons}}}</td>
                             </tr>
                         {{/devices_offline}}
                         </tbody>
@@ -145,4 +146,30 @@
             "responsive": true
         });
     });
+    // TODO: Make resuable method
+    function reboot(uuid) {
+        const listeners = ('{{{listeners}}}' || '').split(',');
+        console.log('Listeners:', listeners);
+        for (let i = 0; i < listeners.length; i++) {
+            const url = listeners[i];
+            const data = JSON.stringify({ 'type': 'restart', 'device': uuid });
+            console.log('Sending reboot request to remote listener at', url);
+            $.ajax({
+                url: url,
+                type: 'POST',
+                dataType: 'json',
+                data: data,
+                async: true,
+                headers: { 'Accept': 'application/json', 'Content-Type': 'application/json' },
+                success: function(data) {
+                    $('#reboot').text('Rebooted');
+                    console.log("Sent restart command to remote listener", url);
+                },
+                error: function(err) {
+                    $('#reboot').text('Error');
+                    console.error("Failed to send restart command to remote listener", url);
+                }
+            });
+        }
+    }
 </script>

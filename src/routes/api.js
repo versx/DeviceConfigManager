@@ -167,7 +167,7 @@ router.post('/devices/mass_action', async (req, res) => {
         break;
     case 'restart_config':
         logger('dcm').info('Received restart by config mass action');
-        endpoint = 'restart_config';
+        endpoint = 'restart';
         break;
     default:
         res.send('Error Occurred');
