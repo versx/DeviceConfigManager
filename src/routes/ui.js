@@ -40,6 +40,7 @@ router.get(['/', '/index'], async (req, res) => {
         data.username = username;
         data.devices_offline = devices.filter(x => x.last_seen < (Math.round((new Date()).getTime() / 1000) - delta));
         data.devices_offline.forEach((device) => {
+            device.uuid = `<a href='/device/manage/${device.uuid}' target='_blank' class='text-light'>${device.uuid}</a>`;
             device.last_seen = utils.getDateTime(device.last_seen * 1000);
         });
         data.devices_online_count = devices.filter(x => x.last_seen >= (Math.round((new Date()).getTime() / 1000) - delta)).length;
