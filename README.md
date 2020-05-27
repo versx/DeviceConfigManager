@@ -40,6 +40,9 @@ A.) You need to make sure to set `option forwardfor` in your haproxy.cfg file un
 Q.) Why are devices not connecting to backend or sending data to data endpoints?  
 A.) Make sure to **not** include the `/raw` or `/controler` endpoints in the `Backend Url` and `Data Endpoints` config options. These are automatically appended to each URL address.  
 
+Q.) Will I be able to view screenshots and use the device endpoint tools with devices using mac internet sharing?  
+A.) No, since it uses the connected machine's IP address for internet sharing.  
+
 ## PM2 (recommended)
 Once everything is setup and running appropriately, you can add this to PM2 ecosystem.config.js file so it is automatically started:  
 ```

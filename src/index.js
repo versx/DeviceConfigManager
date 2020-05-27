@@ -22,6 +22,9 @@ const utils = require('./services/utils.js');
 // TODO: Secure /api/config endpoint with token
 // TODO: Success/error responses
 // TODO: Test/fix schedules changing days
+// TODO: Click offline device, go to manage page
+// TODO: Reset offline devices via Action menu
+// TODO: Make device names clickable to manage page
 
 require('events').defaultMaxListeners = 300;
 

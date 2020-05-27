@@ -138,6 +138,7 @@ router.get('/devices', async (req, res) => {
                         <a href="/device/logs/${device.uuid}" class="dropdown-item">Logs</a>
                     </div>
                 </div>`;
+                device.uuid = `<a href='/device/manage/${device.uuid}' target='_blank' class='text-light'>${device.uuid}</a>`;
             }
         }
         res.json({
