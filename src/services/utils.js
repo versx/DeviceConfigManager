@@ -4,33 +4,33 @@ const fs = require('fs');
 const moment = require('moment');
 const config = require('../config.json');
 
-async function readFile(path) {
-    return new Promise(function(resolve, reject) {
-        fs.readFile(path, function(err, data) {
+const readFile = async (path) => {
+    return new Promise((resolve, reject) => {
+        fs.readFile(path, (err, data) => {
             if (err) {
                 return reject(err);
             }
             resolve(data.toString('utf8'));
         });
     });
-}
+};
 
-async function fileExists(path) {
-    return new Promise(function(resolve, reject) {
+const fileExists = async (path) => {
+    return new Promise((resolve, reject) => {
         try {
-            fs.exists(path, function(exists) {
+            fs.exists(path, (exists) => {
                 resolve(exists);
             });
         } catch (e) {
             return reject(e);
         }
     });
-}
+};
 
-async function fileLastModifiedTime(path) {
-    return new Promise(function(resolve, reject) {
+const fileLastModifiedTime = async (path) => {
+    return new Promise((resolve, reject) => {
         try {
-            fs.stat(path, function(err, stats) {
+            fs.stat(path, (err, stats) => {
                 if (err) {
                     return reject(err);
                 }
@@ -40,20 +40,20 @@ async function fileLastModifiedTime(path) {
             return reject(e);
         }
     });
-}
+};
 
-function snooze(ms) {
+const snooze = async (ms) => {
     return new Promise(resolve => setTimeout(resolve, ms));
-}
+};
 
-function getDateTime(date) {
+const getDateTime = (date) => {
     const momentDate = moment(date);
     const formatted = momentDate.format(config.logging.format);
     return formatted;
-}
+};
 
-function buildConfig(provider, backendUrl, dataEndpoints, token, heartbeatMaxTime, minDelayLogout,
-    loggingUrl, loggingPort, accountManager, deployEggs, nearbyTracker, autoLogin) {
+const buildConfig = (provider, backendUrl, dataEndpoints, token, heartbeatMaxTime, minDelayLogout,
+    loggingUrl, loggingPort, accountManager, deployEggs, nearbyTracker, autoLogin) => {
     let obj = {};
     switch (provider) {
     case 'GoCheats':
@@ -91,9 +91,9 @@ function buildConfig(provider, backendUrl, dataEndpoints, token, heartbeatMaxTim
     }
     const json = JSON.stringify(obj);
     return json;
-}
+};
 
-function formatBytes(bytes) {
+const formatBytes = (bytes) => {
     const sizes = ['Bytes', 'KB', 'MB', 'GB', 'TB'];
     if (bytes === 0) {
         return 0;
@@ -103,23 +103,23 @@ function formatBytes(bytes) {
         return bytes + ' ' + sizes[index];
     }
     return (bytes / Math.pow(1024, index)).toFixed(1) + ' ' + sizes[index];
-}
+};
 
-function timeToSeconds(time) {
+const timeToSeconds = (time) => {
     if (time) {
         const split = time.split(':');
         if (split.length === 3) {
             const hours = parseInt(split[0]);
             const minutes = parseInt(split[1]);
             const seconds = parseInt(split[2]);
-            let timeNew = parseInt(hours * 3600 + minutes * 60 + seconds);
+            const timeNew = parseInt(hours * 3600 + minutes * 60 + seconds);
             return timeNew;
         }
     }
     return 0;
-}
+};
 
-function todaySeconds() {
+const todaySeconds = () => {
     const date = moment();
     const formattedDate = date.format('HH:mm:ss');
     const split = formattedDate.split(':');
@@ -131,7 +131,7 @@ function todaySeconds() {
     } else {
         return 0;
     }
-}
+};
 
 module.exports = {
     readFile,

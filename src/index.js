@@ -22,11 +22,12 @@ const utils = require('./services/utils.js');
 // TODO: Secure /api/config endpoint with token
 // TODO: Success/error responses
 // TODO: Test/fix schedules changing days
+// TODO: Restart offline devices via front page offline device list (add button)
+// TODO: Webhook for device reboots
 
+require('events').defaultMaxListeners = 300;
 
-run();
-
-async function run() {
+const run = async () => {
     // Start database migrator
     const dbMigrator = new Migrator();
     dbMigrator.load();
@@ -57,11 +58,11 @@ async function run() {
     app.use(i18n.init);
     
     // Register helper as a locals function wrroutered as mustache expects
-    app.use(function(req, res, next) {
+    app.use((req, res, next) => {
         // Mustache helper
-        res.locals.__ = function() {
+        res.locals.__ = () => {
             /* eslint-disable no-unused-vars */
-            return function(text, render) {
+            return (text, render) => {
                 return i18n.__.routerly(req, arguments);
             };
             /* eslint-disable no-unused-vars */
@@ -80,7 +81,7 @@ async function run() {
     }));
     
     // Login middleware
-    app.use(function(req, res, next) {
+    app.use((req, res, next) => {
         if (req.path === '/api/login' || req.path === '/login' || req.path === '/api/config' || req.path == '/api/log/new') {
             return next();
         }
@@ -97,7 +98,7 @@ async function run() {
     // CSRF token middleware
     app.use(cookieParser());
     app.use(csrf({ cookie: true }));
-    app.use(function(req, res, next) {
+    app.use((req, res, next) => {
         var csrf = req.csrfToken();
         defaultData.csrf = csrf;
         //console.log("CSRF Token:", csrf);
@@ -116,4 +117,10 @@ async function run() {
     if (config.monitor.enabled) {
         DeviceMonitor.start();
     }
-}
+};
+
+run().then(x => {
+    console.log('Initialized');
+}).catch(err => {
+    console.error('Error:', err);
+});

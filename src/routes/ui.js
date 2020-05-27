@@ -22,7 +22,7 @@ const providers = [
 ];
 
 // UI Routes
-router.get(['/', '/index'], async function(req, res) {
+router.get(['/', '/index'], async (req, res) => {
     if (req.session.loggedin) {
         const username = req.session.username;
         const devices = await Device.getAll();
@@ -39,55 +39,58 @@ router.get(['/', '/index'], async function(req, res) {
         data.schedules = Object.keys(schedules).length;
         data.username = username;
         data.devices_offline = devices.filter(x => x.last_seen < (Math.round((new Date()).getTime() / 1000) - delta));
-        data.devices_offline.forEach(function(device) {
+        data.devices_offline.forEach((device) => {
             device.last_seen = utils.getDateTime(device.last_seen * 1000);
+            device.buttons = `<button type='button' class='btn btn-success' onclick='reboot("${device.uuid}")'>Reboot</button>`; // TODO: Localize
+            device.uuid = `<a href='/device/manage/${device.uuid}' target='_blank' class='text-light'>${device.uuid}</a>`;
         });
         data.devices_online_count = devices.filter(x => x.last_seen >= (Math.round((new Date()).getTime() / 1000) - delta)).length;
         data.devices_offline_count = data.devices_offline.length;
         data.logs_size = utils.formatBytes(logsSize);
+        data.listeners = config.listeners;
         data.version = require('../../package.json').version;
         res.render('index', data);
     }
 });
 
-router.get('/login', function(req, res) {
+router.get('/login', (req, res) => {
     const data = defaultData;
     data.logged_in = false;
     data.username = null;
     res.render('login', data);
 });
 
-router.get('/logout', function(req, res) {
-    req.session.destroy(function(err) {
+router.get('/logout', (req, res) => {
+    req.session.destroy((err) => {
         if (err) throw err;
         res.redirect('/login');
     });
 });
 
-router.get('/account', function(req, res) {
+router.get('/account', (req, res) => {
     const data = defaultData;
     data.username = req.session.username;
     res.render('account', data);
 });
 
 // Device UI Routes
-router.get('/devices', function(req, res) {
+router.get('/devices', (req, res) => {
     res.render('devices', defaultData);
 });
 
-router.get('/device/new', async function(req, res) {
+router.get('/device/new', async (req, res) => {
     const data = defaultData;
     data.configs = await Config.getAll();
     res.render('device-new', defaultData);
 });
 
-router.get('/device/edit/:uuid', async function(req, res) {
+router.get('/device/edit/:uuid', async (req, res) => {
     const uuid = req.params.uuid;
     const data = defaultData;
     const configs = await Config.getAll();
     const device = await Device.getByName(uuid);
     if (device.config) {
-        configs.forEach(function(config) {
+        configs.forEach((config) => {
             config.selected = config.name === device.config;
         });
     } else {
@@ -102,20 +105,20 @@ router.get('/device/edit/:uuid', async function(req, res) {
     res.render('device-edit', data);    
 });
 
-router.get('/device/logs/:uuid', async function(req, res) {
+router.get('/device/logs/:uuid', async (req, res) => {
     const uuid = req.params.uuid;
     const data = defaultData;
     data.uuid = uuid;
     res.render('device-logs', data);
 });
 
-router.get('/device/delete/:uuid', async function(req, res) {
+router.get('/device/delete/:uuid', async (req, res) => {
     const data = defaultData;
     data.uuid = req.params.uuid;
     res.render('device-delete', data);
 });
 
-router.get('/device/manage/:uuid', async function(req, res) {
+router.get('/device/manage/:uuid', async (req, res) => {
     const uuid = req.params.uuid;
     const device = await Device.getByName(uuid);
     const data = defaultData;
@@ -132,17 +135,17 @@ router.get('/device/manage/:uuid', async function(req, res) {
 });
 
 // Config UI Routes
-router.get('/configs', function(req, res) {
+router.get('/configs', (req, res) => {
     res.render('configs', defaultData);
 });
 
-router.get('/config/new', function(req, res) {
+router.get('/config/new', (req, res) => {
     const data = defaultData;
     data.providers = providers;
     res.render('config-new', data);
 });
 
-router.get('/config/edit/:name', async function(req, res) {
+router.get('/config/edit/:name', async (req, res) => {
     const name = req.params.name;
     const c = await Config.getByName(name);
     const data = defaultData;
@@ -150,7 +153,7 @@ router.get('/config/edit/:name', async function(req, res) {
     data.old_name = name;
     data.name = c.name;
     data.providers = providers;
-    data.providers.forEach(function(provider) {
+    data.providers.forEach((provider) => {
         provider.selected = provider.name === c.provider;
     });
     // TODO: Better way
@@ -172,18 +175,18 @@ router.get('/config/edit/:name', async function(req, res) {
     res.render('config-edit', data);
 });
 
-router.get('/config/delete/:name', function(req, res) {
+router.get('/config/delete/:name', (req, res) => {
     const data = defaultData;
     data.name = req.params.name;
     res.render('config-delete', data);
 });
 
 // Schedule UI Routes
-router.get('/schedules', function(req, res) {
+router.get('/schedules', (req, res) => {
     res.render('schedules', defaultData);
 });
 
-router.get('/schedule/new', async function(req, res) {
+router.get('/schedule/new', async (req, res) => {
     const data = defaultData;
     const configs = await Config.getAll();
     const devices = await Device.getAll();
@@ -193,20 +196,20 @@ router.get('/schedule/new', async function(req, res) {
     res.render('schedule-new', data);
 });
 
-router.get('/schedule/edit/:name', async function(req, res) {
+router.get('/schedule/edit/:name', async (req, res) => {
     const name = req.params.name;
     const data = defaultData;
     const configs = await Config.getAll();
     const devices = await Device.getAll();
     const schedule = ScheduleManager.getByName(name);
     if (configs) {
-        configs.forEach(function(cfg) {
+        configs.forEach((cfg) => {
             cfg.selected = cfg.name === schedule.config;
             cfg.next_config_selected = cfg.name === schedule.next_config;
         });
     }
     if (devices) {
-        devices.forEach(function(device) {
+        devices.forEach((device) => {
             device.selected = schedule.uuids.includes(device.uuid);
         });
     }
@@ -219,21 +222,21 @@ router.get('/schedule/edit/:name', async function(req, res) {
     data.timezone = schedule.timezone;
     data.next_config = schedule.next_config;
     data.enabled = schedule.enabled === 1 ? 'checked' : '';
-    timezones.forEach(function(timezone) {
+    timezones.forEach((timezone) => {
         timezone.selected = timezone.value === schedule.timezone;
     });
     data.timezones = timezones;
     res.render('schedule-edit', data);
 });
 
-router.get('/schedule/delete/:name', function(req, res) {
+router.get('/schedule/delete/:name', (req, res) => {
     const data = defaultData;
     data.name = req.params.name;
     res.render('schedule-delete', data);
 });
 
 // Settings UI Routes
-router.get('/settings', function(req, res) {
+router.get('/settings', (req, res) => {
     const data = defaultData;
     data.title = config.title;
     data.host = config.db.host;
@@ -246,7 +249,7 @@ router.get('/settings', function(req, res) {
         { 'name': 'dark' },
         { 'name': 'light' }
     ];
-    data.styles.forEach(function(style) {
+    data.styles.forEach((style) => {
         style.selected = style.name === config.style;
     });
     data.languages = [
@@ -254,7 +257,7 @@ router.get('/settings', function(req, res) {
         { 'name': 'es' },
         { 'name': 'de' }
     ];
-    data.languages.forEach(function(locale) {
+    data.languages.forEach((locale) => {
         locale.selected = locale.name === config.locale;
     });
     data.listeners = (config.listeners || '').join(',');
@@ -265,11 +268,11 @@ router.get('/settings', function(req, res) {
     data.monitor_reboot = config.monitor.reboot ? 'checked' : '';
     data.logging = config.logging.enabled ? 'checked' : '';
     data.max_size = config.logging.max_size;
-    data.log_format = config.logging.format;
+    data.log_format = config.logging.format || 'YYYY-MM-DD hh:mm:ss A';
     res.render('settings', data);
 });
 
-router.get('/logs', function(req, res) {
+router.get('/logs', (req, res) => {
     res.render('logs', defaultData);
 });
 

@@ -114,3 +114,6 @@ screenshots
 
 # No schedules
 schedules.json
+
+# No docker-compose.yml
+docker-compose.yml

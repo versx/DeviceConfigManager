@@ -19,7 +19,7 @@ const ScheduleManager = require('../models/schedule-manager.js');
 const logger = require('../services/logger.js');
 const utils = require('../services/utils.js');
 
-router.use(function(req, res, next) {
+router.use((req, res, next) => {
     if (req.path === '/api/login' || req.path === '/login' ||
         req.path === '/config' || req.path === '/log/new') {
         return next();
@@ -32,7 +32,7 @@ router.use(function(req, res, next) {
 });
 
 // Authentication API Route
-router.post('/login', async function(req, res) {
+router.post('/login', async (req, res) => {
     const { username, password } = req.body;
     if (username && password) {
         const result = await Account.getAccount(username, password);
@@ -50,7 +50,7 @@ router.post('/login', async function(req, res) {
     res.redirect('/login');
 });
 
-router.post('/account/change_password/:username', async function(req, res) {
+router.post('/account/change_password/:username', async (req, res) => {
     const { username, oldPassword, password, password2 } = req.body;
     // TODO: show error
     if (password !== password2) {
@@ -77,7 +77,7 @@ router.post('/account/change_password/:username', async function(req, res) {
 
 
 // Settings API Routes
-router.post('/settings/change', function(req, res) {
+router.post('/settings/change', (req, res) => {
     const data = req.body;
     const newConfig = config;
     newConfig.title = data.title;
@@ -88,13 +88,13 @@ router.post('/settings/change', function(req, res) {
         enabled: data.monitor_enabled === 'on',
         threshold: data.monitor_threshold,
         interval: data.monitor_interval,
-        webhooks: data.monitor_webhooks ? data.webhooks.split(',') || [] : [],
+        webhooks: data.monitor_webhooks ? data.monitor_webhooks.split(',') || [] : [],
         reboot: data.monitor_reboot === 'on'
     };
     newConfig.logging = {
         enabled: data.logging === 'on',
         max_size: data.max_size,
-        format: data.log_format
+        format: data.log_format || 'YYYY-MM-DD hh:mm:ss A'
     };
     newConfig.db = {
         host: data.host,
@@ -110,7 +110,7 @@ router.post('/settings/change', function(req, res) {
 
 
 // Device API Routes
-router.get('/devices', async function(req, res) {
+router.get('/devices', async (req, res) => {
     try {
         const devices = await Device.getAll();
         let previewSize = req.query.previewSize;
@@ -138,6 +138,7 @@ router.get('/devices', async function(req, res) {
                         <a href="/device/logs/${device.uuid}" class="dropdown-item">Logs</a>
                     </div>
                 </div>`;
+                device.uuid = `<a href='/device/manage/${device.uuid}' target='_blank' class='text-light'>${device.uuid}</a>`;
             }
         }
         res.json({
@@ -150,7 +151,7 @@ router.get('/devices', async function(req, res) {
     }
 });
 
-router.post('/devices/mass_action', async function(req, res) {
+router.post('/devices/mass_action', async (req, res) => {
     const type = req.body.type;
     let endpoint = '';
     switch (type) {
@@ -166,7 +167,7 @@ router.post('/devices/mass_action', async function(req, res) {
         break;
     case 'restart_config':
         logger('dcm').info('Received restart by config mass action');
-        endpoint = 'restart_config';
+        endpoint = 'restart';
         break;
     default:
         res.send('Error Occurred');
@@ -180,7 +181,7 @@ router.post('/devices/mass_action', async function(req, res) {
                 logger('dcm').info(`Filtering devices based on config ${config}`);
                 devices = devices.filter(x => x.config === config);
             }
-            devices.forEach(function(device) {
+            devices.forEach((device) => {
                 const ip = device.clientip;
                 if (ip) {
                     const host = `http://${ip}:8080/${endpoint}`;
@@ -191,7 +192,7 @@ router.post('/devices/mass_action', async function(req, res) {
     }
 });
 
-router.post('/device/new', async function(req, res) {
+router.post('/device/new', async (req, res) => {
     const data = req.body;
     const result = await Device.create(
         data.uuid,
@@ -209,7 +210,7 @@ router.post('/device/new', async function(req, res) {
     res.redirect('/devices');
 });
 
-router.post('/device/edit/:uuid', async function(req, res) {
+router.post('/device/edit/:uuid', async (req, res) => {
     const {
         uuid,
         config,
@@ -233,7 +234,7 @@ router.post('/device/edit/:uuid', async function(req, res) {
 });
 
 // Kevin screenshot support
-router.post('/device/:uuid/screen', upload.single('file'), function(req, res) {
+router.post('/device/:uuid/screen', upload.single('file'), (req, res) => {
     const uuid = req.params.uuid;
     const fileName = uuid + '.png';
     const tempPath = req.file.path;
@@ -246,7 +247,7 @@ router.post('/device/:uuid/screen', upload.single('file'), function(req, res) {
     if (path.extname(req.file.originalname).toLowerCase() === '.png' ||
         path.extname(req.file.originalname).toLowerCase() === '.jpg' ||
         path.extname(req.file.originalname).toLowerCase() === '.jpeg') {
-        fs.rename(tempPath, targetPath, function(err) {
+        fs.rename(tempPath, targetPath, (err) => {
             if (err) {
                 logger('dcm').error(err);
                 res.status(500)
@@ -259,7 +260,7 @@ router.post('/device/:uuid/screen', upload.single('file'), function(req, res) {
                 .end('OK');
         });
     } else {
-        fs.unlink(tempPath, function(err) {
+        fs.unlink(tempPath, (err) => {
             if (err) {
                 logger('dcm').error(err);
             }
@@ -270,12 +271,12 @@ router.post('/device/:uuid/screen', upload.single('file'), function(req, res) {
     }
 });
 
-router.post('/device/screen/:uuid', function(req, res) {
+router.post('/device/screen/:uuid', (req, res) => {
     const uuid = req.params.uuid;
     logger('dcm').info(`Received screen ${uuid}`);
     const data = Buffer.from(req.body.body, 'base64');
     const screenshotFile = path.resolve(__dirname, '../../screenshots/' + uuid + '.png');
-    fs.writeFile(screenshotFile, data, function(err) {
+    fs.writeFile(screenshotFile, data, (err) => {
         if (err) {
             logger('dcm').error('Failed to save screenshot');
         }
@@ -283,7 +284,7 @@ router.post('/device/screen/:uuid', function(req, res) {
     res.sendStatus(200).end();
 });
 
-router.post('/device/delete/:uuid', async function(req, res) {
+router.post('/device/delete/:uuid', async (req, res) => {
     const uuid = req.params.uuid;
     const result = await Device.delete(uuid);
     if (result) {
@@ -294,10 +295,10 @@ router.post('/device/delete/:uuid', async function(req, res) {
 
 
 // Config API requests
-router.get('/configs', async function(req, res) {
+router.get('/configs', async (req, res) => {
     try {
         let configs = await Config.getAll();
-        configs.forEach(function(config) {
+        configs.forEach((config) => {
             config.is_default = config.is_default ? 'Yes' : 'No';
             config.buttons = `
             <div class='btn-group' role='group' style='float: right;'>
@@ -323,7 +324,7 @@ router.get('/configs', async function(req, res) {
     }
 });
 
-router.post('/config', async function(req, res) {
+router.post('/config', async (req, res) => {
     const { uuid, ios_version, ipa_version } = req.body;
     let device = await Device.getByName(uuid);
     let noConfig = false;
@@ -415,7 +416,7 @@ router.post('/config', async function(req, res) {
     res.send(json);
 });
 
-router.post('/config/new', async function(req, res) {
+router.post('/config/new', async (req, res) => {
     const data = req.body;
     const cfg = await Config.create(
         data.name,
@@ -445,7 +446,7 @@ router.post('/config/new', async function(req, res) {
     res.redirect('/configs');
 });
 
-router.post('/config/edit/:name', async function(req, res) {
+router.post('/config/edit/:name', async (req, res) => {
     const oldName = req.params.name;
     const data = req.body;
     const c = await Config.getByName(oldName);
@@ -474,7 +475,7 @@ router.post('/config/edit/:name', async function(req, res) {
     res.redirect('/configs');
 });
 
-router.post('/config/delete/:name', async function(req, res) {
+router.post('/config/delete/:name', async (req, res) => {
     const name = req.params.name;
     const result = await Config.delete(name);
     if (result) {
@@ -485,11 +486,11 @@ router.post('/config/delete/:name', async function(req, res) {
 
 
 // Schedule API requests
-router.get('/schedules', async function(req, res) {
+router.get('/schedules', async (req, res) => {
     let schedules = ScheduleManager.getAll();
     const list = Object.values(schedules);
     if (list) {
-        list.forEach(function(schedule) {
+        list.forEach((schedule) => {
             schedule.uuids = (schedule.uuids || []).join(',');
             schedule.buttons = `<a href='/schedule/edit/${schedule.name}'><button type='button' class='btn btn-primary'>Edit</button></a>
                                 <a href='/schedule/delete/${schedule.name}'><button type='button'class='btn btn-danger'>Delete</button></a>`;
@@ -499,7 +500,7 @@ router.get('/schedules', async function(req, res) {
     res.json({ data: { schedules: list } });
 });
 
-router.post('/schedule/new', function(req, res) {
+router.post('/schedule/new', (req, res) => {
     const data = req.body;
     const result = ScheduleManager.create(
         data.name,
@@ -519,7 +520,7 @@ router.post('/schedule/new', function(req, res) {
     res.redirect('/schedules');
 });
 
-router.post('/schedule/edit/:name', function(req, res) {
+router.post('/schedule/edit/:name', (req, res) => {
     const data = req.body;
     const oldName = req.params.name;
     const result = ScheduleManager.update(
@@ -541,7 +542,7 @@ router.post('/schedule/edit/:name', function(req, res) {
     res.redirect('/schedules');
 });
 
-router.post('/schedule/delete/:name', function(req, res) {
+router.post('/schedule/delete/:name', (req, res) => {
     const name = req.params.name;
     const result = ScheduleManager.delete(name);
     if (result) {
@@ -551,7 +552,7 @@ router.post('/schedule/delete/:name', function(req, res) {
     res.redirect('/schedules');
 });
 
-router.get('/schedule/delete_all', function(req, res) {
+router.get('/schedule/delete_all', (req, res) => {
     const result = ScheduleManager.deleteAll();
     if (result) {
         // Success
@@ -562,7 +563,7 @@ router.get('/schedule/delete_all', function(req, res) {
 
 
 // Logging API requests
-router.get('/logs/delete_all', function(req, res) {
+router.get('/logs/delete_all', (req, res) => {
     const result = Log.deleteAll();
     if (result) {
         // Success
@@ -570,7 +571,7 @@ router.get('/logs/delete_all', function(req, res) {
     res.redirect('/settings');
 });
 
-router.get('/logs/:uuid', async function(req, res) {
+router.get('/logs/:uuid', async (req, res) => {
     const uuid = req.params.uuid;
     const logs = await Log.getByDevice(uuid);
     res.send({
@@ -581,7 +582,7 @@ router.get('/logs/:uuid', async function(req, res) {
     });
 });
 
-router.post('/log/new', async function(req, res) {
+router.post('/log/new', async (req, res) => {
     if (!config.logging.enabled) {
         // Logs are disabled
         res.send('OK');
@@ -599,7 +600,7 @@ router.post('/log/new', async function(req, res) {
     res.send('OK');
 });
 
-router.get('/log/delete/:uuid', async function(req, res) {
+router.get('/log/delete/:uuid', async (req, res) => {
     const uuid = req.params.uuid;
     const result = await Log.delete(uuid);
     if (result) {
@@ -608,38 +609,38 @@ router.get('/log/delete/:uuid', async function(req, res) {
     res.redirect('/device/logs/' + uuid);
 });
 
-router.get('/log/export/:uuid', async function(req, res) {
+router.get('/log/export/:uuid', async (req, res) => {
     const uuid = req.params.uuid;
     let logText = '';
     const logs = await Log.getByDevice(uuid);
     if (logs) {
-        logs.forEach(function(log) {
+        logs.forEach((log) => {
             logText += `${log.timestamp} ${log.uuid} ${log.message}\n`;
         });
     }
     res.send(logText);
 });
 
-async function get(uuid, url) {
+const get = async (uuid, url) => {
     const isScreen = url.includes('/screen');
     if (isScreen) {
         const screenshotFile = path.resolve(__dirname, '../../screenshots/' + uuid + '.png');
         const fileStream = fs.createWriteStream(screenshotFile);
         request
             .get(url)
-            .on('error', function(err) {
+            .on('error', (err) => {
                 logger('dcm').error(`Failed to get screenshot for ${uuid} at ${url}. Are you sure the device is up? ${err.code}`);
             })
             .pipe(fileStream);
     } else {
-        request.get(url, function(err) {
+        request.get(url, (err) => {
             if (err) {
                 logger('dcm').error(`Error: ${err}`);
             }
-        }).on('error', function(err) {
+        }).on('error', (err) => {
             logger('dcm').error(`Error occurred: ${err}`);
         });
     }
-}
+};
 
 module.exports = router;

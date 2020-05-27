@@ -8,10 +8,9 @@ const logsDir = path.resolve(__dirname, '../../logs');
 
 // Global log rotator
 const rotator = logrotate.rotator;
-
 const loggers = {};
 
-function getLogger(name) {
+const getLogger = (name) => {
     // Logger with name was already created, no need to create another.
     if (loggers[name]) {
         return loggers[name];
@@ -39,15 +38,15 @@ function getLogger(name) {
         count: 3
     });
     rotator.on('error', (err) => {
-        logger('dcm').error(err);
+        console.log('Log rotate error:', err);
     });  
     // 'rotate' event is invoked whenever a registered file gets rotated
     rotator.on('rotate', (file) => {
-        logger('dcm').info(`Log file ${file} was rotated.`);
+        console.log('Log file rotated:', file);
     });
 
     loggers[name] = logger;
     return logger;
-}
+};
 
 module.exports = getLogger;

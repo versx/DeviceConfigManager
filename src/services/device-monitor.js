@@ -11,15 +11,15 @@ const delta = (config.monitor.threshold || 15) * 60; // Amount of time in second
 const maxRebootCount = 10;
 const devicesRebooted = {};
 
-function start() {
+const start = () => {
     // Only start the device monitor if it's enabled in the config
     if (config.monitor.enabled) {
         logger('dcm').info(`Enabling device monitor every ${devicesCheckInterval / 1000} seconds`);
         setInterval(checkDevices, devicesCheckInterval);
     }
-}
+};
 
-async function checkDevices() {
+const checkDevices = async () => {
     const devices = await Device.getAll();
     if (!(devices && devices.length > 0)) {
         return;
@@ -86,7 +86,7 @@ async function checkDevices() {
                 webhook,
                 obj,
                 /* eslint-disable no-unused-vars */
-                function(error, res, body) {
+                (error, res, body) => {
                 /* eslint-enable no-unused-vars */
                     if (error) {
                         logger('dcm').error(error);
@@ -97,7 +97,7 @@ async function checkDevices() {
         }
     }
 
-    utils.snooze(5000);
-}
+    await utils.snooze(5000);
+};
 
 module.exports = { start };

@@ -179,8 +179,8 @@
     }
 
     function reboot() {
-        var listeners = '{{listeners}}'.replace(/&#x2F;/g, '/').split(',');
-        console.log("Listeners:", listeners);
+        const listeners = ('{{{listeners}}}' || '').split(',');
+        console.log('Listeners:', listeners);
         for (let i = 0; i < listeners.length; i++) {
             const url = listeners[i];
             const data = JSON.stringify({ 'type': 'restart', 'device': '{{name}}' });
