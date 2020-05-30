@@ -124,6 +124,7 @@ router.get('/devices', async (req, res) => {
                 const isOffline = device.last_seen > (Math.round((new Date()).getTime() / 1000) - delta) ? 0 : 1;
                 const image = isOffline ? '/img/offline.png' : (exists ? `/screenshots/${device.uuid}.png` : '/img/online.png');
                 const lastModified = exists && !isOffline ? (await utils.fileLastModifiedTime(screenshotPath)).toLocaleString() : '';
+                const encodedUuid = encodeURIComponent(device.uuid);
                 device.image = `<img src='${image}' width='${previewSize}' height='auto' style='margin-left: auto;margin-right: auto;display: block;' class='deviceImage' /><br><div class='text-center'><small>${lastModified}</small></div>`;
                 device.last_seen = utils.getDateTime(device.last_seen * 1000);
                 device.buttons = `
@@ -132,13 +133,13 @@ router.get('/devices', async (req, res) => {
                         Actions
                     </button>
                     <div class="dropdown-menu" aria-labelledby="deviceActionsDropdown">
-                        <a href="/device/manage/${device.uuid}" class="dropdown-item">Manage</a>
+                        <a href="/device/manage/${encodedUuid}" class="dropdown-item">Manage</a>
                         <div class="dropdown-divider"></div>
-                        <a href="/device/edit/${device.uuid}" class="dropdown-item">Edit</a>
-                        <a href="/device/logs/${device.uuid}" class="dropdown-item">Logs</a>
+                        <a href="/device/edit/${encodedUuid}" class="dropdown-item">Edit</a>
+                        <a href="/device/logs/${encodedUuid}" class="dropdown-item">Logs</a>
                     </div>
                 </div>`;
-                device.uuid = `<a href='/device/manage/${device.uuid}' target='_blank' class='text-light'>${device.uuid}</a>`;
+                device.uuid = `<a href='/device/manage/${encodedUuid}' target='_blank' class='text-light'>${device.uuid}</a>`;
             }
         }
         res.json({
@@ -285,7 +286,9 @@ router.post('/device/screen/:uuid', (req, res) => {
 });
 
 router.post('/device/delete/:uuid', async (req, res) => {
+    console.log('Encoded:', req.params.uuid);
     const uuid = req.params.uuid;
+    console.log('Decoded:', uuid);
     const result = await Device.delete(uuid);
     if (result) {
         // Success

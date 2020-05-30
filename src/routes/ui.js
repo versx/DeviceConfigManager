@@ -85,7 +85,7 @@ router.get('/device/new', async (req, res) => {
 });
 
 router.get('/device/edit/:uuid', async (req, res) => {
-    const uuid = req.params.uuid;
+    const uuid = decodeURIComponent(req.params.uuid);
     const data = defaultData;
     const configs = await Config.getAll();
     const device = await Device.getByName(uuid);
@@ -114,7 +114,7 @@ router.get('/device/logs/:uuid', async (req, res) => {
 
 router.get('/device/delete/:uuid', async (req, res) => {
     const data = defaultData;
-    data.uuid = req.params.uuid;
+    data.uuid = decodeURIComponent(req.params.uuid);
     res.render('device-delete', data);
 });
 
