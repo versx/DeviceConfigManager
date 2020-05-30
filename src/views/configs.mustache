@@ -35,7 +35,8 @@
     </body>
 </html>
 
-<script>
+<script type='text/javascript' src='/js/device.js'></script>
+<script type='text/javascript'>
     if ("{{style}}" === 'dark') {
         $('body').css('background-color', 'rgb(33, 37, 41)');
         $('body').css('color', 'rgb(255, 255, 255)');
@@ -103,20 +104,5 @@
                 console.error('Error Thrown:', errorThrown);
             }
         })
-    }
-    function sendMassAction(action) {
-        $.ajax({
-            url: '/api/devices/mass_action',
-            type: 'POST',
-            data: { 'type': action },
-            async: true,
-            success: function(result, textStatus, jqXHR) {
-                console.log('Action response:', result);
-            },
-            error: function(xhr, textStatus, errorThrown) {
-                console.error('Error:', textStatus);
-                console.error('Error Thrown:', errorThrown);
-            } 
-        });
     }
 </script>

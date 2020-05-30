@@ -137,6 +137,8 @@ router.get('/devices', async (req, res) => {
                         <div class="dropdown-divider"></div>
                         <a href="/device/edit/${encodedUuid}" class="dropdown-item">Edit</a>
                         <a href="/device/logs/${encodedUuid}" class="dropdown-item">Logs</a>
+                        <h6 class="dropdown-header">Actions</h6>
+                        <button type="button" class="dropdown-item" onclick='reboot("${config.listeners}", "${device.uuid}")'>Reboot Device</button>
                     </div>
                 </div>`;
                 device.uuid = `<a href='/device/manage/${encodedUuid}' target='_blank' class='text-light'>${device.uuid}</a>`;

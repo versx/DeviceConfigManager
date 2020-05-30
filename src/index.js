@@ -24,6 +24,7 @@ const utils = require('./services/utils.js');
 // TODO: Success/error responses
 // TODO: Test/fix schedules changing days
 // TODO: Webhook for device reboots
+// TODO: Get device model in config request
 
 require('events').defaultMaxListeners = 300;
 
