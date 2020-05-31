@@ -25,7 +25,6 @@ const utils = require('./services/utils.js');
 // TODO: Test/fix schedules changing days
 // TODO: Webhook for device reboots
 // TODO: Get device model in config request
-// TODO: Show green/red device icon after 1 hour has passed from screenshot modified date
 
 require('events').defaultMaxListeners = 300;
 

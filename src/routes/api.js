@@ -353,7 +353,7 @@ router.post('/config', async (req, res) => {
     let noConfig = false;
     let assignDefault = false;
     // Check for a proxied IP before the normal IP and set the first one that exists
-    const clientip = ((req.headers['x-forwarded-for'] || '').split(', ')[0]) || (req.connection.remoteAddress).match('[0-9]+.[0-9].+[0-9]+.[0-9]+$')[0];
+    const clientip = ((req.headers['x-forwarded-for'] || '').split(', ')[0]) || (req.connection.remoteAddress || req.connection.localAddress).match('[0-9]+.[0-9].+[0-9]+.[0-9]+$')[0];
     logger('dcm').info(`Client ${uuid} at ${clientip} is requesting a config.`);
 
     // Check if device config is empty, if not provide it as json response
