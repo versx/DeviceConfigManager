@@ -15,6 +15,7 @@ function reboot(listeners, uuid) {
             success: function(data) {
                 $('#reboot').text('Rebooted');
                 console.log("Sent restart command to remote listener", url);
+                // TODO: reboot webhook
             },
             error: function(err) {
                 $('#reboot').text('Error');

@@ -132,8 +132,8 @@ router.get('/devices', async (req, res) => {
                     ? '/img/offline.png'
                     : (
                         exists && passedOneHour
-                        ? `/screenshots/${device.uuid}.png`
-                        : '/img/online.png'
+                            ? `/screenshots/${device.uuid}.png`
+                            : '/img/online.png'
                     );
                 const lastModifiedFormatted = exists && !isOffline ? lastModified.toLocaleString() : '';
                 const encodedUuid = encodeURIComponent(device.uuid);
