@@ -121,11 +121,28 @@ router.get('/devices', async (req, res) => {
                 const exists = fs.existsSync(screenshotPath);
                 // Device received a config last 15 minutes
                 const delta = 15 * 60;
-                const isOffline = device.last_seen > (Math.round((new Date()).getTime() / 1000) - delta) ? 0 : 1;
-                const image = isOffline ? '/img/offline.png' : (exists ? `/screenshots/${device.uuid}.png` : '/img/online.png');
-                const lastModified = exists && !isOffline ? (await utils.fileLastModifiedTime(screenshotPath)).toLocaleString() : '';
+                const diff = Math.round((new Date()).getTime() / 1000) - delta;
+                const isOffline = device.last_seen > diff ? 0 : 1;
+                // If the screenshot exists for the device get the last modified date object
+                const lastModified = exists ? await utils.fileLastModifiedTime(screenshotPath) : 0;
+                // Check if the screenshot was taken within the last 60 minutes
+                const passedOneHour = new Date(lastModified).getTime() / 1000 > diff - (45 * 60);
+                // If the screenshot was taken within the last 60 minutes show it, otherwise show the appropriate device icon
+                const image = isOffline
+                    ? '/img/offline.png'
+                    : (
+                        exists && passedOneHour
+                        ? `/screenshots/${device.uuid}.png`
+                        : '/img/online.png'
+                    );
+                const lastModifiedFormatted = exists && !isOffline ? lastModified.toLocaleString() : '';
                 const encodedUuid = encodeURIComponent(device.uuid);
-                device.image = `<img src='${image}' width='${previewSize}' height='auto' style='margin-left: auto;margin-right: auto;display: block;' class='deviceImage' /><br><div class='text-center'><small>${lastModified}</small></div>`;
+                device.image = `
+                <img src='${image}' width='${previewSize}' height='auto' style='margin-left: auto;margin-right: auto;display: block;' class='deviceImage' />
+                <br>
+                <div class='text-center'>
+                    <small>${lastModifiedFormatted}</small>
+                </div>`;
                 device.last_seen = utils.getDateTime(device.last_seen * 1000);
                 device.buttons = `
                 <div class="btn-group" role="group" style="float: right;">
@@ -150,6 +167,7 @@ router.get('/devices', async (req, res) => {
             }
         });
     } catch (e) {
+        console.log(e);
         logger('dcm').error(`Devices error: ${e}`);
     }
 });
