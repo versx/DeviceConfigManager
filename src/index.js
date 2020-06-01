@@ -25,6 +25,7 @@ const utils = require('./services/utils.js');
 // TODO: Test/fix schedules changing days
 // TODO: Webhook for device reboots
 // TODO: Get device model in config request
+// TODO: Send coord changes to DCM via client
 
 require('events').defaultMaxListeners = 300;
 

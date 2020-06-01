@@ -217,6 +217,7 @@ router.post('/device/new', async (req, res) => {
     const data = req.body;
     const result = await Device.create(
         data.uuid,
+        null,
         data.config || null,
         null,
         data.clientip || null,
@@ -348,7 +349,7 @@ router.get('/configs', async (req, res) => {
 });
 
 router.post('/config', async (req, res) => {
-    const { uuid, ios_version, ipa_version } = req.body;
+    const { uuid, ios_version, ipa_version, model } = req.body;
     let device = await Device.getByName(uuid);
     let noConfig = false;
     let assignDefault = false;
@@ -366,6 +367,9 @@ router.post('/config', async (req, res) => {
         }
         device.iosVersion = ios_version;
         device.ipaVersion = ipa_version;
+        if (device.model === null) {
+            device.model = model;
+        }
         device.save();
         if (device.config) {
             // Nothing to do besides respond with config
@@ -378,7 +382,7 @@ router.post('/config', async (req, res) => {
         logger('dcm').info('Device does not exist, creating...');
         // Device doesn't exist, create db entry
         const ts = new Date() / 1000;
-        device = await Device.create(uuid, null, ts, clientip, ios_version, ipa_version);
+        device = await Device.create(uuid, model, null, ts, clientip, ios_version, ipa_version);
         if (device) {
             // Success, assign default config if there is one.
             assignDefault = true;

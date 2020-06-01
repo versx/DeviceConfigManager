@@ -63,6 +63,7 @@
                 <tr>
                     <th class="all">{{Preview}}</th>
                     <th class="all">{{UUID}}</th>
+                    <th class="all">{{Model}}</th>
                     <th class="all">{{Config}}</th>
                     <th class="min-desktop">{{iOS Version}}</th>
                     <th class="min-desktop">{{IPA Version}}</th>
@@ -98,7 +99,7 @@
 		}
         $("input[name='size'][value='" + previewSize + "']").parent().button('toggle');
 		const query = `?previewSize=${previewSize}`;
-        const table = $('#table').DataTable( {
+        const table = $('#table').DataTable({
             "ajax": {
                 "url": "/api/devices" + query,
                 "dataSrc": "data.devices",
@@ -130,6 +131,7 @@
             "columns": [
                 { "data": "image" },
                 { "data": "uuid" },
+                { "data": "model" },
                 { "data": "config" },
                 { "data": "ios_version" },
                 { "data": "ipa_version" },
