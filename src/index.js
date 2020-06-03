@@ -76,7 +76,7 @@ const run = async () => {
 
     // Sessions middleware
     app.use(session({
-        secret: config.secret, // REVIEW: Randomize?
+        secret: utils.generateString(),
         resave: true,
         saveUninitialized: true
     }));
