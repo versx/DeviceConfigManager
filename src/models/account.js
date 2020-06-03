@@ -1,27 +1,38 @@
 'use strict';
 
 const query = require('../services/db.js');
+const utils = require('../services/utils.js');
 
 class Account {
     constructor() {
     }
-    static async getAccount(username, password) {
-        const sql = `
-        SELECT username
-        FROM users
-        WHERE username = ? AND password = SHA1(?)`;
-        const args = [username, password];
-        const results = await query(sql, args);
-        return results && results.length > 0;
-    }
-    static async changePassword(username, password, newPassword) {
+    static async changePassword(username, newPassword) {
         const sql = `
         UPDATE users
-        SET password = SHA1(?)
-        WHERE username = ? AND password = SHA1(?)`;
-        const args = [newPassword, username, password];
+        SET password = ?
+        WHERE username = ?`;
+        const encryptedNewPassword = utils.encrypt(newPassword);
+        const args = [encryptedNewPassword, username];
         const result = await query(sql, args);
         return result.affectedRows === 1;
+    }
+    static async getPassword(username) {
+        const sql = `
+        SELECT password
+        FROM users
+        WHERE username = ?
+        `;
+        const args = [username];
+        const result = await query(sql, args);
+        if (result && result.length > 0) {
+            return result[0].password;
+        }
+        return null;
+    }
+    static async verifyAccount(username, password) {
+        const encryptedPassword = await this.getPassword(username);
+        const result = utils.verify(password, encryptedPassword);
+        return result;
     }
 }
 
