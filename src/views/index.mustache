@@ -126,7 +126,8 @@
     </body>
 </html>
 
-<script>
+<script type='text/javascript' src='/js/device.js'></script>
+<script type='text/javascript'>
     if ("{{style}}" === 'dark') {
         $('body').css('background-color', 'rgb(33, 37, 41)');
         //$('body').css('color', 'rgb(255, 255, 255)');
@@ -146,30 +147,4 @@
             "responsive": true
         });
     });
-    // TODO: Make resuable method
-    function reboot(uuid) {
-        const listeners = ('{{{listeners}}}' || '').split(',');
-        console.log('Listeners:', listeners);
-        for (let i = 0; i < listeners.length; i++) {
-            const url = listeners[i];
-            const data = JSON.stringify({ 'type': 'restart', 'device': uuid });
-            console.log('Sending reboot request to remote listener at', url);
-            $.ajax({
-                url: url,
-                type: 'POST',
-                dataType: 'json',
-                data: data,
-                async: true,
-                headers: { 'Accept': 'application/json', 'Content-Type': 'application/json' },
-                success: function(data) {
-                    $('#reboot').text('Rebooted');
-                    console.log("Sent restart command to remote listener", url);
-                },
-                error: function(err) {
-                    $('#reboot').text('Error');
-                    console.error("Failed to send restart command to remote listener", url);
-                }
-            });
-        }
-    }
 </script>

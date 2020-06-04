@@ -15,14 +15,20 @@ const Account = require('../models/account.js');
 const Config = require('../models/config.js');
 const Device = require('../models/device.js');
 const Log = require('../models/log.js');
+const Migrator = require('../services/migrator.js');
 const ScheduleManager = require('../models/schedule-manager.js');
 const logger = require('../services/logger.js');
 const utils = require('../services/utils.js');
 
-router.use((req, res, next) => {
+router.use(async (req, res, next) => {
     if (req.path === '/api/login' || req.path === '/login' ||
+        req.path === '/api/register' || req.path === '/register' ||
         req.path === '/config' || req.path === '/log/new') {
         return next();
+    }
+    if (!await Migrator.getValueForKey('SETUP')) {
+        res.redirect('/register');
+        return;
     }
     if (req.session.loggedin) {
         next();
@@ -31,11 +37,39 @@ router.use((req, res, next) => {
     res.redirect('/login');
 });
 
+router.post('/register', async (req, res) => {
+    const isSetup = await Migrator.getValueForKey('SETUP');
+    if (isSetup) {
+        res.redirect('/');
+        return;
+    }
+    const { username, password, password2 } = req.body;
+    if (password !== password2) {
+        // TODO: show error
+        logger('dcm').error('Passwords do not match');
+        console.log('Passwords do not match');
+        res.redirect('/register');
+        return;
+    }
+    if (await Account.create(username, password)) {
+        // Success
+        logger('dcm').info(`Successfully created account '${username}' with password '${password}'.`);
+        console.log(`Successfully created account '${username}' with password '${password}'.`);
+        res.redirect('/login');
+        return;
+    } else {
+        // Failed
+        logger('dcm').error(`Unexpected error occurred trying to create account '${username}' with password '${password}'.`);
+        console.error(`Unexpected error occurred trying to create account '${username}' with password '${password}'.`);
+    }
+    res.redirect('/register');
+});
+
 // Authentication API Route
 router.post('/login', async (req, res) => {
     const { username, password } = req.body;
     if (username && password) {
-        const result = await Account.getAccount(username, password);
+        const result = await Account.verifyAccount(username, password);
         if (result) {
             req.session.loggedin = true;
             req.session.username = username;
@@ -51,19 +85,22 @@ router.post('/login', async (req, res) => {
 });
 
 router.post('/account/change_password/:username', async (req, res) => {
-    const { username, oldPassword, password, password2 } = req.body;
+    const username = req.session.username;
+    const { old_password, password, password2 } = req.body;
     // TODO: show error
     if (password !== password2) {
         logger('dcm').error('Passwords do not match');
         res.redirect('/account');
         return;
     }
-    const exists = await Account.getAccount(username, oldPassword);
+    const exists = await Account.verifyAccount(username, old_password);
     if (exists) {
-        const result = await Account.changePassword(username, oldPassword, password);
+        const result = await Account.changePassword(username, password);
         if (result) {
             // Success
-            logger('dcm').info(`Successfully changed password for user ${username} from ${oldPassword} to ${password}.`);
+            logger('dcm').info(`Successfully changed password for user ${username} from ${old_password} to ${password}.`);
+            res.redirect('/logout');
+            return;
         } else {
             // Failed
             logger('dcm').error(`Unexpected error occurred trying to change password for user ${username}`);
@@ -121,10 +158,28 @@ router.get('/devices', async (req, res) => {
                 const exists = fs.existsSync(screenshotPath);
                 // Device received a config last 15 minutes
                 const delta = 15 * 60;
-                const isOffline = device.last_seen > (Math.round((new Date()).getTime() / 1000) - delta) ? 0 : 1;
-                const image = isOffline ? '/img/offline.png' : (exists ? `/screenshots/${device.uuid}.png` : '/img/online.png');
-                const lastModified = exists && !isOffline ? (await utils.fileLastModifiedTime(screenshotPath)).toLocaleString() : '';
-                device.image = `<img src='${image}' width='${previewSize}' height='auto' style='margin-left: auto;margin-right: auto;display: block;' class='deviceImage' /><br><div class='text-center'><small>${lastModified}</small></div>`;
+                const diff = Math.round((new Date()).getTime() / 1000) - delta;
+                const isOffline = device.last_seen > diff ? 0 : 1;
+                // If the screenshot exists for the device get the last modified date object
+                const lastModified = exists ? await utils.fileLastModifiedTime(screenshotPath) : 0;
+                // Check if the screenshot was taken within the last 60 minutes
+                const passedOneHour = new Date(lastModified).getTime() / 1000 > diff - (45 * 60);
+                // If the screenshot was taken within the last 60 minutes show it, otherwise show the appropriate device icon
+                const image = isOffline
+                    ? '/img/offline.png'
+                    : (
+                        exists && passedOneHour
+                            ? `/screenshots/${device.uuid}.png`
+                            : '/img/online.png'
+                    );
+                const lastModifiedFormatted = exists && !isOffline ? lastModified.toLocaleString() : '';
+                const encodedUuid = encodeURIComponent(device.uuid);
+                device.image = `
+                <img src='${image}' width='${previewSize}' height='auto' style='margin-left: auto;margin-right: auto;display: block;' class='deviceImage' />
+                <br>
+                <div class='text-center'>
+                    <small>${lastModifiedFormatted}</small>
+                </div>`;
                 device.last_seen = utils.getDateTime(device.last_seen * 1000);
                 device.buttons = `
                 <div class="btn-group" role="group" style="float: right;">
@@ -132,13 +187,16 @@ router.get('/devices', async (req, res) => {
                         Actions
                     </button>
                     <div class="dropdown-menu" aria-labelledby="deviceActionsDropdown">
-                        <a href="/device/manage/${device.uuid}" class="dropdown-item">Manage</a>
+                        <a href="/device/manage/${encodedUuid}" class="dropdown-item">Manage</a>
                         <div class="dropdown-divider"></div>
-                        <a href="/device/edit/${device.uuid}" class="dropdown-item">Edit</a>
-                        <a href="/device/logs/${device.uuid}" class="dropdown-item">Logs</a>
+                        <a href="/device/edit/${encodedUuid}" class="dropdown-item">Edit</a>
+                        <a href="/device/logs/${encodedUuid}" class="dropdown-item">Logs</a>
+                        <h6 class="dropdown-header">Actions</h6>
+                        <button type="button" class="dropdown-item" onclick='reboot("${config.listeners}", "${device.uuid}")'>Reboot Device</button>
                     </div>
                 </div>`;
                 device.uuid = `<a href='/device/manage/${device.uuid}' target='_blank' class='text-light'>${device.uuid}</a>`;
+                device.enabled = device.enabled ? 'Yes' : 'No';
             }
         }
         res.json({
@@ -147,6 +205,7 @@ router.get('/devices', async (req, res) => {
             }
         });
     } catch (e) {
+        console.log(e);
         logger('dcm').error(`Devices error: ${e}`);
     }
 });
@@ -201,7 +260,8 @@ router.post('/device/new', async (req, res) => {
         data.clientip || null,
         null,
         null,
-        data.notes || null
+        data.notes || null,
+        data.enabled === 'on'
     );
     if (result) {
         // Success
@@ -215,13 +275,15 @@ router.post('/device/edit/:uuid', async (req, res) => {
         uuid,
         config,
         clientip,
-        notes
+        notes,
+        enabled
     } = req.body;
     let device = await Device.getByName(uuid);
     if (device) {
         device.config = config || null;
         device.clientip = clientip || null;
         device.notes = notes || null;
+        device.enabled = enabled === 'on';
         const result = await device.save();
         if (!result) {
             logger('dcm').error(`Failed to update device ${uuid}`);
@@ -285,7 +347,9 @@ router.post('/device/screen/:uuid', (req, res) => {
 });
 
 router.post('/device/delete/:uuid', async (req, res) => {
+    console.log('Encoded:', req.params.uuid);
     const uuid = req.params.uuid;
+    console.log('Decoded:', uuid);
     const result = await Device.delete(uuid);
     if (result) {
         // Success
@@ -330,7 +394,7 @@ router.post('/config', async (req, res) => {
     let noConfig = false;
     let assignDefault = false;
     // Check for a proxied IP before the normal IP and set the first one that exists
-    const clientip = ((req.headers['x-forwarded-for'] || '').split(', ')[0]) || (req.connection.remoteAddress).match('[0-9]+.[0-9].+[0-9]+.[0-9]+$')[0];
+    const clientip = ((req.headers['x-forwarded-for'] || '').split(', ')[0]) || (req.connection.remoteAddress || req.connection.localAddress).match('[0-9]+.[0-9].+[0-9]+.[0-9]+$')[0];
     logger('dcm').info(`Client ${uuid} at ${clientip} is requesting a config.`);
 
     // Check if device config is empty, if not provide it as json response
@@ -364,6 +428,15 @@ router.post('/config', async (req, res) => {
             noConfig = true;
         }
     }
+
+    if (!device.enabled) {
+        logger('dcm').error(`Device ${uuid} not enabled!`);
+        res.json({
+            status: 'error',
+            error: 'Device not enabled!'
+        });
+        return;
+    }  
 
     if (assignDefault) {
         const defaultConfig = await Config.getDefault();

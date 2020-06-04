@@ -8,6 +8,7 @@ const session = require('express-session');
 const app = express();
 const mustacheExpress = require('mustache-express');
 const i18n = require('i18n');
+const helmet = require('helmet');
 
 const config = require('./config.json');
 const defaultData = require('./data/default.js');
@@ -22,8 +23,8 @@ const utils = require('./services/utils.js');
 // TODO: Secure /api/config endpoint with token
 // TODO: Success/error responses
 // TODO: Test/fix schedules changing days
-// TODO: Restart offline devices via front page offline device list (add button)
 // TODO: Webhook for device reboots
+// TODO: Bruteforce prevention
 
 require('events').defaultMaxListeners = 300;
 
@@ -36,6 +37,9 @@ const run = async () => {
     while (!dbMigrator.done) {
         await utils.snooze(1000);
     }
+
+    // Basic security protection middleware
+    app.use(helmet());
 
     // View engine
     app.set('view engine', 'mustache');
@@ -75,15 +79,21 @@ const run = async () => {
 
     // Sessions middleware
     app.use(session({
-        secret: config.secret, // REVIEW: Randomize?
+        secret: utils.generateString(),
         resave: true,
         saveUninitialized: true
     }));
     
     // Login middleware
-    app.use((req, res, next) => {
-        if (req.path === '/api/login' || req.path === '/login' || req.path === '/api/config' || req.path == '/api/log/new') {
+    app.use(async (req, res, next) => {
+        if (req.path === '/api/login' || req.path === '/login' ||
+            req.path === '/api/register' || req.path === '/register' ||
+            req.path === '/api/config' || req.path == '/api/log/new') {
             return next();
+        }
+        if (!await Migrator.getValueForKey('SETUP')) {
+            res.redirect('/register');
+            return;
         }
         if (req.session.loggedin) {
             defaultData.logged_in = true;

@@ -2,6 +2,8 @@
 
 const fs = require('fs');
 const moment = require('moment');
+const bcrypt = require('bcrypt');
+const rounds = 10;
 const config = require('../config.json');
 
 const readFile = async (path) => {
@@ -133,6 +135,20 @@ const todaySeconds = () => {
     }
 };
 
+const encrypt = (data) => {
+    const encrypted = bcrypt.hashSync(data, rounds);
+    return encrypted;
+};
+
+const verify = (data, verifyHash) => {
+    const result = bcrypt.compareSync(data, verifyHash);
+    return result;
+};
+
+const generateString = () => {
+    return Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15);
+};
+
 module.exports = {
     readFile,
     fileExists,
@@ -142,5 +158,8 @@ module.exports = {
     buildConfig,
     formatBytes,
     timeToSeconds,
-    todaySeconds
+    todaySeconds,
+    encrypt,
+    verify,
+    generateString
 };

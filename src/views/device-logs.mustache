@@ -8,7 +8,7 @@
     <body>
         {{> navbar}}
         <br>
-        <h1 align="center" id="header">{{uuid}} {{Device Logs}}</h1>
+        <h1 align="center" id="header">{{{uuid}}} {{Device Logs}}</h1>
         <br>
         <div style="width:90%; margin-left:calc(5%);">
             <a href="/api/log/delete/{{uuid}}" role="button" style="float: right;" class="btn btn-danger" onclick="return confirm('{{Are you sure you want to delete all logs for}} {{uuid}}?');">{{Delete All}}</a>

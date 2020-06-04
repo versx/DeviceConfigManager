@@ -68,6 +68,7 @@
                     <th class="min-desktop">{{IPA Version}}</th>
                     <th class="all">{{Last Config}}</th>
                     <th class="min-desktop">{{Notes}}</th>
+                    <th class="all">{{Enabled}}</th>
                     <th class="all" width="5%"></th>
                 </tr>
                 </thead>
@@ -79,7 +80,8 @@
     </body>
 </html>
 
-<script>
+<script type='text/javascript' src='/js/device.js'></script>
+<script type='text/javascript'>
     if ("{{style}}" === 'dark') {
         $('body').css('background-color', 'rgb(33, 37, 41)');
         $('body').css('color', 'rgb(255, 255, 255)');
@@ -90,7 +92,7 @@
 		localStorage.setItem('previewSize', size.value);
 	}
     $(document).ready(function() {
-        //Localstorage for imagePreview
+        // Localstorage for imagePreview
 		let previewSize = localStorage.getItem('previewSize') !== null ? localStorage.getItem('previewSize') : '96';
 		if (localStorage.getItem('previewSize') == null){
             localStorage.setItem('previewSize', '96');
@@ -134,6 +136,7 @@
                 { "data": "ipa_version" },
                 { "data": "last_seen" },
                 { "data": "notes" },
+                { "data": "enabled" },
                 { "data": "buttons" },
             ],
             "info": true,
@@ -154,21 +157,6 @@
             }, 30 * 1000);
         });
     });
-    function sendMassAction(action) {
-        $.ajax({
-            url: '/api/devices/mass_action',
-            type: 'POST',
-            data: { 'type': action },
-            async: true,
-            success: function(result, textStatus, jqXHR) {
-                console.log('Action response:', result);
-            },
-            error: function(xhr, textStatus, errorThrown) {
-                console.error('Error:', textStatus);
-                console.error('Error Thrown:', errorThrown);
-            } 
-        });
-    }
     /*
     function onCheckChanged(checkbox) {
         const checked = checkbox.checked;
