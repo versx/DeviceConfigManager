@@ -8,6 +8,7 @@ const session = require('express-session');
 const app = express();
 const mustacheExpress = require('mustache-express');
 const i18n = require('i18n');
+const helmet = require('helmet');
 
 const config = require('./config.json');
 const defaultData = require('./data/default.js');
@@ -22,7 +23,6 @@ const utils = require('./services/utils.js');
 // TODO: Secure /api/config endpoint with token
 // TODO: Success/error responses
 // TODO: Test/fix schedules changing days
-// TODO: Restart offline devices via front page offline device list (add button)
 // TODO: Webhook for device reboots
 // TODO: Bruteforce prevention
 
@@ -37,6 +37,9 @@ const run = async () => {
     while (!dbMigrator.done) {
         await utils.snooze(1000);
     }
+
+    // Basic security protection middleware
+    app.use(helmet());
 
     // View engine
     app.set('view engine', 'mustache');

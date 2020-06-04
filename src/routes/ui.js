@@ -41,7 +41,7 @@ router.get(['/', '/index'], async (req, res) => {
         data.devices_offline = devices.filter(x => x.last_seen < (Math.round((new Date()).getTime() / 1000) - delta));
         data.devices_offline.forEach((device) => {
             device.last_seen = utils.getDateTime(device.last_seen * 1000);
-            device.buttons = `<button type='button' class='btn btn-success' onclick='reboot("${device.uuid}")'>Reboot</button>`; // TODO: Localize
+            device.buttons = `<button type='button' class='btn btn-success' onclick='reboot("${config.listeners}", "${device.uuid}")'>Reboot</button>`; // TODO: Localize
             device.uuid = `<a href='/device/manage/${device.uuid}' target='_blank' class='text-light'>${device.uuid}</a>`;
         });
         data.devices_online_count = devices.filter(x => x.last_seen >= (Math.round((new Date()).getTime() / 1000) - delta)).length;
@@ -93,7 +93,7 @@ router.get('/device/new', async (req, res) => {
 });
 
 router.get('/device/edit/:uuid', async (req, res) => {
-    const uuid = req.params.uuid;
+    const uuid = decodeURIComponent(req.params.uuid);
     const data = defaultData;
     const configs = await Config.getAll();
     const device = await Device.getByName(uuid);
@@ -123,7 +123,7 @@ router.get('/device/logs/:uuid', async (req, res) => {
 
 router.get('/device/delete/:uuid', async (req, res) => {
     const data = defaultData;
-    data.uuid = req.params.uuid;
+    data.uuid = decodeURIComponent(req.params.uuid);
     res.render('device-delete', data);
 });
 

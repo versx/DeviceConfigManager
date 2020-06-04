@@ -3,7 +3,7 @@
     <body>
         {{> navbar}}
         <br>
-        <h1 align="center" id="header">{{Edit Device}} {{old_uuid}}</h1>
+        <h1 align="center" id="header">{{Edit Device}} {{{old_uuid}}}</h1>
         <br>
         <div class="w-75" style="float: none; margin: 0 auto;">
             <form action="/api/device/edit/{{old_uuid}}" method="post">

@@ -158,10 +158,28 @@ router.get('/devices', async (req, res) => {
                 const exists = fs.existsSync(screenshotPath);
                 // Device received a config last 15 minutes
                 const delta = 15 * 60;
-                const isOffline = device.last_seen > (Math.round((new Date()).getTime() / 1000) - delta) ? 0 : 1;
-                const image = isOffline ? '/img/offline.png' : (exists ? `/screenshots/${device.uuid}.png` : '/img/online.png');
-                const lastModified = exists && !isOffline ? (await utils.fileLastModifiedTime(screenshotPath)).toLocaleString() : '';
-                device.image = `<img src='${image}' width='${previewSize}' height='auto' style='margin-left: auto;margin-right: auto;display: block;' class='deviceImage' /><br><div class='text-center'><small>${lastModified}</small></div>`;
+                const diff = Math.round((new Date()).getTime() / 1000) - delta;
+                const isOffline = device.last_seen > diff ? 0 : 1;
+                // If the screenshot exists for the device get the last modified date object
+                const lastModified = exists ? await utils.fileLastModifiedTime(screenshotPath) : 0;
+                // Check if the screenshot was taken within the last 60 minutes
+                const passedOneHour = new Date(lastModified).getTime() / 1000 > diff - (45 * 60);
+                // If the screenshot was taken within the last 60 minutes show it, otherwise show the appropriate device icon
+                const image = isOffline
+                    ? '/img/offline.png'
+                    : (
+                        exists && passedOneHour
+                            ? `/screenshots/${device.uuid}.png`
+                            : '/img/online.png'
+                    );
+                const lastModifiedFormatted = exists && !isOffline ? lastModified.toLocaleString() : '';
+                const encodedUuid = encodeURIComponent(device.uuid);
+                device.image = `
+                <img src='${image}' width='${previewSize}' height='auto' style='margin-left: auto;margin-right: auto;display: block;' class='deviceImage' />
+                <br>
+                <div class='text-center'>
+                    <small>${lastModifiedFormatted}</small>
+                </div>`;
                 device.last_seen = utils.getDateTime(device.last_seen * 1000);
                 device.buttons = `
                 <div class="btn-group" role="group" style="float: right;">
@@ -169,10 +187,12 @@ router.get('/devices', async (req, res) => {
                         Actions
                     </button>
                     <div class="dropdown-menu" aria-labelledby="deviceActionsDropdown">
-                        <a href="/device/manage/${device.uuid}" class="dropdown-item">Manage</a>
+                        <a href="/device/manage/${encodedUuid}" class="dropdown-item">Manage</a>
                         <div class="dropdown-divider"></div>
-                        <a href="/device/edit/${device.uuid}" class="dropdown-item">Edit</a>
-                        <a href="/device/logs/${device.uuid}" class="dropdown-item">Logs</a>
+                        <a href="/device/edit/${encodedUuid}" class="dropdown-item">Edit</a>
+                        <a href="/device/logs/${encodedUuid}" class="dropdown-item">Logs</a>
+                        <h6 class="dropdown-header">Actions</h6>
+                        <button type="button" class="dropdown-item" onclick='reboot("${config.listeners}", "${device.uuid}")'>Reboot Device</button>
                     </div>
                 </div>`;
                 device.uuid = `<a href='/device/manage/${device.uuid}' target='_blank' class='text-light'>${device.uuid}</a>`;
@@ -185,6 +205,7 @@ router.get('/devices', async (req, res) => {
             }
         });
     } catch (e) {
+        console.log(e);
         logger('dcm').error(`Devices error: ${e}`);
     }
 });
@@ -326,7 +347,9 @@ router.post('/device/screen/:uuid', (req, res) => {
 });
 
 router.post('/device/delete/:uuid', async (req, res) => {
+    console.log('Encoded:', req.params.uuid);
     const uuid = req.params.uuid;
+    console.log('Decoded:', uuid);
     const result = await Device.delete(uuid);
     if (result) {
         // Success
@@ -371,7 +394,7 @@ router.post('/config', async (req, res) => {
     let noConfig = false;
     let assignDefault = false;
     // Check for a proxied IP before the normal IP and set the first one that exists
-    const clientip = ((req.headers['x-forwarded-for'] || '').split(', ')[0]) || (req.connection.remoteAddress).match('[0-9]+.[0-9].+[0-9]+.[0-9]+$')[0];
+    const clientip = ((req.headers['x-forwarded-for'] || '').split(', ')[0]) || (req.connection.remoteAddress || req.connection.localAddress).match('[0-9]+.[0-9].+[0-9]+.[0-9]+$')[0];
     logger('dcm').info(`Client ${uuid} at ${clientip} is requesting a config.`);
 
     // Check if device config is empty, if not provide it as json response
