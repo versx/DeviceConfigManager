@@ -15,14 +15,20 @@ const Account = require('../models/account.js');
 const Config = require('../models/config.js');
 const Device = require('../models/device.js');
 const Log = require('../models/log.js');
+const Migrator = require('../services/migrator.js');
 const ScheduleManager = require('../models/schedule-manager.js');
 const logger = require('../services/logger.js');
 const utils = require('../services/utils.js');
 
-router.use((req, res, next) => {
+router.use(async (req, res, next) => {
     if (req.path === '/api/login' || req.path === '/login' ||
+        req.path === '/api/register' || req.path === '/register' ||
         req.path === '/config' || req.path === '/log/new') {
         return next();
+    }
+    if (!await Migrator.getValueForKey('SETUP')) {
+        res.redirect('/register');
+        return;
     }
     if (req.session.loggedin) {
         next();
@@ -31,11 +37,39 @@ router.use((req, res, next) => {
     res.redirect('/login');
 });
 
+router.post('/register', async (req, res) => {
+    const isSetup = await Migrator.getValueForKey('SETUP');
+    if (isSetup) {
+        res.redirect('/');
+        return;
+    }
+    const { username, password, password2 } = req.body;
+    if (password !== password2) {
+        // TODO: show error
+        logger('dcm').error('Passwords do not match');
+        console.log('Passwords do not match');
+        res.redirect('/register');
+        return;
+    }
+    if (await Account.create(username, password)) {
+        // Success
+        logger('dcm').info(`Successfully created account '${username}' with password '${password}'.`);
+        console.log(`Successfully created account '${username}' with password '${password}'.`);
+        res.redirect('/login');
+        return;
+    } else {
+        // Failed
+        logger('dcm').error(`Unexpected error occurred trying to create account '${username}' with password '${password}'.`);
+        console.error(`Unexpected error occurred trying to create account '${username}' with password '${password}'.`);
+    }
+    res.redirect('/register');
+});
+
 // Authentication API Route
 router.post('/login', async (req, res) => {
     const { username, password } = req.body;
     if (username && password) {
-        const result = await Account.getAccount(username, password);
+        const result = await Account.verifyAccount(username, password);
         if (result) {
             req.session.loggedin = true;
             req.session.username = username;
@@ -51,19 +85,22 @@ router.post('/login', async (req, res) => {
 });
 
 router.post('/account/change_password/:username', async (req, res) => {
-    const { username, oldPassword, password, password2 } = req.body;
+    const username = req.session.username;
+    const { old_password, password, password2 } = req.body;
     // TODO: show error
     if (password !== password2) {
         logger('dcm').error('Passwords do not match');
         res.redirect('/account');
         return;
     }
-    const exists = await Account.getAccount(username, oldPassword);
+    const exists = await Account.verifyAccount(username, old_password);
     if (exists) {
-        const result = await Account.changePassword(username, oldPassword, password);
+        const result = await Account.changePassword(username, password);
         if (result) {
             // Success
-            logger('dcm').info(`Successfully changed password for user ${username} from ${oldPassword} to ${password}.`);
+            logger('dcm').info(`Successfully changed password for user ${username} from ${old_password} to ${password}.`);
+            res.redirect('/logout');
+            return;
         } else {
             // Failed
             logger('dcm').error(`Unexpected error occurred trying to change password for user ${username}`);
