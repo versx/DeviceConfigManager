@@ -53,7 +53,11 @@ router.get(['/', '/index'], async (req, res) => {
     }
 });
 
-router.get('/register', (req, res) => {
+router.get('/register', async (req, res) => {
+    if (await Migrator.getValueForKey('SETUP')) {
+        res.redirect('/');
+        return;
+    }
     res.render('register', defaultData);
 });
 

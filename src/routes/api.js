@@ -38,6 +38,11 @@ router.use(async (req, res, next) => {
 });
 
 router.post('/register', async (req, res) => {
+    const isSetup = await Migrator.getValueForKey('SETUP');
+    if (isSetup) {
+        res.redirect('/');
+        return;
+    }
     const { username, password, password2 } = req.body;
     if (password !== password2) {
         // TODO: show error
