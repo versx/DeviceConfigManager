@@ -53,6 +53,14 @@ router.get(['/', '/index'], async (req, res) => {
     }
 });
 
+router.get('/register', async (req, res) => {
+    if (await Migrator.getValueForKey('SETUP')) {
+        res.redirect('/');
+        return;
+    }
+    res.render('register', defaultData);
+});
+
 router.get('/login', (req, res) => {
     const data = defaultData;
     data.logged_in = false;
@@ -102,6 +110,7 @@ router.get('/device/edit/:uuid', async (req, res) => {
     data.config = device.config;
     data.clientip = device.clientip;
     data.notes = device.notes;
+    data.enabled = device.enabled ? 'checked' : '';
     res.render('device-edit', data);    
 });
 
