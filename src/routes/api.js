@@ -139,6 +139,7 @@ router.get('/devices', async (req, res) => {
                     </div>
                 </div>`;
                 device.uuid = `<a href='/device/manage/${device.uuid}' target='_blank' class='text-light'>${device.uuid}</a>`;
+                device.enabled = device.enabled ? 'Yes' : 'No';
             }
         }
         res.json({
