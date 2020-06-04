@@ -223,7 +223,7 @@ router.post('/device/edit/:uuid', async (req, res) => {
         device.config = config || null;
         device.clientip = clientip || null;
         device.notes = notes || null;
-        device.enabled = enabled || null;
+        device.enabled = enabled === 'on';
         const result = await device.save();
         if (!result) {
             logger('dcm').error(`Failed to update device ${uuid}`);
