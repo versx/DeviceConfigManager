@@ -38,7 +38,7 @@ class Device {
             result[0].enabled
         );
     }
-    static async create(uuid, config = null, lastSeen = null, clientip = null, iosVersion = null, ipaVersion = null, notes = null, enabled = null) {
+    static async create(uuid, config = null, lastSeen = null, clientip = null, iosVersion = null, ipaVersion = null, notes = null, enabled = true) {
         const sql = `
         INSERT INTO devices (uuid, config, last_seen, clientip, ios_version, ipa_version, notes, enabled)
         VALUES (?, ?, ?, ?, ?, ?, ?, ?)`;
