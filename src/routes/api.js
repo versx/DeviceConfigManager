@@ -201,7 +201,7 @@ router.post('/device/new', async (req, res) => {
         null,
         null,
         data.notes || null,
-        data.enabled || null
+        data.enabled === 'on'
     );
     if (result) {
         // Success
