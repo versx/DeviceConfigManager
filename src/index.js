@@ -82,9 +82,15 @@ const run = async () => {
     }));
     
     // Login middleware
-    app.use((req, res, next) => {
-        if (req.path === '/api/login' || req.path === '/login' || req.path === '/api/config' || req.path == '/api/log/new') {
+    app.use(async (req, res, next) => {
+        if (req.path === '/api/login' || req.path === '/login' ||
+            req.path === '/api/register' || req.path === '/register' ||
+            req.path === '/api/config' || req.path == '/api/log/new') {
             return next();
+        }
+        if (!await Migrator.getValueForKey('SETUP')) {
+            res.redirect('/register');
+            return;
         }
         if (req.session.loggedin) {
             defaultData.logged_in = true;

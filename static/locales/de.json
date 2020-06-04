@@ -114,5 +114,20 @@
     "Send Data for Testing": "Send Data for Testing",
     "Get All Screenshots": "Get All Screenshots",
     "Restart All Devices": "Restart All Devices",
-    "Notes": "Notes"
+    "Notes": "Notes",
+    "Edit Device": "Edit Device",
+    "VIEW": "VIEW",
+    "Log Format": "Log Format",
+    "General": "General",
+    "Remote Listeners": "Remote Listeners",
+    "Webhooks": "Webhooks",
+    "Enable Device Monitoring": "Enable Device Monitoring",
+    "Device Check Interval": "Device Check Interval",
+    "Offline Threshold": "Offline Threshold",
+    "Enable Device Reboot": "Enable Device Reboot",
+    "Logging": "Logging",
+    "Utilities": "Utilities",
+    "Delete All Logs": "Delete All Logs",
+    "Create Account": "Create Account",
+    "Register": "Register"
 }

@@ -15,20 +15,49 @@ const Account = require('../models/account.js');
 const Config = require('../models/config.js');
 const Device = require('../models/device.js');
 const Log = require('../models/log.js');
+const Migrator = require('../services/migrator.js');
 const ScheduleManager = require('../models/schedule-manager.js');
 const logger = require('../services/logger.js');
 const utils = require('../services/utils.js');
 
-router.use((req, res, next) => {
+router.use(async (req, res, next) => {
     if (req.path === '/api/login' || req.path === '/login' ||
+        req.path === '/api/register' || req.path === '/register' ||
         req.path === '/config' || req.path === '/log/new') {
         return next();
+    }
+    if (!await Migrator.getValueForKey('SETUP')) {
+        res.redirect('/register');
+        return;
     }
     if (req.session.loggedin) {
         next();
         return;
     }
     res.redirect('/login');
+});
+
+router.post('/register', async (req, res) => {
+    const { username, password, password2 } = req.body;
+    if (password !== password2) {
+        // TODO: show error
+        logger('dcm').error('Passwords do not match');
+        console.log('Passwords do not match');
+        res.redirect('/register');
+        return;
+    }
+    if (await Account.create(username, password)) {
+        // Success
+        logger('dcm').info(`Successfully created account '${username}' with password '${password}'.`);
+        console.log(`Successfully created account '${username}' with password '${password}'.`);
+        res.redirect('/login');
+        return;
+    } else {
+        // Failed
+        logger('dcm').error(`Unexpected error occurred trying to create account '${username}' with password '${password}'.`);
+        console.error(`Unexpected error occurred trying to create account '${username}' with password '${password}'.`);
+    }
+    res.redirect('/register');
 });
 
 // Authentication API Route

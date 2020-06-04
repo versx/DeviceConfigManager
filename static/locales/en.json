@@ -129,5 +129,7 @@
     "Enable Device Reboot": "Enable Device Reboot",
     "Logging": "Logging",
     "Utilities": "Utilities",
-    "Delete All Logs": "Delete All Logs"
+    "Delete All Logs": "Delete All Logs",
+    "Create Account": "Create Account",
+    "Register": "Register"
 }
