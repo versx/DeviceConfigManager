@@ -48,7 +48,7 @@ router.get(['/', '/index'], async (req, res) => {
         data.devices_online_count = devices.filter(x => x.last_seen >= (Math.round((new Date()).getTime() / 1000) - delta)).length;
         data.devices_offline_count = data.devices_offline.length;
         const date = new Date();
-        const today = date.getFullYear() + "-" + (date.getMonth() + 1) + "-" + date.getDate();
+        const today = date.getFullYear() + '-' + (date.getMonth() + 1) + '- ' + date.getDate();
         data.game_restarts_today = await Stats.getAll(today + '-gamerestarts');
         data.logs_size = utils.formatBytes(logsSize);
         data.listeners = config.listeners;

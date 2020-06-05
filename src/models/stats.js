@@ -10,7 +10,7 @@ class Stats {
     static async getAll(key) {
         const sql = `
         SELECT ifnull(sum(counter), 0) as total FROM stats where uuid_date_type like ?`;
-        const args = [`% + key + %`];
+        const args = ['%' + key + '%'];
         const total = await query(sql, args);
         return total[0]['total'];
     }
