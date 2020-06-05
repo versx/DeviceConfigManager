@@ -198,6 +198,9 @@ router.get('/devices', async (req, res) => {
                 </div>`;
                 device.uuid = `<a href='/device/manage/${device.uuid}' target='_blank' class='text-light'>${device.uuid}</a>`;
                 device.enabled = device.enabled ? 'Yes' : 'No';
+                const date = new Date();
+                const today = date.getFullYear() + '-' + (date.getMonth() + 1) + '-' + date.getDate();
+                device.game_restarts_today = await Stats.getAll(device.uuid + '-' + today + '-gamerestarts');
             }
         }
         res.json({
