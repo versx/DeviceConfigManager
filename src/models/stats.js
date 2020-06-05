@@ -7,6 +7,13 @@ class Stats {
         this.uuid_date_type = uuid_date_type;
         this.counter = counter;
     }
+    static async getAll(key) {
+        const sql = `
+        SELECT ifnull(sum(counter), 0) as total FROM stats where uuid_date_type like ?`;
+        const args = [`% + key + %`];
+        const total = await query(sql, args);
+        return total[0]['total'];
+    }
     static async counter(uuid_date_type) {
         const sql = `
         INSERT INTO stats (uuid_date_type, counter)

@@ -669,13 +669,13 @@ router.post('/log/new', async (req, res) => {
         for (let i = messages.length - 1; i >= 0; i--) {
             logger(uuid).info(messages[i]);
             if (messages[i].includes('Initializing')) {
-              const date = new Date();
-              const today = date.getFullYear() + "-" + (date.getMonth() + 1) + "-" + date.getDate();
-              const result = await Stats.counter(uuid + '-' + today + '-gamerestarts');
-              if (result) {
-                  // Success
-              }
-              //console.log('[RESTART]', messages[i]);
+                const date = new Date();
+                const today = date.getFullYear() + '-' + (date.getMonth() + 1) + '-' + date.getDate();
+                const result = await Stats.counter(uuid + '-' + today + '-gamerestarts');
+                if (result) {
+                    // Success
+                }
+                //console.log('[RESTART]', messages[i]);
             }
             //console.log('[SYSLOG]', messages[i]);
         }
