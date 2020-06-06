@@ -27,7 +27,9 @@ const utils = require('./services/utils.js');
 // TODO: Success/error responses
 // TODO: Test/fix schedules changing days
 // TODO: Webhook for device reboots
+// TODO: Replace request with axios
 
+// If more than 300 devices, increase
 require('events').defaultMaxListeners = 300;
 
 // Enable if you're behind a reverse proxy (Heroku, Bluemix, AWS ELB, Nginx, etc)
