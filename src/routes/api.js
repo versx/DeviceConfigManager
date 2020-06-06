@@ -14,6 +14,7 @@ const config = require('../config.json');
 const Account = require('../models/account.js');
 const Config = require('../models/config.js');
 const Device = require('../models/device.js');
+const Stats = require('../models/stats.js');
 const Log = require('../models/log.js');
 const Migrator = require('../services/migrator.js');
 const ScheduleManager = require('../models/schedule-manager.js');
@@ -197,6 +198,9 @@ router.get('/devices', async (req, res) => {
                 </div>`;
                 device.uuid = `<a href='/device/manage/${device.uuid}' target='_blank' class='text-light'>${device.uuid}</a>`;
                 device.enabled = device.enabled ? 'Yes' : 'No';
+                const date = new Date();
+                const today = date.getFullYear() + '-' + (date.getMonth() + 1) + '-' + date.getDate();
+                device.game_restarts_today = await Stats.getAll(device.uuid + '-' + today + '-gamerestarts');
             }
         }
         res.json({
@@ -667,6 +671,15 @@ router.post('/log/new', async (req, res) => {
     if (messages) {
         for (let i = messages.length - 1; i >= 0; i--) {
             logger(uuid).info(messages[i]);
+            if (messages[i].includes('Initializing')) {
+                const date = new Date();
+                const today = date.getFullYear() + '-' + (date.getMonth() + 1) + '-' + date.getDate();
+                const result = await Stats.counter(uuid + '-' + today + '-gamerestarts');
+                if (result) {
+                    // Success
+                }
+                //console.log('[RESTART]', messages[i]);
+            }
             //console.log('[SYSLOG]', messages[i]);
         }
     }

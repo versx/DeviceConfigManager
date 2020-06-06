@@ -22,7 +22,7 @@
                     <button type='button' class="dropdown-item" onclick='sendMassAction("screenshot")'>{{Get All Screenshots}}</button>
                     <button type='button' class="dropdown-item" onclick='sendMassAction("restart")'>{{Restart All Devices}}</button>
                 </div>
-			</div>
+            </div>
             <div class="btn-group" role="group" style="float: left;">
                 <button id="actionsDropdown" type="button" class="btn btn-primary dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                     Settings
@@ -55,9 +55,8 @@
                     </div>
                     -->
                 </div>
-			</div>
+            </div>
             <br><br>
-			
             <table id="table" class="table table-{{style}} table-striped table-bordered table-hover dt-responsive nowrap" style="position: center; width:100%">
                 <thead class="thead-dark">
                 <tr>
@@ -68,6 +67,7 @@
                     <th class="min-desktop">{{IPA Version}}</th>
                     <th class="all">{{Last Config}}</th>
                     <th class="min-desktop">{{Notes}}</th>
+                    <th class="all">{{Game Restarts Today}}</th>
                     <th class="all">{{Enabled}}</th>
                     <th class="all" width="5%"></th>
                 </tr>
@@ -86,19 +86,19 @@
         $('body').css('background-color', 'rgb(33, 37, 41)');
         $('body').css('color', 'rgb(255, 255, 255)');
     }
-	function changePreviewSize(size){
-		// Get Images by Class
+    function changePreviewSize(size){
+        // Get Images by Class
         $('.deviceImage').width(size.value);
-		localStorage.setItem('previewSize', size.value);
-	}
+        localStorage.setItem('previewSize', size.value);
+    }
     $(document).ready(function() {
         // Localstorage for imagePreview
-		let previewSize = localStorage.getItem('previewSize') !== null ? localStorage.getItem('previewSize') : '96';
-		if (localStorage.getItem('previewSize') == null){
+        let previewSize = localStorage.getItem('previewSize') !== null ? localStorage.getItem('previewSize') : '96';
+        if (localStorage.getItem('previewSize') == null){
             localStorage.setItem('previewSize', '96');
-		}
+        }
         $("input[name='size'][value='" + previewSize + "']").parent().button('toggle');
-		const query = `?previewSize=${previewSize}`;
+        let query = `?previewSize=${previewSize}`;
         const table = $('#table').DataTable( {
             "ajax": {
                 "url": "/api/devices" + query,
@@ -136,6 +136,7 @@
                 { "data": "ipa_version" },
                 { "data": "last_seen" },
                 { "data": "notes" },
+                { "data": "game_restarts_today" },
                 { "data": "enabled" },
                 { "data": "buttons" },
             ],
@@ -150,10 +151,10 @@
         });
         table.on('draw.dt', function() {
             setTimeout(function () {
-				// On Reload, get the actual preview Size to keep it
-		        previewSize = localStorage.getItem('previewSize') !== null ? localStorage.getItem('previewSize') : '96';
-		        query = `?previewSize=${previewSize}`;
-				table.ajax.url('/api/devices' + query).load();
+                // On Reload, get the actual preview Size to keep it
+                previewSize = localStorage.getItem('previewSize') !== null ? localStorage.getItem('previewSize') : '96';
+                query = `?previewSize=${previewSize}`;
+                table.ajax.url('/api/devices' + query).load();
             }, 30 * 1000);
         });
     });
