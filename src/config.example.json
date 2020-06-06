@@ -4,6 +4,7 @@
     "port": 9991,
     "locale": "en",
     "style": "dark",
+    "timezone": "America/Denver",
     "logging": {
         "enabled": true,
         "max_size": 5,
@@ -17,7 +18,8 @@
         "interval": 5,
         "threshold": 15,
         "webhooks": [],
-        "reboot": false
+        "reboot": false,
+        "maxRebootCount": 10
     },
     "db": {
         "host": "127.0.0.1",

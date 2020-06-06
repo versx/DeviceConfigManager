@@ -1,3 +1,5 @@
+// DON'T FORGET TO INCREMENT PACKAGE.JSON VERSION!
+
 'use strict';
 
 const path = require('path');
@@ -9,6 +11,7 @@ const app = express();
 const mustacheExpress = require('mustache-express');
 const i18n = require('i18n');
 const helmet = require('helmet');
+const rateLimit = require('express-rate-limit');
 
 const config = require('./config.json');
 const defaultData = require('./data/default.js');
@@ -24,9 +27,26 @@ const utils = require('./services/utils.js');
 // TODO: Success/error responses
 // TODO: Test/fix schedules changing days
 // TODO: Webhook for device reboots
-// TODO: Bruteforce prevention
+// TODO: Replace request with axios
 
+// If more than 300 devices, increase
 require('events').defaultMaxListeners = 300;
+
+// Enable if you're behind a reverse proxy (Heroku, Bluemix, AWS ELB, Nginx, etc)
+// see https://expressjs.com/en/guide/behind-proxies.html
+// TODO: Add config option
+// app.set('trust proxy', 1);
+
+const apiLimiter = rateLimit({
+    windowMs: 15 * 60 * 1000, // 15 minutes
+    max: 100
+});
+   
+const loginLimiter = rateLimit({
+    windowMs: 15 * 60 * 1000, // 15 minute window
+    max: 5, // start blocking after 5 requests
+    message: 'Too many login attempts from this IP, please try again in 15 minutes.'
+});
 
 const run = async () => {
     // Start database migrator
@@ -104,6 +124,10 @@ const run = async () => {
 
     // API routes
     app.use('/api', apiRoutes);
+    app.use('/api/', apiLimiter);
+
+    // Login rate limiter
+    app.use('/login', loginLimiter);
 
     // CSRF token middleware
     app.use(cookieParser());
