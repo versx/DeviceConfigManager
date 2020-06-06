@@ -26,7 +26,7 @@ You can also pre-create devices and assign configs yourself if needed.
 5.) Run `npm start`  
 6.) Access via http://machineip:port/ using username: `root` and password `pass123!`  
 7.) Change default password via the Settings page  
-8.) (Optional) Setup [DCMRemoteListener](https://github.com/versx/DCMRemoteListener) on the machines the phones are running on to restart the actual device.  
+8.) (Optional) Setup [DCMRemoteListener](https://github.com/versx/DCMRemoteListener) on the machines the phones are connected to in order to restart the actual device.  
 
 ## Installation (Docker)  
 1.) Clone repository `git clone https://github.com/versx/DeviceConfigManager`  
@@ -36,7 +36,7 @@ You can also pre-create devices and assign configs yourself if needed.
 5.) Run `docker-compose up -d --build`  
 6.) Access via http://machineip:port/ using username: `root` and password `pass123!`  
 7.) Change default password via the Settings page  
-8.) (Optional) Setup [DCMRemoteListener](https://github.com/versx/DCMRemoteListener) on the machines the phones are running on to restart the actual device.  
+8.) (Optional) Setup [DCMRemoteListener](https://github.com/versx/DCMRemoteListener) on the machines the phones are connected to in order to restart the actual device.  
 
 ## Updating  
 1.) `git pull`  
