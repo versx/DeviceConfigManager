@@ -24,8 +24,9 @@ const utils = require('./services/utils.js');
 // TODO: Success/error responses
 // TODO: Test/fix schedules changing days
 // TODO: Webhook for device reboots
-// TODO: Bruteforce prevention
+// TODO: Replace request with axios
 
+// If more than 300 devices, increase
 require('events').defaultMaxListeners = 300;
 
 const run = async () => {

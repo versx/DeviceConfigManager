@@ -17,7 +17,8 @@
         "interval": 5,
         "threshold": 15,
         "webhooks": [],
-        "reboot": false
+        "reboot": false,
+        "maxRebootCount": 10
     },
     "db": {
         "host": "127.0.0.1",
