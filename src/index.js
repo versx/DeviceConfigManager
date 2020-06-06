@@ -1,3 +1,5 @@
+// DON'T FORGET TO INCREMENT PACKAGE.JSON VERSION!
+
 'use strict';
 
 const path = require('path');
@@ -25,8 +27,6 @@ const utils = require('./services/utils.js');
 // TODO: Success/error responses
 // TODO: Test/fix schedules changing days
 // TODO: Webhook for device reboots
-// TODO: Bruteforce prevention
-// TODO: Timezone all date objects
 
 require('events').defaultMaxListeners = 300;
 
