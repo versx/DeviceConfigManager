@@ -7,6 +7,7 @@ const config = require('../config.json');
 const defaultData = require('../data/default.js');
 const Config = require('../models/config.js');
 const Device = require('../models/device.js');
+const Stats = require('../models/stats.js');
 const Log = require('../models/log.js');
 const ScheduleManager = require('../models/schedule-manager.js');
 const logger = require('../services/logger.js');
@@ -46,6 +47,9 @@ router.get(['/', '/index'], async (req, res) => {
         });
         data.devices_online_count = devices.filter(x => x.last_seen >= (Math.round((new Date()).getTime() / 1000) - delta)).length;
         data.devices_offline_count = data.devices_offline.length;
+        const date = new Date();
+        const today = date.getFullYear() + '-' + (date.getMonth() + 1) + '- ' + date.getDate();
+        data.game_restarts_today = await Stats.getAll(today + '-gamerestarts');
         data.logs_size = utils.formatBytes(logsSize);
         data.listeners = config.listeners;
         data.version = require('../../package.json').version;

@@ -2,7 +2,7 @@ version: '3.2'
 
 services:
   dcm:
-    image: node:12.16.2-alpine
+    build: .
     restart: unless-stopped
     working_dir: /app
     command:
