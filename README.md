@@ -28,7 +28,7 @@ You can also pre-create devices and assign configs yourself if needed.
 7.) Change default password via the Settings page  
 8.) (Optional) Setup [DCMRemoteListener](https://github.com/versx/DCMRemoteListener) on the machines the phones are running on to restart the actual device.  
 
-##Installation (docker)
+## Installation (Docker)  
 1.) Clone repository `git clone https://github.com/versx/DeviceConfigManager`  
 2.) Copy docker-compose `cp src/docker-compose.example.yml src/docker-compose.yml`  
 3.) Copy config `cp src/config.example.json src/config.json`  
