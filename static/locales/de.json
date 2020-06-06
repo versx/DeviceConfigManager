@@ -132,5 +132,10 @@
     "Delete All Logs": "Delete All Logs",
     "Create Account": "Create Account",
     "Register": "Register",
-    "Game Restarts Today": "Game Restarts Today"
+    "Game Restarts Today": "Game Restarts Today",
+    "Game Restarts": "Game Restarts",
+    "Device Status (Last 15 Minutes)": "Device Status (Last 15 Minutes)",
+    "Online": "Online",
+    "Offline": "Offline",
+    "Offline Devices": "Offline Devices"
 }
