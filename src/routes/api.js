@@ -196,11 +196,11 @@ router.get('/devices', async (req, res) => {
                         <button type="button" class="dropdown-item" onclick='reboot("${config.listeners}", "${device.uuid}")'>Reboot Device</button>
                     </div>
                 </div>`;
-                device.uuid = `<a href='/device/manage/${device.uuid}' target='_blank' class='text-light'>${device.uuid}</a>`;
                 device.enabled = device.enabled ? 'Yes' : 'No';
                 const date = new Date();
                 const today = date.getFullYear() + '-' + (date.getMonth() + 1) + '-' + date.getDate();
                 device.game_restarts_today = await Stats.getAll(device.uuid + '-' + today + '-gamerestarts');
+                device.uuid = `<a href='/device/manage/${device.uuid}' target='_blank' class='text-light'>${device.uuid}</a>`;
             }
         }
         res.json({
