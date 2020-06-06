@@ -9,7 +9,7 @@ const app = express();
 const mustacheExpress = require('mustache-express');
 const i18n = require('i18n');
 const helmet = require('helmet');
-const rateLimit = require("express-rate-limit");
+const rateLimit = require('express-rate-limit');
 
 const config = require('./config.json');
 const defaultData = require('./data/default.js');
