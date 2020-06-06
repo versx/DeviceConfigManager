@@ -4,6 +4,7 @@
     "port": 9991,
     "locale": "en",
     "style": "dark",
+    "timezone": "America/Denver",
     "logging": {
         "enabled": true,
         "max_size": 5,

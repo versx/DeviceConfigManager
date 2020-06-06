@@ -1,18 +1,18 @@
 'use strict';
 
 const fs = require('fs');
-const moment = require('moment');
+const moment = require('moment-timezone');
 const bcrypt = require('bcrypt');
 const rounds = 10;
 const config = require('../config.json');
 
-const readFile = async (path) => {
+const readFile = async (path, encoding = 'utf8') => {
     return new Promise((resolve, reject) => {
         fs.readFile(path, (err, data) => {
             if (err) {
                 return reject(err);
             }
-            resolve(data.toString('utf8'));
+            resolve(data.toString(encoding));
         });
     });
 };
@@ -36,7 +36,7 @@ const fileLastModifiedTime = async (path) => {
                 if (err) {
                     return reject(err);
                 }
-                resolve(stats.mtime);
+                resolve(convertTz(stats.mtime));
             });
         } catch (e) {
             return reject(e);
@@ -49,7 +49,7 @@ const snooze = async (ms) => {
 };
 
 const getDateTime = (date) => {
-    const momentDate = moment(date);
+    const momentDate = convertTz(date);//moment(date).tz(config.timezone);
     const formatted = momentDate.format(config.logging.format);
     return formatted;
 };
@@ -122,7 +122,7 @@ const timeToSeconds = (time) => {
 };
 
 const todaySeconds = () => {
-    const date = moment();
+    const date = moment().tz(config.timezone);
     const formattedDate = date.format('HH:mm:ss');
     const split = formattedDate.split(':');
     if (split.length >= 3) {
@@ -133,6 +133,11 @@ const todaySeconds = () => {
     } else {
         return 0;
     }
+};
+
+const convertTz = (date) => {
+    const momentDate = moment(date).tz(config.timezone);
+    return momentDate;
 };
 
 const encrypt = (data) => {
@@ -159,6 +164,7 @@ module.exports = {
     formatBytes,
     timeToSeconds,
     todaySeconds,
+    convertTz,
     encrypt,
     verify,
     generateString

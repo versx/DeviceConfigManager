@@ -159,7 +159,7 @@ router.get('/devices', async (req, res) => {
                 const exists = fs.existsSync(screenshotPath);
                 // Device received a config last 15 minutes
                 const delta = 15 * 60;
-                const diff = Math.round((new Date()).getTime() / 1000) - delta;
+                const diff = Math.round(utils.convertTz(new Date()).format('x') / 1000) - delta;
                 const isOffline = device.last_seen > diff ? 0 : 1;
                 // If the screenshot exists for the device get the last modified date object
                 const lastModified = exists ? await utils.fileLastModifiedTime(screenshotPath) : 0;
@@ -198,8 +198,8 @@ router.get('/devices', async (req, res) => {
                 </div>`;
                 device.uuid = `<a href='/device/manage/${device.uuid}' target='_blank' class='text-light'>${device.uuid}</a>`;
                 device.enabled = device.enabled ? 'Yes' : 'No';
-                const date = new Date();
-                const today = date.getFullYear() + '-' + (date.getMonth() + 1) + '-' + date.getDate();
+                const date = utils.convertTz(new Date());
+                const today = date.format('YYYY-M-D');
                 device.game_restarts_today = await Stats.getAll(device.uuid + '-' + today + '-gamerestarts');
             }
         }
@@ -404,7 +404,7 @@ router.post('/config', async (req, res) => {
     // Check if device config is empty, if not provide it as json response
     if (device) {
         // Device exists
-        device.lastSeen = new Date() / 1000;
+        device.lastSeen = utils.convertTz(new Date()) / 1000;
         // Only update client IP if it hasn't been set yet.
         if (device.clientip === null) {
             device.clientip = clientip;
@@ -422,7 +422,7 @@ router.post('/config', async (req, res) => {
     } else {
         logger('dcm').info('Device does not exist, creating...');
         // Device doesn't exist, create db entry
-        const ts = new Date() / 1000;
+        const ts = utils.convertTz(new Date()) / 1000;
         device = await Device.create(uuid, null, ts, clientip, ios_version, ipa_version);
         if (device) {
             // Success, assign default config if there is one.
@@ -672,8 +672,8 @@ router.post('/log/new', async (req, res) => {
         for (let i = messages.length - 1; i >= 0; i--) {
             logger(uuid).info(messages[i]);
             if (messages[i].includes('Initializing')) {
-                const date = new Date();
-                const today = date.getFullYear() + '-' + (date.getMonth() + 1) + '-' + date.getDate();
+                const date = utils.convertTz(new Date());
+                const today = date.format('YYYY-M-D');
                 const result = await Stats.counter(uuid + '-' + today + '-gamerestarts');
                 if (result) {
                     // Success
