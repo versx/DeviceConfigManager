@@ -14,15 +14,22 @@ const config = require('../config.json');
 const Account = require('../models/account.js');
 const Config = require('../models/config.js');
 const Device = require('../models/device.js');
+const Stats = require('../models/stats.js');
 const Log = require('../models/log.js');
+const Migrator = require('../services/migrator.js');
 const ScheduleManager = require('../models/schedule-manager.js');
 const logger = require('../services/logger.js');
 const utils = require('../services/utils.js');
 
-router.use((req, res, next) => {
+router.use(async (req, res, next) => {
     if (req.path === '/api/login' || req.path === '/login' ||
+        req.path === '/api/register' || req.path === '/register' ||
         req.path === '/config' || req.path === '/log/new') {
         return next();
+    }
+    if (!await Migrator.getValueForKey('SETUP')) {
+        res.redirect('/register');
+        return;
     }
     if (req.session.loggedin) {
         next();
@@ -31,11 +38,39 @@ router.use((req, res, next) => {
     res.redirect('/login');
 });
 
+router.post('/register', async (req, res) => {
+    const isSetup = await Migrator.getValueForKey('SETUP');
+    if (isSetup) {
+        res.redirect('/');
+        return;
+    }
+    const { username, password, password2 } = req.body;
+    if (password !== password2) {
+        // TODO: show error
+        logger('dcm').error('Passwords do not match');
+        console.log('Passwords do not match');
+        res.redirect('/register');
+        return;
+    }
+    if (await Account.create(username, password)) {
+        // Success
+        logger('dcm').info(`Successfully created account '${username}' with password '${password}'.`);
+        console.log(`Successfully created account '${username}' with password '${password}'.`);
+        res.redirect('/login');
+        return;
+    } else {
+        // Failed
+        logger('dcm').error(`Unexpected error occurred trying to create account '${username}' with password '${password}'.`);
+        console.error(`Unexpected error occurred trying to create account '${username}' with password '${password}'.`);
+    }
+    res.redirect('/register');
+});
+
 // Authentication API Route
 router.post('/login', async (req, res) => {
     const { username, password } = req.body;
     if (username && password) {
-        const result = await Account.getAccount(username, password);
+        const result = await Account.verifyAccount(username, password);
         if (result) {
             req.session.loggedin = true;
             req.session.username = username;
@@ -51,19 +86,22 @@ router.post('/login', async (req, res) => {
 });
 
 router.post('/account/change_password/:username', async (req, res) => {
-    const { username, oldPassword, password, password2 } = req.body;
+    const username = req.session.username;
+    const { old_password, password, password2 } = req.body;
     // TODO: show error
     if (password !== password2) {
         logger('dcm').error('Passwords do not match');
         res.redirect('/account');
         return;
     }
-    const exists = await Account.getAccount(username, oldPassword);
+    const exists = await Account.verifyAccount(username, old_password);
     if (exists) {
-        const result = await Account.changePassword(username, oldPassword, password);
+        const result = await Account.changePassword(username, password);
         if (result) {
             // Success
-            logger('dcm').info(`Successfully changed password for user ${username} from ${oldPassword} to ${password}.`);
+            logger('dcm').info(`Successfully changed password for user ${username} from ${old_password} to ${password}.`);
+            res.redirect('/logout');
+            return;
         } else {
             // Failed
             logger('dcm').error(`Unexpected error occurred trying to change password for user ${username}`);
@@ -121,7 +159,7 @@ router.get('/devices', async (req, res) => {
                 const exists = fs.existsSync(screenshotPath);
                 // Device received a config last 15 minutes
                 const delta = 15 * 60;
-                const diff = Math.round((new Date()).getTime() / 1000) - delta;
+                const diff = Math.round(utils.convertTz(new Date()).format('x') / 1000) - delta;
                 const isOffline = device.last_seen > diff ? 0 : 1;
                 // If the screenshot exists for the device get the last modified date object
                 const lastModified = exists ? await utils.fileLastModifiedTime(screenshotPath) : 0;
@@ -158,7 +196,11 @@ router.get('/devices', async (req, res) => {
                         <button type="button" class="dropdown-item" onclick='reboot("${config.listeners}", "${device.uuid}")'>Reboot Device</button>
                     </div>
                 </div>`;
-                device.uuid = `<a href='/device/manage/${encodedUuid}' target='_blank' class='text-light'>${device.uuid}</a>`;
+                device.uuid = `<a href='/device/manage/${device.uuid}' target='_blank' class='text-light'>${device.uuid}</a>`;
+                device.enabled = device.enabled ? 'Yes' : 'No';
+                const date = utils.convertTz(new Date());
+                const today = date.format('YYYY-M-D');
+                device.game_restarts_today = await Stats.getAll(device.uuid + '-' + today + '-gamerestarts');
             }
         }
         res.json({
@@ -223,7 +265,8 @@ router.post('/device/new', async (req, res) => {
         data.clientip || null,
         null,
         null,
-        data.notes || null
+        data.notes || null,
+        data.enabled === 'on'
     );
     if (result) {
         // Success
@@ -237,13 +280,15 @@ router.post('/device/edit/:uuid', async (req, res) => {
         uuid,
         config,
         clientip,
-        notes
+        notes,
+        enabled
     } = req.body;
     let device = await Device.getByName(uuid);
     if (device) {
         device.config = config || null;
         device.clientip = clientip || null;
         device.notes = notes || null;
+        device.enabled = enabled === 'on';
         const result = await device.save();
         if (!result) {
             logger('dcm').error(`Failed to update device ${uuid}`);
@@ -360,7 +405,7 @@ router.post('/config', async (req, res) => {
     // Check if device config is empty, if not provide it as json response
     if (device) {
         // Device exists
-        device.lastSeen = new Date() / 1000;
+        device.lastSeen = utils.convertTz(new Date()) / 1000;
         // Only update client IP if it hasn't been set yet.
         if (device.clientip === null) {
             device.clientip = clientip;
@@ -381,7 +426,7 @@ router.post('/config', async (req, res) => {
     } else {
         logger('dcm').info('Device does not exist, creating...');
         // Device doesn't exist, create db entry
-        const ts = new Date() / 1000;
+        const ts = utils.convertTz(new Date()) / 1000;
         device = await Device.create(uuid, model, null, ts, clientip, ios_version, ipa_version);
         if (device) {
             // Success, assign default config if there is one.
@@ -391,6 +436,15 @@ router.post('/config', async (req, res) => {
             noConfig = true;
         }
     }
+
+    if (!device.enabled) {
+        logger('dcm').error(`Device ${uuid} not enabled!`);
+        res.json({
+            status: 'error',
+            error: 'Device not enabled!'
+        });
+        return;
+    }  
 
     if (assignDefault) {
         const defaultConfig = await Config.getDefault();
@@ -621,6 +675,15 @@ router.post('/log/new', async (req, res) => {
     if (messages) {
         for (let i = messages.length - 1; i >= 0; i--) {
             logger(uuid).info(messages[i]);
+            if (messages[i].includes('Initializing')) {
+                const date = utils.convertTz(new Date());
+                const today = date.format('YYYY-M-D');
+                const result = await Stats.counter(uuid + '-' + today + '-gamerestarts');
+                if (result) {
+                    // Success
+                }
+                //console.log('[RESTART]', messages[i]);
+            }
             //console.log('[SYSLOG]', messages[i]);
         }
     }

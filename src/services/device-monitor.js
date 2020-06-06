@@ -27,8 +27,8 @@ const checkDevices = async () => {
 
     for (let i = 0; i < devices.length; i++) {
         const device = devices[i];
-        const isOffline = device.last_seen > (Math.round((new Date()).getTime() / 1000) - delta) ? 0 : 1;
-        if (!isOffline) {
+        const isOffline = device.last_seen > (Math.round(utils.convertTz(new Date()).format('x') / 1000) - delta) ? 0 : 1;
+        if (!isOffline || !device.enabled) {
             continue;
         }
 
@@ -50,14 +50,14 @@ const checkDevices = async () => {
                     body: { 'type': 'restart', 'device': device.uuid },
                     headers: { 'Accept': 'application/json', 'Content-Type': 'application/json' },
                 };
-                logger('dcm').info(`Sending reboot request to remote listener at ${url}`);
+                logger('dcm').info(`Sending reboot request for ${device.uuid} to remote listener at ${url}`);
                 /* eslint-disable no-unused-vars */
                 request(options, (err, res, body) => {
                 /* eslint-enable no-unused-vars */
                     if (err) {
                         logger('dcm').error(`Failed to send restart command to remote listener ${url}. Error: ${err}`);
                     }
-                    logger('dcm').info(`Sent restart command to remote listener ${url}`);
+                    logger('dcm').info(`Sent restart command for ${device.uuid} to remote listener ${url}`);
                 });
                 if (devicesRebooted[device.uuid]) {
                     devicesRebooted[device.uuid]++;

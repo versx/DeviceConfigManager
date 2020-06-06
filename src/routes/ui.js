@@ -7,6 +7,7 @@ const config = require('../config.json');
 const defaultData = require('../data/default.js');
 const Config = require('../models/config.js');
 const Device = require('../models/device.js');
+const Stats = require('../models/stats.js');
 const Log = require('../models/log.js');
 const ScheduleManager = require('../models/schedule-manager.js');
 const logger = require('../services/logger.js');
@@ -38,19 +39,30 @@ router.get(['/', '/index'], async (req, res) => {
         data.configs = configs.length;
         data.schedules = Object.keys(schedules).length;
         data.username = username;
-        data.devices_offline = devices.filter(x => x.last_seen < (Math.round((new Date()).getTime() / 1000) - delta));
+        data.devices_offline = devices.filter(x => x.last_seen < (Math.round(utils.convertTz(new Date()).format('x') / 1000) - delta));
         data.devices_offline.forEach((device) => {
             device.last_seen = utils.getDateTime(device.last_seen * 1000);
             device.buttons = `<button type='button' class='btn btn-success' onclick='reboot("${config.listeners}", "${device.uuid}")'>Reboot</button>`; // TODO: Localize
             device.uuid = `<a href='/device/manage/${device.uuid}' target='_blank' class='text-light'>${device.uuid}</a>`;
         });
-        data.devices_online_count = devices.filter(x => x.last_seen >= (Math.round((new Date()).getTime() / 1000) - delta)).length;
+        data.devices_online_count = devices.filter(x => x.last_seen >= (Math.round(utils.convertTz(new Date()).format('x') / 1000) - delta)).length;
         data.devices_offline_count = data.devices_offline.length;
+        const date = utils.convertTz(new Date());
+        const today = date.format('YYYY-M-D');
+        data.game_restarts_today = await Stats.getAll(today + '-gamerestarts');
         data.logs_size = utils.formatBytes(logsSize);
         data.listeners = config.listeners;
         data.version = require('../../package.json').version;
         res.render('index', data);
     }
+});
+
+router.get('/register', async (req, res) => {
+    if (await Migrator.getValueForKey('SETUP')) {
+        res.redirect('/');
+        return;
+    }
+    res.render('register', defaultData);
 });
 
 router.get('/login', (req, res) => {
@@ -103,6 +115,7 @@ router.get('/device/edit/:uuid', async (req, res) => {
     data.config = device.config;
     data.clientip = device.clientip;
     data.notes = device.notes;
+    data.enabled = device.enabled ? 'checked' : '';
     res.render('device-edit', data);    
 });
 

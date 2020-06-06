@@ -60,6 +60,7 @@ class Migrator {
     
         const newestVersion = this.getNewestDbVersion();
         logger('dcm').info(`[DbController] Current: ${version}, Latest: ${newestVersion}`);
+        console.log(`[DbController] Current: ${version}, Latest: ${newestVersion}`);
         this.migrate(version, newestVersion);
     }
     static async getEntries() {
@@ -71,8 +72,10 @@ class Migrator {
         if (fromVersion < toVersion) {
             // Wait 30 seconds and let user know we are about to migrate the database and for them to make a backup until we handle backups and rollbacks.
             logger('dcm').info('[DBController] MIGRATION IS ABOUT TO START IN 30 SECONDS, PLEASE MAKE SURE YOU HAVE A BACKUP!!!');
+            console.log('[DBController] MIGRATION IS ABOUT TO START IN 30 SECONDS, PLEASE MAKE SURE YOU HAVE A BACKUP!!!');
             await utils.snooze(30 * 1000);
             logger('dcm').info(`[DBController] Migrating database to version ${(fromVersion + 1)}`);
+            console.log(`[DBController] Migrating database to version ${(fromVersion + 1)}`);
             let migrateSQL;
             try {
                 const sqlFile = `${migrationsDir}${path.sep}${fromVersion + 1}.sql`;
@@ -80,6 +83,8 @@ class Migrator {
                 migrateSQL.replace('\r', '').replace('\n', '');
             } catch (err) {
                 logger('dcm').error(`[DBController] Migration failed: ${err}`);
+                console.error(`[DBController] Migration failed: ${err}`);
+                console.error(`[DBController] Migration failed: ${err}`);
                 process.exit(-1);
             }
             const sqlSplit = migrateSQL.split(';');
@@ -87,10 +92,12 @@ class Migrator {
                 const msql = sql.replace('&semi', ';').trim();
                 if (msql !== '') {
                     logger('dcm').info(`[DBController] Executing: ${msql}`);
+                    console.log(`[DBController] Executing: ${msql}`);
                     const result = await query(msql)
                         .then(x => x)
                         .catch(async err => {
                             logger('dcm').error(`[DBController] Migration failed: ${err}`);
+                            console.error(`[DBController] Migration failed: ${err}`);
                             /*
                             if (noBackup === undefined || noBackup === null || noBackup === false) {
                                 for (let i = 0; i < 10; i++) {
@@ -109,6 +116,7 @@ class Migrator {
                             */
                         });
                     logger('dcm').info(`[DBController] Migration execution result: ${result}`);
+                    console.log(`[DBController] Migration execution result: ${result}`);
                     await utils.snooze(2000);
                 }
             });

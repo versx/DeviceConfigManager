@@ -1,16 +1,18 @@
 'use strict';
 
 const fs = require('fs');
-const moment = require('moment');
+const moment = require('moment-timezone');
+const bcrypt = require('bcrypt');
+const rounds = 10;
 const config = require('../config.json');
 
-const readFile = async (path) => {
+const readFile = async (path, encoding = 'utf8') => {
     return new Promise((resolve, reject) => {
         fs.readFile(path, (err, data) => {
             if (err) {
                 return reject(err);
             }
-            resolve(data.toString('utf8'));
+            resolve(data.toString(encoding));
         });
     });
 };
@@ -34,7 +36,7 @@ const fileLastModifiedTime = async (path) => {
                 if (err) {
                     return reject(err);
                 }
-                resolve(stats.mtime);
+                resolve(convertTz(stats.mtime));
             });
         } catch (e) {
             return reject(e);
@@ -47,7 +49,7 @@ const snooze = async (ms) => {
 };
 
 const getDateTime = (date) => {
-    const momentDate = moment(date);
+    const momentDate = convertTz(date);//moment(date).tz(config.timezone);
     const formatted = momentDate.format(config.logging.format);
     return formatted;
 };
@@ -120,7 +122,7 @@ const timeToSeconds = (time) => {
 };
 
 const todaySeconds = () => {
-    const date = moment();
+    const date = moment().tz(config.timezone);
     const formattedDate = date.format('HH:mm:ss');
     const split = formattedDate.split(':');
     if (split.length >= 3) {
@@ -133,6 +135,25 @@ const todaySeconds = () => {
     }
 };
 
+const convertTz = (date) => {
+    const momentDate = moment(date).tz(config.timezone);
+    return momentDate;
+};
+
+const encrypt = (data) => {
+    const encrypted = bcrypt.hashSync(data, rounds);
+    return encrypted;
+};
+
+const verify = (data, verifyHash) => {
+    const result = bcrypt.compareSync(data, verifyHash);
+    return result;
+};
+
+const generateString = () => {
+    return Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15);
+};
+
 module.exports = {
     readFile,
     fileExists,
@@ -142,5 +163,9 @@ module.exports = {
     buildConfig,
     formatBytes,
     timeToSeconds,
-    todaySeconds
+    todaySeconds,
+    convertTz,
+    encrypt,
+    verify,
+    generateString
 };
