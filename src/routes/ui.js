@@ -285,6 +285,7 @@ router.get('/settings', (req, res) => {
     data.monitor_threshold = config.monitor.threshold;
     data.monitor_webhooks = (config.monitor.webhooks || '').join(',');
     data.monitor_reboot = config.monitor.reboot ? 'checked' : '';
+    data.monitor_max_reboot_count = config.monitor.maxRebootCount;
     data.logging = config.logging.enabled ? 'checked' : '';
     data.max_size = config.logging.max_size;
     data.log_format = config.logging.format || 'YYYY-MM-DD hh:mm:ss A';

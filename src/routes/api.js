@@ -127,7 +127,8 @@ router.post('/settings/change', (req, res) => {
         threshold: data.monitor_threshold,
         interval: data.monitor_interval,
         webhooks: data.monitor_webhooks ? data.monitor_webhooks.split(',') || [] : [],
-        reboot: data.monitor_reboot === 'on'
+        reboot: data.monitor_reboot === 'on',
+        maxRebootCount: data.monitor_max_reboot_count
     };
     newConfig.logging = {
         enabled: data.logging === 'on',

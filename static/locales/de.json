@@ -137,5 +137,6 @@
     "Device Status (Last 15 Minutes)": "Device Status (Last 15 Minutes)",
     "Online": "Online",
     "Offline": "Offline",
-    "Offline Devices": "Offline Devices"
+    "Offline Devices": "Offline Devices",
+    "Max Reboot Count": "Max Reboot Count"
 }
