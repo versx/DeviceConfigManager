@@ -710,6 +710,14 @@ router.get('/log/export/:uuid', async (req, res) => {
     res.send(logText);
 });
 
+router.get('/utilities/clear_device_ips', async (req, res) => {
+    const result = await Device.clearIPAddresses();
+    if (result) {
+        // Success
+    }
+    res.redirect('/settings');
+});
+
 const get = async (uuid, url) => {
     const isScreen = url.includes('/screen');
     if (isScreen) {

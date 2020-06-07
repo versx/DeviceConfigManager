@@ -139,5 +139,6 @@
     "Offline": "Offline",
     "Offline Devices": "Offline Devices",
     "Max Reboot Count": "Max Reboot Count",
-    "Timezone": "Timezone"
+    "Timezone": "Timezone",
+    "Clear Device IP Addresses": "Clear Device IP Addresses"
 }

@@ -167,7 +167,8 @@
                             <div class="card-header text-center bg-dark"><b>{{Utilities}}</b></div>
                             <div class="card-body">
                                 <div class="container text-center">
-                                    <button type="submit" class="btn btn-danger"><a href="/api/logs/delete_all">{{Delete All Logs}}</a></button>
+                                    <button type="submit" class="btn btn-danger"><a href="/api/logs/delete_all" class="text-light" onclick="return confirm('Are you sure you want to delete all device logs?');">{{Delete All Logs}}</a></button>
+                                    <button type="submit" class="btn btn-warning"><a href="/api/utilities/clear_device_ips" class="text-light" onclick="return confirm('Are you sure you want to clear all device IP addresses?');">{{Clear Device IP Addresses}}</a></button>
                                 </div>
                             </div>
                         </div>
@@ -175,7 +176,7 @@
                     <!-- End Utilities Tab -->
                 <br>
                 <div class="text-center">
-                    <button type="submit" class="btn btn-primary" style="align:center;">{{Save}}</button>
+                    <button type="submit" class="btn btn-primary">{{Save}}</button>
                 </div>
                 <br>
                 </div>
