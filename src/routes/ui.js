@@ -293,6 +293,10 @@ router.get('/settings', (req, res) => {
     res.render('settings', data);
 });
 
+router.get('/utilities', (req, res) => {
+    res.render('utilities', defaultData);
+});
+
 router.get('/dcm-logs', (req, res) => {
     res.render('dcm-logs', defaultData);
 });
