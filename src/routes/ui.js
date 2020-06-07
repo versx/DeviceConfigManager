@@ -248,6 +248,12 @@ router.get('/schedule/delete/:name', (req, res) => {
     res.render('schedule-delete', data);
 });
 
+router.get('/logs', (req, res) => {
+    const data = defaultData;
+    data.uuid = 'all';
+    res.render('logs', data);
+});
+
 // Settings UI Routes
 router.get('/settings', (req, res) => {
     const data = defaultData;
@@ -273,20 +279,26 @@ router.get('/settings', (req, res) => {
     data.languages.forEach((locale) => {
         locale.selected = locale.name === config.locale;
     });
+    data.timezone = config.timezone || 'America/Denver';
     data.listeners = (config.listeners || '').join(',');
     data.monitor_enabled = config.monitor.enabled ? 'checked' : '';
     data.monitor_interval = config.monitor.interval;
     data.monitor_threshold = config.monitor.threshold;
     data.monitor_webhooks = (config.monitor.webhooks || '').join(',');
     data.monitor_reboot = config.monitor.reboot ? 'checked' : '';
+    data.monitor_max_reboot_count = config.monitor.maxRebootCount;
     data.logging = config.logging.enabled ? 'checked' : '';
     data.max_size = config.logging.max_size;
     data.log_format = config.logging.format || 'YYYY-MM-DD hh:mm:ss A';
     res.render('settings', data);
 });
 
-router.get('/logs', (req, res) => {
-    res.render('logs', defaultData);
+router.get('/utilities', (req, res) => {
+    res.render('utilities', defaultData);
+});
+
+router.get('/dcm-logs', (req, res) => {
+    res.render('dcm-logs', defaultData);
 });
 
 module.exports = router;

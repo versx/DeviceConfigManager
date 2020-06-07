@@ -64,6 +64,11 @@ class Device {
         const result = await query(sql, args);
         return result.affectedRows === 1;
     }
+    static async clearIPAddresses() {
+        const sql = 'UPDATE devices SET clientip = NULL';
+        const result = await query(sql);
+        return result.affectedRows > 0;
+    }
     async save() {
         const sql = `
         UPDATE devices

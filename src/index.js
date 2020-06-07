@@ -87,9 +87,9 @@ const run = async () => {
         res.locals.__ = () => {
             /* eslint-disable no-unused-vars */
             return (text, render) => {
+            /* eslint-disable no-unused-vars */
                 return i18n.__.routerly(req, arguments);
             };
-            /* eslint-disable no-unused-vars */
         };
         next();
     });

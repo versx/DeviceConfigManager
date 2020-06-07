@@ -2,6 +2,7 @@
 
 const fs = require('fs');
 const path = require('path');
+const Device = require('../models/device.js');
 const logger = require('../services/logger.js');
 const utils = require('../services/utils.js');
 
@@ -16,7 +17,20 @@ class Log {
         this.timestamp = timestamp;
         this.message = message;
     }
-    static async getByDevice(uuid) {
+    static async getAll() {
+        const logs = [];
+        const devices = await Device.getAll();
+        for (let i = 0; i < devices.length; i++) {
+            const device = devices[i];
+            const logData = await this.getByDevice(device.uuid, true);
+            for (let j = 0; j < logData.length; j++) {
+                const log = logData[j];
+                logs.push(log);
+            }
+        }
+        return logs;
+    }
+    static async getByDevice(uuid, includeUuid = false) {
         const name = uuid + '.log';
         const logFile = path.resolve(logsDir, name);
         const exists = await utils.fileExists(logFile);
@@ -30,10 +44,18 @@ class Log {
             split.forEach((log) => {
                 if (log) {
                     const l = JSON.parse(log);
-                    logs.push({
-                        message: l.msg,
-                        date: utils.getDateTime(l.time)
-                    });
+                    if (includeUuid) {
+                        logs.push({
+                            message: l.msg,
+                            uuid: uuid,
+                            date: utils.getDateTime(l.time)
+                        });
+                    } else {
+                        logs.push({
+                            message: l.msg,
+                            date: utils.getDateTime(l.time)
+                        });
+                    }
                 }
             });
         }
@@ -51,7 +73,6 @@ class Log {
                     logger('dcm').info(`Cleared ${uuid} log file.`);
                 }
             });
-            //fs.unlinkSync(logFile);
             return true;
         }
         return false;
@@ -70,13 +91,6 @@ class Log {
                         logger('dcm').info(`Cleared ${logFile}`);
                     }
                 });
-                /*
-                fs.unlink(logFile, (err) => {
-                    if (err) {
-                        logger('dcm').error('Failed to delete log file:', logFile);
-                    }
-                });
-                */
             });
         });
     }
