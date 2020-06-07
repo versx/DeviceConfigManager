@@ -248,6 +248,12 @@ router.get('/schedule/delete/:name', (req, res) => {
     res.render('schedule-delete', data);
 });
 
+router.get('/logs', (req, res) => {
+    const data = defaultData;
+    data.uuid = 'all';
+    res.render('logs', data);
+});
+
 // Settings UI Routes
 router.get('/settings', (req, res) => {
     const data = defaultData;
@@ -285,8 +291,8 @@ router.get('/settings', (req, res) => {
     res.render('settings', data);
 });
 
-router.get('/logs', (req, res) => {
-    res.render('logs', defaultData);
+router.get('/dcm-logs', (req, res) => {
+    res.render('dcm-logs', defaultData);
 });
 
 module.exports = router;

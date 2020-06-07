@@ -650,9 +650,10 @@ router.get('/logs/delete_all', (req, res) => {
 
 router.get('/logs/:uuid', async (req, res) => {
     const uuid = req.params.uuid;
-    const logs = await Log.getByDevice(uuid);
+    const logs = uuid === 'all' ?
+        await Log.getAll() :
+        await Log.getByDevice(uuid);
     res.send({
-        uuid: uuid,
         data: {
             logs: logs || []
         }
