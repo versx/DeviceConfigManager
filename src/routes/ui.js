@@ -279,6 +279,7 @@ router.get('/settings', (req, res) => {
     data.languages.forEach((locale) => {
         locale.selected = locale.name === config.locale;
     });
+    data.timezone = config.timezone || 'America/Denver';
     data.listeners = (config.listeners || '').join(',');
     data.monitor_enabled = config.monitor.enabled ? 'checked' : '';
     data.monitor_interval = config.monitor.interval;

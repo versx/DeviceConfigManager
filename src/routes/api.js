@@ -121,6 +121,7 @@ router.post('/settings/change', (req, res) => {
     newConfig.title = data.title;
     newConfig.locale = data.locale;
     newConfig.style = data.style;
+    newConfig.timezone = data.timezone;
     newConfig.listeners = data.listeners ? data.listeners.split(',') || []: [];
     newConfig.monitor = {
         enabled: data.monitor_enabled === 'on',

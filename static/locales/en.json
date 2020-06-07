@@ -138,5 +138,6 @@
     "Online": "Online",
     "Offline": "Offline",
     "Offline Devices": "Offline Devices",
-    "Max Reboot Count": "Max Reboot Count"
+    "Max Reboot Count": "Max Reboot Count",
+    "Timezone": "Timezone"
 }
