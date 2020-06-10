@@ -3,8 +3,9 @@
 const query = require('../services/db.js');
 
 class Device {
-    constructor(uuid, config, lastSeen, clientip, iosVersion, ipaVersion, notes = null, enabled = false) {
+    constructor(uuid, model, config, lastSeen, clientip, iosVersion, ipaVersion, notes = null, enabled = false) {
         this.uuid = uuid;
+        this.model = model;
         this.config = config;
         this.lastSeen = lastSeen;
         this.clientip = clientip;
@@ -14,12 +15,12 @@ class Device {
         this.enabled = enabled;
     }
     static async getAll() {
-        const devices = await query('SELECT uuid, config, last_seen, clientip, ios_version, ipa_version, notes, enabled FROM devices');
+        const devices = await query('SELECT uuid, model, config, last_seen, clientip, ios_version, ipa_version, notes, enabled FROM devices');
         return devices;
     }
     static async getByName(uuid) {
         const sql = `
-        SELECT uuid, config, last_seen, clientip, ios_version, ipa_version, notes, enabled
+        SELECT uuid, model, config, last_seen, clientip, ios_version, ipa_version, notes, enabled
         FROM devices
         WHERE uuid = ?`;
         const args = [uuid];
@@ -29,6 +30,7 @@ class Device {
         }
         return new Device(
             result[0].uuid,
+            result[0].model,
             result[0].config,
             result[0].last_seen,
             result[0].clientip,
@@ -38,15 +40,16 @@ class Device {
             result[0].enabled
         );
     }
-    static async create(uuid, config = null, lastSeen = null, clientip = null, iosVersion = null, ipaVersion = null, notes = null, enabled = true) {
+    static async create(uuid, model = null, config = null, lastSeen = null, clientip = null, iosVersion = null, ipaVersion = null, notes = null, enabled = true) {
         const sql = `
-        INSERT INTO devices (uuid, config, last_seen, clientip, ios_version, ipa_version, notes, enabled)
-        VALUES (?, ?, ?, ?, ?, ?, ?, ?)`;
-        const args = [uuid, config, lastSeen, clientip, iosVersion, ipaVersion, notes, enabled];
+        INSERT INTO devices (uuid, model, config, last_seen, clientip, ios_version, ipa_version, notes, enabled)
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)`;
+        const args = [uuid, model, config, lastSeen, clientip, iosVersion, ipaVersion, notes, enabled];
         const result = await query(sql, args);
         if (result.affectedRows === 1) {
             return new Device(
                 uuid,
+                model,
                 config,
                 lastSeen,
                 clientip,
@@ -72,9 +75,9 @@ class Device {
     async save() {
         const sql = `
         UPDATE devices
-        SET config = ?, last_seen = ?, clientip = ?, ios_version = ?, ipa_version = ?, notes = ?, enabled = ?
+        SET model = ?, config = ?, last_seen = ?, clientip = ?, ios_version = ?, ipa_version = ?, notes = ?, enabled = ?
         WHERE uuid = ?`;
-        const args = [this.config, this.lastSeen, this.clientip, this.iosVersion, this.ipaVersion, this.notes, this.enabled, this.uuid];
+        const args = [this.model, this.config, this.lastSeen, this.clientip, this.iosVersion, this.ipaVersion, this.notes, this.enabled, this.uuid];
         const result = await query(sql, args);
         return result.affectedRows === 1;
     }

@@ -12,6 +12,10 @@
                     <input type="text" class="form-control" name="uuid" value="{{old_uuid}}" placeholder="iPhone1" readonly required>
                 </div>
                 <div class="form-group">
+                    {{Model}}
+                    <input type="text" class="form-control" name="model" value="{{model}}" readonly>
+                </div>
+                <div class="form-group">
                     {{Select Device Config}}
                     <select class="form-control" name="config">
                         <option value="" selected disabled hidden>{{Choose a Config}}</option>
