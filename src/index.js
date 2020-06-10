@@ -27,6 +27,7 @@ const utils = require('./services/utils.js');
 // TODO: Success/error responses
 // TODO: Test/fix schedules changing days
 // TODO: Webhook for device reboots
+// TODO: Send coord changes to DCM via client
 // TODO: Replace request with axios
 
 // If more than 300 devices, increase

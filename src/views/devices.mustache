@@ -62,6 +62,7 @@
                 <tr>
                     <th class="all">{{Preview}}</th>
                     <th class="all">{{UUID}}</th>
+                    <th class="all">{{Model}}</th>
                     <th class="all">{{Config}}</th>
                     <th class="min-desktop">{{iOS Version}}</th>
                     <th class="min-desktop">{{IPA Version}}</th>
@@ -131,6 +132,7 @@
             "columns": [
                 { "data": "image" },
                 { "data": "uuid" },
+                { "data": "model" },
                 { "data": "config" },
                 { "data": "ios_version" },
                 { "data": "ipa_version" },
@@ -138,13 +140,13 @@
                 { "data": "notes" },
                 { "data": "game_restarts_today" },
                 { "data": "enabled" },
-                { "data": "buttons" },
+                { "data": "buttons" }
             ],
             "info": true,
             "order": [[ 1, "asc" ]],
             "search.caseInsensitive": true,
             "columnDefs": [{
-                "targets": [9],
+                "targets": [10],
                 "orderable": false
             }],
             "responsive": true

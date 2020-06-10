@@ -110,6 +110,7 @@ router.get('/device/edit/:uuid', async (req, res) => {
     }
     data.configs = configs;
     data.uuid = device.uuid;
+    data.model = device.model;
     data.old_uuid = device.uuid;
     data.config = device.config;
     data.clientip = device.clientip;
