@@ -19,9 +19,6 @@
                 <li class="nav-item">
                     <a class="nav-link" data-toggle="pill" href="#logging">{{Logging}}</a>
                 </li>
-                <li class="nav-item">
-                    <a class="nav-link" data-toggle="pill" href="#utilities">{{Utilities}}</a>
-                </li>
             </ul>
             <form action="/api/settings/change" method="post" novalidate>
                 <div class="tab-content">
@@ -56,6 +53,10 @@
                                         <input type="checkbox" class="form-check-input" name="monitor_reboot" {{monitor_reboot}}>
                                         <label class="form-check-label" for="monitor_reboot">{{Enable Device Reboot}}</label>
                                     </div>
+                                    <div class="form-group">
+                                        {{Max Reboot Count}}
+                                        <input type="number" class="form-control" name="monitor_max_reboot_count" value="{{monitor_max_reboot_count}}" placeholder="10" required>
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -88,6 +89,10 @@
                                             <option value="{{name}}" {{#selected}}selected{{/selected}}>{{name}}</option>
                                             {{/styles}}
                                         </select>
+                                    </div>
+                                    <div class="form-group">
+                                        {{Timezone}}
+                                        <input type="text" class="form-control" name="timezone" value="{{timezone}}" placeholder="America/Denver" required>
                                     </div>
                                 </div>
                             </div>
@@ -153,23 +158,11 @@
                         </div>
                     </div>
                     <!-- End Logging Tab -->
-                    <!-- Start Utilities Tab -->
-                    <div class="tab-pane container" id="utilities">
-                        <div class="card bg-dark p-1 m-3">
-                            <div class="card-header text-center bg-dark"><b>{{Utilities}}</b></div>
-                            <div class="card-body">
-                                <div class="container text-center">
-                                    <button type="submit" class="btn btn-danger"><a href="/api/logs/delete_all">{{Delete All Logs}}</a></button>
-                                </div>
-                            </div>
-                        </div>
+                    <br>
+                    <div class="text-center">
+                        <button type="submit" class="btn btn-primary">{{Save}}</button>
                     </div>
-                    <!-- End Utilities Tab -->
-                <br>
-                <div class="text-center">
-                    <button type="submit" class="btn btn-primary" style="align:center;">{{Save}}</button>
-                </div>
-                <br>
+                    <br>
                 </div>
             </form>
         </div>

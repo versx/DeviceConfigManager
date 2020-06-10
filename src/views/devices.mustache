@@ -100,7 +100,7 @@
         }
         $("input[name='size'][value='" + previewSize + "']").parent().button('toggle');
         let query = `?previewSize=${previewSize}`;
-        const table = $('#table').DataTable({
+        const table = $('#table').DataTable( {
             "ajax": {
                 "url": "/api/devices" + query,
                 "dataSrc": "data.devices",
@@ -140,13 +140,13 @@
                 { "data": "notes" },
                 { "data": "game_restarts_today" },
                 { "data": "enabled" },
-                { "data": "buttons" },
+                { "data": "buttons" }
             ],
             "info": true,
             "order": [[ 1, "asc" ]],
             "search.caseInsensitive": true,
             "columnDefs": [{
-                "targets": [7],
+                "targets": [10],
                 "orderable": false
             }],
             "responsive": true
