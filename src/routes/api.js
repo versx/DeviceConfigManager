@@ -175,7 +175,7 @@ router.get('/devices', async (req, res) => {
                             ? `/screenshots/${device.uuid}.png`
                             : '/img/online.png'
                     );
-                const lastModifiedFormatted = exists && !isOffline ? lastModified.toLocaleString() : '';
+                const lastModifiedFormatted = exists && !isOffline ? lastModified.format(config.logging.format) : '';
                 const encodedUuid = encodeURIComponent(device.uuid);
                 device.image = `
                 <img src='${image}' width='${previewSize}' height='auto' style='margin-left: auto;margin-right: auto;display: block;' class='deviceImage' />

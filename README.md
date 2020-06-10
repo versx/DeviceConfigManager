@@ -43,7 +43,7 @@ You can also pre-create devices and assign configs yourself if needed.
 2.) Run `npm install` in root folder  
 3.) Run `npm start`  
 
-## Updating (docker)  
+## Updating (Docker)  
 1.) `git pull`  
 2.) Run `docker-compose up -d --build`
 
