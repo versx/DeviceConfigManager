@@ -45,7 +45,7 @@ class Device {
     static async create(uuid, model = null, config = null, lastSeen = null, clientip = null, iosVersion = null, ipaVersion = null, webserverPort = 8080, notes = null, enabled = true) {
         const sql = `
         INSERT INTO devices (uuid, model, config, last_seen, clientip, ios_version, ipa_version, webserver_port, notes, enabled)
-        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)`;
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`;
         const args = [uuid, model, config, lastSeen, clientip, iosVersion, ipaVersion, webserverPort, notes, enabled];
         const result = await query(sql, args);
         if (result.affectedRows === 1) {
