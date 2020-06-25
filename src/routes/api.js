@@ -249,7 +249,7 @@ router.post('/devices/mass_action', async (req, res) => {
             devices.forEach((device) => {
                 const ip = device.clientip;
                 if (ip) {
-                    const host = `http://${ip}:${device.webserverPort}/${endpoint}`;
+                    const host = `http://${ip}:${device.webserver_port}/${endpoint}`;
                     get(device.uuid, host);
                 }
             });
