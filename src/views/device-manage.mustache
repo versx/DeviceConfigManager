@@ -25,6 +25,7 @@
                         <th><button type='button' class='btn btn-success' onclick='get("screen")'>{{GET}}</button></th>
                         <th><img id='screen' src=''/></div></th>
                     </tr>
+                    {{#kevin_selected}}
                     <tr>
                         <th>{{Get Current Location}}</th>
                         <th><button type='button' class='btn btn-success' onclick='get("loc")'>{{GET}}</button></th>
@@ -35,16 +36,19 @@
                         <th><button type='button' class='btn btn-success' onclick='get("config")'>{{GET}}</button></th>
                         <th><div id='config'></div></th>
                     </tr>
+                    {{/kevin_selected}}
                     <tr>
                         <th>{{Get Current Account Data}}</th>
                         <th><button type='button' class='btn btn-success' onclick='get("account")'>{{GET}}</button></th>
                         <th><div id='account'></div></th>
                     </tr>
+                    {{#kevin_selected}}
                     <tr>
                         <th>{{Get System Information Data}}</th>
                         <th><button type='button' class='btn btn-success' onclick='get("system_info")'>{{GET}}</button></th>
                         <th><div id='system_info'></div></th>
                     </tr>
+                    {{/kevin_selected}}
                     <tr>
                         <th>{{Restart Game}}</th>
                         <th><button type='button' class='btn btn-success' onclick='get("restart")'>{{RESTART}}</button></th>
@@ -60,6 +64,7 @@
                         <th><a href='/device/logs/{{name}}' type='button' class='btn btn-success'>{{VIEW}}</a></th>
                         <th><div id='logs'></div></th>
                     </tr>
+                    {{#kevin_selected}}
                     <tr>
                         <th>{{Send Data for Testing}} (WIP)</th>
                         <th>
@@ -108,6 +113,7 @@
                         </th>
                         <th><div id='type'></div></th>
                     </tr>
+                    {{/kevin_selected}}
                     <tr>
                         <th>{{Delete Device}}</th>
                         <th><button type='button' class='btn btn-danger'><a href='/device/delete/{{{name}}}'>{{DELETE}}</a></button></th>

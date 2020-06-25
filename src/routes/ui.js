@@ -146,6 +146,9 @@ router.get('/device/manage/:uuid', async (req, res) => {
             logger('dcm').error(`Failed to get IP address for device ${uuid}`);
         }
         data.webserver_port = device.webserverPort;
+        const config = await Config.getByName(device.config);
+        data.providers = providers;
+        data.kevin_selected = config.provider === data.providers[1].name;
     }
     res.render('device-manage', data);
 });
