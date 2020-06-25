@@ -414,7 +414,7 @@ router.post('/config', async (req, res) => {
         }
         device.iosVersion = ios_version;
         device.ipaVersion = ipa_version;
-        device.webserver_port = webserver_port;
+        device.webserverPort = webserver_port;
         if (device.model === null) {
             device.model = model;
         }
