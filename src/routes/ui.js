@@ -114,6 +114,7 @@ router.get('/device/edit/:uuid', async (req, res) => {
     data.old_uuid = device.uuid;
     data.config = device.config;
     data.clientip = device.clientip;
+    data.webserver_port = device.webserverPort;
     data.notes = device.notes;
     data.enabled = device.enabled ? 'checked' : '';
     res.render('device-edit', data);    
@@ -144,6 +145,7 @@ router.get('/device/manage/:uuid', async (req, res) => {
         } else {
             logger('dcm').error(`Failed to get IP address for device ${uuid}`);
         }
+        data.webserver_port = device.webserverPort;
     }
     res.render('device-manage', data);
 });

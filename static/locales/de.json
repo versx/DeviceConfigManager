@@ -27,6 +27,7 @@
     "Database": "Datenbank",
     "Host": "Hostname",
     "Port": "Port",
+    "Listening Port": "Listening Port",
     "Character Set": "Character Set",
     "Account Profil": "Account Profil",
     "Change Password": "Passwort ändern",
@@ -140,5 +141,6 @@
     "Offline Devices": "Offline Devices",
     "Max Reboot Count": "Max Reboot Count",
     "Timezone": "Timezone",
-    "Clear Device IP Addresses": "Clear Device IP Addresses"
+    "Clear Device IP Addresses": "Clear Device IP Addresses",
+    "Model": "Model"
 }

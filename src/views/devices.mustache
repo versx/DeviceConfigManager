@@ -66,6 +66,7 @@
                     <th class="all">{{Config}}</th>
                     <th class="min-desktop">{{iOS Version}}</th>
                     <th class="min-desktop">{{IPA Version}}</th>
+                    <th class="min-desktop">{{Port}}</th>
                     <th class="all">{{Last Config}}</th>
                     <th class="min-desktop">{{Notes}}</th>
                     <th class="all">{{Game Restarts Today}}</th>
@@ -136,6 +137,7 @@
                 { "data": "config" },
                 { "data": "ios_version" },
                 { "data": "ipa_version" },
+                { "data": "webserver_port" },
                 { "data": "last_seen" },
                 { "data": "notes" },
                 { "data": "game_restarts_today" },
@@ -146,7 +148,7 @@
             "order": [[ 1, "asc" ]],
             "search.caseInsensitive": true,
             "columnDefs": [{
-                "targets": [10],
+                "targets": [11],
                 "orderable": false
             }],
             "responsive": true

@@ -249,7 +249,7 @@ router.post('/devices/mass_action', async (req, res) => {
             devices.forEach((device) => {
                 const ip = device.clientip;
                 if (ip) {
-                    const host = `http://${ip}:8080/${endpoint}`;
+                    const host = `http://${ip}:${device.webserverPort}/${endpoint}`;
                     get(device.uuid, host);
                 }
             });
@@ -396,7 +396,7 @@ router.get('/configs', async (req, res) => {
 });
 
 router.post('/config', async (req, res) => {
-    const { uuid, ios_version, ipa_version, model } = req.body;
+    const { uuid, ios_version, ipa_version, model, webserver_port } = req.body;
     let device = await Device.getByName(uuid);
     let noConfig = false;
     let assignDefault = false;
@@ -414,6 +414,7 @@ router.post('/config', async (req, res) => {
         }
         device.iosVersion = ios_version;
         device.ipaVersion = ipa_version;
+        device.webserver_port = webserver_port;
         if (device.model === null) {
             device.model = model;
         }
@@ -713,6 +714,7 @@ router.get('/log/export/:uuid', async (req, res) => {
     }
     res.send(logText);
 });
+
 
 router.get('/utilities/clear_device_ips', async (req, res) => {
     const result = await Device.clearIPAddresses();

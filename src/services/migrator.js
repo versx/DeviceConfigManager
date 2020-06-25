@@ -116,7 +116,8 @@ class Migrator {
                             */
                         });
                     logger('dcm').info(`[DBController] Migration execution result: ${result}`);
-                    console.log(`[DBController] Migration execution result: ${result}`);
+                    const resultFormatted = result ? JSON.parse(result) : result;
+                    console.log(`[DBController] Migration execution result: ${resultFormatted}`);
                     await utils.snooze(2000);
                 }
             });
