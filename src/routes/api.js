@@ -430,7 +430,7 @@ router.post('/config', async (req, res) => {
         logger('dcm').info('Device does not exist, creating...');
         // Device doesn't exist, create db entry
         const ts = utils.convertTz(new Date()) / 1000;
-        device = await Device.create(uuid, model, null, ts, clientip, ios_version, ipa_version);
+        device = await Device.create(uuid, model, null, ts, clientip, ios_version, ipa_version, webserver_port);
         if (device) {
             // Success, assign default config if there is one.
             assignDefault = true;
@@ -486,6 +486,7 @@ router.post('/config', async (req, res) => {
         c.backendUrl,
         c.dataEndpoints,
         c.token,
+        device.webserverPort,
         c.heartbeatMaxTime,
         c.minDelayLogout,
         c.loggingUrl,
