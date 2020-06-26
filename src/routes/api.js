@@ -249,7 +249,7 @@ router.post('/devices/mass_action', async (req, res) => {
             devices.forEach((device) => {
                 const ip = device.clientip;
                 if (ip) {
-                    const host = `http://${ip}:8080/${endpoint}`;
+                    const host = `http://${ip}:${device.webserver_port}/${endpoint}`;
                     get(device.uuid, host);
                 }
             });
@@ -396,7 +396,7 @@ router.get('/configs', async (req, res) => {
 });
 
 router.post('/config', async (req, res) => {
-    const { uuid, ios_version, ipa_version, model } = req.body;
+    const { uuid, ios_version, ipa_version, model, webserver_port } = req.body;
     let device = await Device.getByName(uuid);
     let noConfig = false;
     let assignDefault = false;
@@ -414,6 +414,7 @@ router.post('/config', async (req, res) => {
         }
         device.iosVersion = ios_version;
         device.ipaVersion = ipa_version;
+        device.webserverPort = webserver_port;
         if (device.model === null) {
             device.model = model;
         }
@@ -429,7 +430,7 @@ router.post('/config', async (req, res) => {
         logger('dcm').info('Device does not exist, creating...');
         // Device doesn't exist, create db entry
         const ts = utils.convertTz(new Date()) / 1000;
-        device = await Device.create(uuid, model, null, ts, clientip, ios_version, ipa_version);
+        device = await Device.create(uuid, model, null, ts, clientip, ios_version, ipa_version, webserver_port);
         if (device) {
             // Success, assign default config if there is one.
             assignDefault = true;
@@ -485,6 +486,7 @@ router.post('/config', async (req, res) => {
         c.backendUrl,
         c.dataEndpoints,
         c.token,
+        device.webserverPort,
         c.heartbeatMaxTime,
         c.minDelayLogout,
         c.loggingUrl,
@@ -713,6 +715,7 @@ router.get('/log/export/:uuid', async (req, res) => {
     }
     res.send(logText);
 });
+
 
 router.get('/utilities/clear_device_ips', async (req, res) => {
     const result = await Device.clearIPAddresses();

@@ -57,6 +57,9 @@ A.) Make sure to **not** include the `/raw` or `/controler` endpoints in the `Ba
 Q.) Will I be able to view screenshots and use the device endpoint tools with devices using mac internet sharing?  
 A.) No, since it uses the connected machine's IP address for internet sharing.  
 
+## Current Issues  
+- Unable to set schedule that switches between days, i.e. Start 11pm and Ends 2am.  
+
 ## PM2 (recommended)
 Once everything is setup and running appropriately, you can add this to PM2 ecosystem.config.js file so it is automatically started:  
 ```

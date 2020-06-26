@@ -54,7 +54,7 @@ const getDateTime = (date) => {
     return formatted;
 };
 
-const buildConfig = (provider, backendUrl, dataEndpoints, token, heartbeatMaxTime, minDelayLogout,
+const buildConfig = (provider, backendUrl, dataEndpoints, token, webserverPort, heartbeatMaxTime, minDelayLogout,
     loggingUrl, loggingPort, accountManager, deployEggs, nearbyTracker, autoLogin) => {
     let obj = {};
     switch (provider) {
@@ -62,7 +62,8 @@ const buildConfig = (provider, backendUrl, dataEndpoints, token, heartbeatMaxTim
         obj = {
             'backend_url': backendUrl,
             'data_endpoints': (dataEndpoints || '').split(',') || [],
-            'backend_secret_token': token
+            'backend_secret_token': token,
+            'webserver_port': webserverPort || 8080
         };
         break;
     case 'Kevin':
@@ -70,6 +71,7 @@ const buildConfig = (provider, backendUrl, dataEndpoints, token, heartbeatMaxTim
             'backend_url': backendUrl,
             'data_endpoints': (dataEndpoints || '').split(',') || [],
             'backend_secret_token': token,
+            'webserver_port': webserverPort || 8080,
             'heartbeat_max_time': heartbeatMaxTime,
             'min_delay_logout': minDelayLogout,
             'account_manager': accountManager,
@@ -83,6 +85,7 @@ const buildConfig = (provider, backendUrl, dataEndpoints, token, heartbeatMaxTim
             'backend_url': backendUrl,
             'data_endpoints': (dataEndpoints || '').split(',') || [],
             'backend_secret_token': token,
+            'webserver_port': webserverPort || 8080,
             'min_delay_logout': minDelayLogout,
             'logging_url': loggingUrl,
             'logging_port': loggingPort,

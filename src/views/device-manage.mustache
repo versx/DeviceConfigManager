@@ -25,6 +25,7 @@
                         <th><button type='button' class='btn btn-success' onclick='get("screen")'>{{GET}}</button></th>
                         <th><img id='screen' src=''/></div></th>
                     </tr>
+                    {{#kevin_selected}}
                     <tr>
                         <th>{{Get Current Location}}</th>
                         <th><button type='button' class='btn btn-success' onclick='get("loc")'>{{GET}}</button></th>
@@ -35,16 +36,19 @@
                         <th><button type='button' class='btn btn-success' onclick='get("config")'>{{GET}}</button></th>
                         <th><div id='config'></div></th>
                     </tr>
+                    {{/kevin_selected}}
                     <tr>
                         <th>{{Get Current Account Data}}</th>
                         <th><button type='button' class='btn btn-success' onclick='get("account")'>{{GET}}</button></th>
                         <th><div id='account'></div></th>
                     </tr>
+                    {{#kevin_selected}}
                     <tr>
                         <th>{{Get System Information Data}}</th>
                         <th><button type='button' class='btn btn-success' onclick='get("system_info")'>{{GET}}</button></th>
                         <th><div id='system_info'></div></th>
                     </tr>
+                    {{/kevin_selected}}
                     <tr>
                         <th>{{Restart Game}}</th>
                         <th><button type='button' class='btn btn-success' onclick='get("restart")'>{{RESTART}}</button></th>
@@ -60,10 +64,11 @@
                         <th><a href='/device/logs/{{name}}' type='button' class='btn btn-success'>{{VIEW}}</a></th>
                         <th><div id='logs'></div></th>
                     </tr>
+                    {{#kevin_selected}}
                     <tr>
                         <th>{{Send Data for Testing}} (WIP)</th>
                         <th>
-                            <form action="http://{{clientip}}:8080/data" method="post">
+                            <form action="http://{{clientip}}:{{webserver_port}}/data" method="post">
                                 <div class="form-group">
                                     <input type="text" class="form-control" name="data_text" placeholder="{}">
                                 </div>
@@ -75,7 +80,7 @@
                     <tr>
                         <th>{{Send Pixel Check Location}} (WIP)</th>
                         <th>
-                            <form action="http://{{clientip}}:8080/pixel" method="post">
+                            <form action="http://{{clientip}}:{{webserver_port}}/pixel" method="post">
                                 <div class="form-group">
                                     <input type="text" class="form-control" name="pixel_text" placeholder="{ 'x': 320, 'y': 320 }">
                                 </div>
@@ -87,7 +92,7 @@
                     <tr>
                         <th>{{Send Touch Location}} (WIP)</th>
                         <th>
-                            <form action="http://{{clientip}}:8080/touch" method="post">
+                            <form action="http://{{clientip}}:{{webserver_port}}/touch" method="post">
                                 <div class="form-group">
                                     <input type="text" class="form-control" name="touch_text" placeholder="{ 'x': 160, 'y': 160 }">
                                 </div>
@@ -99,7 +104,7 @@
                     <tr>
                         <th>{{Send Typing Data}} (WIP)</th>
                         <th>
-                            <form action="http://{{clientip}}:8080/type" method="post">
+                            <form action="http://{{clientip}}:{{webserver_port}}/type" method="post">
                                 <div class="form-group">
                                     <input type="text" class="form-control" name="type_text" placeholder="{ 'text': 'User123' }">
                                 </div>
@@ -108,6 +113,7 @@
                         </th>
                         <th><div id='type'></div></th>
                     </tr>
+                    {{/kevin_selected}}
                     <tr>
                         <th>{{Delete Device}}</th>
                         <th><button type='button' class='btn btn-danger'><a href='/device/delete/{{{name}}}'>{{DELETE}}</a></button></th>
@@ -128,7 +134,7 @@
 
     function get(id) {
         const clientip = $('#client_ip').val();
-        const url = `http://${clientip}:8080/${id}`;
+        const url = `http://${clientip}:{{webserver_port}}/${id}`;
         const uuid = '{{uuid}}';
         const isScreen = url.includes('/screen');
         const isRestart = url.includes('/restart');
