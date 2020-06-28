@@ -19,24 +19,26 @@ You can also pre-create devices and assign configs yourself if needed.
 - AI  
 
 ## Installation
-1.) Clone repository `git clone https://github.com/versx/DeviceConfigManager`  
-2.) Install dependencies `npm install`  
-3.) Copy config `cp src/config.example.json src/config.json`  
-4.) Fill out config `vi src/config.json`  
-5.) Run `npm start`  
-6.) Access via http://machineip:port/ using username: `root` and password `pass123!`  
-7.) Change default password via the Settings page  
-8.) (Optional) Setup [DCMRemoteListener](https://github.com/versx/DCMRemoteListener) on the machines the phones are connected to in order to restart the actual device.  
+1.) Create new database `dcm` with utf8_unicode_ci/utf8mb4 character sets and collation  
+2.) Clone repository `git clone https://github.com/versx/DeviceConfigManager`  
+3.) Install dependencies `npm install`  
+4.) Copy config `cp src/config.example.json src/config.json`  
+5.) Fill out config `vi src/config.json`  
+6.) Run `npm start`  
+7.) Access via http://machineip:port/ using username: `root` and password `pass123!`  
+8.) Change default password via the Settings page  
+9.) (Optional) Setup [DCMRemoteListener](https://github.com/versx/DCMRemoteListener) on the machines the phones are connected to in order to restart the actual device.  
 
 ## Installation (Docker)  
-1.) Clone repository `git clone https://github.com/versx/DeviceConfigManager`  
-2.) Copy docker-compose `cp src/docker-compose.example.yml src/docker-compose.yml`  
-3.) Copy config `cp src/config.example.json src/config.json`  
-4.) Fill out config `vi src/config.json`  
-5.) Run `docker-compose up -d --build`  
-6.) Access via http://machineip:port/ using username: `root` and password `pass123!`  
-7.) Change default password via the Settings page  
-8.) (Optional) Setup [DCMRemoteListener](https://github.com/versx/DCMRemoteListener) on the machines the phones are connected to in order to restart the actual device.  
+1.) Create new database `dcm` with utf8_unicode_ci/utf8mb4 character sets and collation  
+2.) Clone repository `git clone https://github.com/versx/DeviceConfigManager`  
+3.) Copy docker-compose `cp src/docker-compose.example.yml src/docker-compose.yml`  
+4.) Copy config `cp src/config.example.json src/config.json`  
+5.) Fill out config `vi src/config.json`  
+6.) Run `docker-compose up -d --build`  
+7.) Access via http://machineip:port/ using username: `root` and password `pass123!`  
+8.) Change default password via the Settings page  
+9.) (Optional) Setup [DCMRemoteListener](https://github.com/versx/DCMRemoteListener) on the machines the phones are connected to in order to restart the actual device.  
 
 ## Updating  
 1.) `git pull`  
