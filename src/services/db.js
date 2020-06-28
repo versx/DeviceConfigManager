@@ -16,12 +16,14 @@ const getConnection = () => {
     
     conn.connect((err) => {
         if (err) {
+            console.error('Failed to connect to the database:', config.db);
             logger('dcm').info('Error connecting to database');
             return;
         }
     });
     
     conn.on('error', (err) => {
+        console.error(`Mysql error: ${err}`);
         logger('dcm').error(`Mysql error: ${err}`);
     });
     return conn;
@@ -43,6 +45,7 @@ const query = async (sql, args) => {
             resolve(rows);
             conn.end((err, args) => {
                 if (err) {
+                    console.error(`Failed to close mysql connection: ${args}`);
                     logger('dcm').error(`Failed to close mysql connection: ${args}`);
                     return;
                 }
