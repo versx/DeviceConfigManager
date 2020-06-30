@@ -27,7 +27,7 @@ class ScheduleManager {
         schedules[name] = {
             name: name,
             config: config,
-            uuids: uuids,
+            uuids: Array.isArray(uuids) ? uuids : uuids.split(','),
             start_time: startTime === '00:00:00' ? '00:00:01' : startTime,
             end_time: endTime,
             timezone: parseInt(timezone),
