@@ -45,7 +45,7 @@ const apiLimiter = rateLimit({
    
 const loginLimiter = rateLimit({
     windowMs: 15 * 60 * 1000, // 15 minute window
-    max: 5, // start blocking after 5 requests
+    max: 10, // start blocking after 5 requests
     message: 'Too many login attempts from this IP, please try again in 15 minutes.'
 });
 
