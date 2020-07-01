@@ -1,1 +1,1 @@
-ALTER TABLE `stats` MODIFY COLUMN `uuid_date_type` VARCHAR(255) UNIQUE;
+ALTER TABLE `stats` MODIFY COLUMN `uuid_date_type` VARCHAR(191) UNIQUE;
