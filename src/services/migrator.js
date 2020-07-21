@@ -59,8 +59,14 @@ class Migrator {
         }
     
         const newestVersion = this.getNewestDbVersion();
-        logger('dcm').info(`[DbController] Current: ${version}, Latest: ${newestVersion}`);
-        console.log(`[DbController] Current: ${version}, Latest: ${newestVersion}`);
+        logger('dcm').info(`[DBController] Current: ${version}, Latest: ${newestVersion}`);
+        console.log(`[DBController] Current: ${version}, Latest: ${newestVersion}`);
+        if (version < newestVersion) {
+            // Wait 30 seconds and let user know we are about to migrate the database and for them to make a backup until we handle backups and rollbacks.
+            logger('dcm').info('[DBController] MIGRATION IS ABOUT TO START IN 30 SECONDS, PLEASE MAKE SURE YOU HAVE A BACKUP!!!');
+            console.log('[DBController] MIGRATION IS ABOUT TO START IN 30 SECONDS, PLEASE MAKE SURE YOU HAVE A BACKUP!!!');
+            await utils.snooze(30 * 1000);
+        }
         this.migrate(version, newestVersion);
     }
     static async getEntries() {
@@ -70,12 +76,9 @@ class Migrator {
     }
     async migrate(fromVersion, toVersion) {
         if (fromVersion < toVersion) {
-            // Wait 30 seconds and let user know we are about to migrate the database and for them to make a backup until we handle backups and rollbacks.
-            logger('dcm').info('[DBController] MIGRATION IS ABOUT TO START IN 30 SECONDS, PLEASE MAKE SURE YOU HAVE A BACKUP!!!');
-            console.log('[DBController] MIGRATION IS ABOUT TO START IN 30 SECONDS, PLEASE MAKE SURE YOU HAVE A BACKUP!!!');
-            await utils.snooze(30 * 1000);
             logger('dcm').info(`[DBController] Migrating database to version ${(fromVersion + 1)}`);
             console.log(`[DBController] Migrating database to version ${(fromVersion + 1)}`);
+            await utils.snooze(5 * 1000);
             let migrateSQL;
             try {
                 const sqlFile = `${migrationsDir}${path.sep}${fromVersion + 1}.sql`;
@@ -84,42 +87,25 @@ class Migrator {
             } catch (err) {
                 logger('dcm').error(`[DBController] Migration failed: ${err}`);
                 console.error(`[DBController] Migration failed: ${err}`);
-                console.error(`[DBController] Migration failed: ${err}`);
                 process.exit(-1);
             }
             const sqlSplit = migrateSQL.split(';');
-            sqlSplit.forEach(async sql => {
+            //sqlSplit.forEach(async sql => {
+            for (let i = 0; i < sqlSplit.length; i++) {
+                const sql = sqlSplit[i];
                 const msql = sql.replace('&semi', ';').trim();
                 if (msql !== '') {
-                    logger('dcm').info(`[DBController] Executing: ${msql}`);
-                    console.log(`[DBController] Executing: ${msql}`);
-                    const result = await query(msql)
+                    //logger('dcm').info(`[DBController] Executing: ${msql}`);
+                    //console.log(`[DBController] Executing: ${msql}`);
+                    await query(msql)
                         .then(x => x)
                         .catch(async err => {
                             logger('dcm').error(`[DBController] Migration failed: ${err}`);
                             console.error(`[DBController] Migration failed: ${err}`);
-                            /*
-                            if (noBackup === undefined || noBackup === null || noBackup === false) {
-                                for (let i = 0; i < 10; i++) {
-                                    logger.warn(`[DBController] Rolling back migration in ${(10 - i)} seconds`);
-                                    await utils.snooze(1000);
-                                }
-                                logger('dcm').info('[DBController] Rolling back migration now. Do not kill RDM!');
-                            rollback(
-                                backupFileSchema.path.toString(), 
-                                backupFileTrigger.path.toString(), 
-                                backupFileData.path.toString()
-                            );
-                            }
-                            //fatalError(message);
-                            return null;
-                            */
                         });
-                    logger('dcm').info(`[DBController] Migration execution result: ${result}`);
-                    console.log(`[DBController] Migration execution result: ${result}`);
-                    await utils.snooze(2000);
+                    //await utils.snooze(2000);
                 }
-            });
+            }
             
             const newVersion = fromVersion + 1;
             const updateVersionSQL = `
