@@ -29,6 +29,7 @@ const utils = require('./services/utils.js');
 // TODO: Webhook for device reboots
 // TODO: Send coord changes to DCM via client
 // TODO: Replace request with axios
+// TODO: Device stats
 
 // If more than 300 devices, increase
 require('events').defaultMaxListeners = 300;

@@ -409,7 +409,7 @@ router.post('/config', async (req, res) => {
         // Device exists
         device.lastSeen = utils.convertTz(new Date()) / 1000;
         // Only update client IP if it hasn't been set yet.
-        if (device.clientip === null) {
+        if (device.clientip === null || device.clientip !== clientip) {
             device.clientip = clientip;
         }
         device.iosVersion = ios_version;

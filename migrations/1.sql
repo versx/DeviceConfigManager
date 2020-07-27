@@ -33,8 +33,8 @@ CREATE TABLE IF NOT EXISTS `devices` (
     `config` varchar(64) DEFAULT NULL,
     `last_seen` int DEFAULT NULL,
     CONSTRAINT `fk_config_name`
-      FOREIGN KEY (`config`)
-      REFERENCES `configs` (`name`)
-      ON DELETE SET NULL
-      ON UPDATE CASCADE
+        FOREIGN KEY (`config`)
+        REFERENCES `configs` (`name`)
+        ON DELETE SET NULL
+        ON UPDATE CASCADE
 );
