@@ -195,9 +195,10 @@ router.get('/devices', async (req, res) => {
                         <a href="/device/edit/${encodedUuid}" class="dropdown-item">Edit</a>
                         <a href="/device/logs/${encodedUuid}" class="dropdown-item">Logs</a>
                         <h6 class="dropdown-header">Actions</h6>
-                        <button type="button" class="dropdown-item" onclick='reboot("${config.listeners}", "${device.uuid}")'>Reboot Device</button>
+                        <button type="button" class="dropdown-item" onclick='reboot("${config.listeners}", "${device.uuid}", "${device.exclude_reboots}")'>Reboot Device</button>
                     </div>
                 </div>`;
+                device.exclude_reboots = device.exclude_reboots ? 'Yes' : 'No';
                 device.enabled = device.enabled ? 'Yes' : 'No';
                 const date = utils.convertTz(new Date());
                 const today = date.format('YYYY-M-D');
@@ -265,9 +266,10 @@ router.post('/device/new', async (req, res) => {
         data.config || null,
         null,
         data.clientip || null,
-        null,
+        8080,
         null,
         data.notes || null,
+        data.exclude_reboots === 'on',
         data.enabled === 'on'
     );
     if (result) {
@@ -283,6 +285,7 @@ router.post('/device/edit/:uuid', async (req, res) => {
         config,
         clientip,
         notes,
+        exclude_reboots,
         enabled
     } = req.body;
     let device = await Device.getByName(uuid);
@@ -290,6 +293,7 @@ router.post('/device/edit/:uuid', async (req, res) => {
         device.config = config || null;
         device.clientip = clientip || null;
         device.notes = notes || null;
+        device.excludeReboots = exclude_reboots === 'on';
         device.enabled = enabled === 'on';
         const result = await device.save();
         if (!result) {

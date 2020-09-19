@@ -42,7 +42,7 @@ router.get(['/', '/index'], async (req, res) => {
         data.devices_offline = devices.filter(x => x.last_seen < (Math.round(utils.convertTz(new Date()).format('x') / 1000) - delta));
         data.devices_offline.forEach((device) => {
             device.last_seen = utils.getDateTime(device.last_seen * 1000);
-            device.buttons = `<button type='button' class='btn btn-success' onclick='reboot("${config.listeners}", "${device.uuid}")'>Reboot</button>`; // TODO: Localize
+            device.buttons = `<button type='button' class='btn btn-success' onclick='reboot("${config.listeners}", "${device.uuid}", "${device.exclude_reboots}")'>Reboot</button>`; // TODO: Localize
             device.uuid = `<a href='/device/manage/${device.uuid}' target='_blank' class='text-light'>${device.uuid}</a>`;
         });
         data.devices_online_count = devices.filter(x => x.last_seen >= (Math.round(utils.convertTz(new Date()).format('x') / 1000) - delta)).length;
@@ -116,6 +116,7 @@ router.get('/device/edit/:uuid', async (req, res) => {
     data.clientip = device.clientip;
     data.webserver_port = device.webserverPort;
     data.notes = device.notes;
+    data.exclude_reboots = device.excludeReboots ? 'checked' : '';
     data.enabled = device.enabled ? 'checked' : '';
     res.render('device-edit', data);    
 });
@@ -146,6 +147,7 @@ router.get('/device/manage/:uuid', async (req, res) => {
             logger('dcm').error(`Failed to get IP address for device ${uuid}`);
         }
         data.webserver_port = device.webserverPort;
+        data.exclude_reboots = device.excludeReboots;
         const config = await Config.getByName(device.config);
         data.providers = providers;
         data.kevin_selected = config.provider === data.providers[1].name;

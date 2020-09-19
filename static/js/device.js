@@ -1,4 +1,7 @@
-function reboot(listeners, uuid) {
+function reboot(listeners, uuid, excludeReboots) {
+    if (parseInt(excludeReboots) === 1) {
+        return;
+    }
     const listenersList = (listeners || '').split(',');
     console.log('Listeners:', listenersList);
     for (let i = 0; i < listenersList.length; i++) {

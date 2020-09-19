@@ -28,7 +28,7 @@ const checkDevices = async () => {
     for (let i = 0; i < devices.length; i++) {
         const device = devices[i];
         const isOffline = device.last_seen > (Math.round(utils.convertTz(new Date()).format('x') / 1000) - delta) ? 0 : 1;
-        if (!isOffline || !device.enabled) {
+        if (!isOffline || !device.enabled || device.exclude_reboots) {
             continue;
         }
 
