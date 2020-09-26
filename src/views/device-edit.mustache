@@ -37,6 +37,10 @@
                     <input type="text" class="form-control" name="notes" value="{{notes}}" placeholder="">
                 </div>
                 <div class="form-check">
+                    <input type="checkbox" class="form-check-input" name="exclude_reboots" {{exclude_reboots}}>
+                    <label class="form-check-label" for="exclude_reboots">{{Exclude From Reboots}}</label>
+                </div>
+                <div class="form-check">
                     <input type="checkbox" class="form-check-input" name="enabled" {{enabled}}>
                     <label class="form-check-label" for="enabled">{{Enabled}}</label>
                 </div>
