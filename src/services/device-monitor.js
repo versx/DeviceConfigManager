@@ -81,7 +81,7 @@ const checkDevices = async () => {
 
 const sendWebhook = (device) => {
     const time = delta / 60;
-    const embed = DiscordEmbed.createAdvancedEmbed('DeviceConfigManager', `Device '${device.uuid}' has not requested config '${device.config}' in over ${time} minutes`, null, null, DiscordColors.Red);
+    const embed = DiscordEmbed.createAdvancedEmbed(null, `Device '${device.uuid}' has not requested config '${device.config}' in over ${time} minutes`, null, null, DiscordColors.Red);
     embed.addFooter(new Date().toLocaleString());
     const discordMessage = new DiscordMessage(null, 'DeviceConfigManager', null, [embed]);
     const webhooks = config.monitor.webhooks;
