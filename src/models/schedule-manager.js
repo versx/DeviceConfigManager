@@ -117,7 +117,7 @@ class ScheduleManager {
             uuids.forEach(async (uuid) => {
                 const device = await Device.getByName(uuid);
                 // Check if the device config is not already set to the scheduled config to assign.
-                if (device.config !== config) {
+                if (device && device.config !== config) {
                     device.config = config;
                     const result = await device.save();
                     if (result) {

@@ -1,5 +1,6 @@
 'use strict';
 
+const request = require('request');
 const fs = require('fs');
 const moment = require('moment-timezone');
 const bcrypt = require('bcrypt');
@@ -157,6 +158,23 @@ const generateString = () => {
     return Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15);
 };
 
+const postRequest = (url, data) => {
+    const options = {
+        url: url,
+        json: true,
+        method: 'POST',
+        body: data,
+        headers: { 'Accept': 'application/json', 'Content-Type': 'application/json' },
+    };
+    request(options)
+        .on('error', err => {
+            if (err) {
+                console.error(err);
+                return;
+            }
+    });
+};
+
 module.exports = {
     readFile,
     fileExists,
@@ -170,5 +188,6 @@ module.exports = {
     convertTz,
     encrypt,
     verify,
-    generateString
+    generateString,
+    postRequest
 };
