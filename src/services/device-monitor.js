@@ -37,11 +37,9 @@ const checkDevices = async () => {
         if (config.monitor.reboot && config.listeners.length > 0) {
             const listeners = config.listeners;
             for (let i = 0; i < listeners.length; i++) {
-                if (devicesRebooted[device.uuid]) {
-                    if (devicesRebooted[device.uuid] > maxRebootCount) {
-                        // Skip rebooting devices we've already rebooted passed the maximum count
-                        continue;
-                    }
+                if (devicesRebooted[device.uuid] && devicesRebooted[device.uuid] > maxRebootCount) {
+                    // Skip rebooting devices we've already rebooted passed the maximum count
+                    continue;
                 }
                 const url = listeners[i];
                 const options = {
