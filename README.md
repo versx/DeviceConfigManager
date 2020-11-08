@@ -32,7 +32,7 @@ You can also pre-create devices and assign configs yourself if needed.
 ## Installation (Docker)  
 1.) Create new database `dcm` with utf8_unicode_ci/utf8mb4 character sets and collation  
 2.) Clone repository `git clone https://github.com/versx/DeviceConfigManager`  
-3.) Copy docker-compose `cp docker-compose.example.yml src/docker-compose.yml`  
+3.) Copy docker-compose `cp docker-compose.example.yml docker-compose.yml`  
 4.) Copy config `cp src/config.example.json src/config.json`  
 5.) Fill out config `vi src/config.json`  
 6.) Run `docker-compose up -d --build`  
