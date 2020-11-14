@@ -11,6 +11,7 @@ const devicesCheckInterval = (config.monitor.interval || 5) * 60 * 1000; // Chec
 const delta = (config.monitor.threshold || 15) * 60; // Amount of time in seconds before rendered offline
 const maxRebootCount = config.maxRebootCount || 10;
 const devicesRebooted = {};
+const deviceWebhooksSent = {};
 
 const start = () => {
     // Only start the device monitor if it's enabled in the config
@@ -71,21 +72,33 @@ const checkDevices = async () => {
             return;
         }
 
-        sendWebhook(device);
+        sendOfflineMessage(device);
     }
 
     await utils.snooze(5000);
 };
 
-const sendWebhook = (device) => {
-    const time = delta / 60;
-    const embed = DiscordEmbed.createAdvancedEmbed(null, `[${new Date().toLocaleString()}] Device '${device.uuid}' has not requested config '${device.config}' in over ${time} minutes`, null, null, DiscordColors.Red);
-    const discordMessage = new DiscordMessage(null, config.title || 'DeviceConfigManager', null, [embed]);
+const sendOfflineMessage = (device) => {
     const webhooks = config.monitor.webhooks;
+    const payload = createPayload(device);
     for (let i = 0; i < webhooks.length; i++) {
         const webhook = webhooks[i];
-        utils.postRequest(webhook, discordMessage);
+        sendWebhook(webhook, payload);
     }
+    deviceWebhooksSent[device.uuid] = new Date();
 };
 
-module.exports = { start };
+const sendWebhook = (url, payload) => {
+    utils.postRequest(url, payload);
+};
+
+const createPayload = (device) => {
+    const time = delta / 60;
+    const date = utils.convertTz(new Date()).format(config.logging.format);
+    const message = `[${date}] Device **${device.uuid}** has not requested config **${device.config}** in over **${time}** minutes`;
+    const embed = DiscordEmbed.createAdvancedEmbed(null, message, null, null, DiscordColors.Red);
+    const discordMessage = new DiscordMessage(null, config.title || 'DeviceConfigManager', null, [embed]);
+    return discordMessage;
+};
+
+module.exports = { start, sendOfflineMessage };
