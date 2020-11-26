@@ -73,21 +73,21 @@ class DiscordEmbed {
     static createAdvancedEmbed(title, content, thumbnail = '', image = '', color = 0) {
         return new DiscordEmbed(title, content, thumbnail, image, null, color);
     }
-};
+}
 
 class DiscordEmbedAuthor {
     constructor(name, iconUrl) {
         this.name = name;
         this.icon_url = iconUrl;
     }
-};
+}
 
 class DiscordEmbedFooter {
     constructor(text, iconUrl) {
         this.text = text;
         this.icon_url = iconUrl;
     }
-};
+}
 
 class DiscordEmbedField {
     constructor(name, value, inline = false) {
@@ -95,13 +95,13 @@ class DiscordEmbedField {
         this.value = value;
         this.inline = inline;
     }
-};
+}
 
 class DiscordEmbedImage {
     constructor(url) {
         this.url = url;
     }
-};
+}
 
 module.exports = {
     DiscordMessage,
@@ -110,7 +110,7 @@ module.exports = {
     DiscordEmbedFooter,
     DiscordEmbedField,
     DiscordEmbedImage,
-    DiscordColors
+    DiscordColors,
 };
 
 /*

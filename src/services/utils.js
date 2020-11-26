@@ -172,7 +172,7 @@ const postRequest = (url, data) => {
                 console.error(err);
                 return;
             }
-    });
+        });
 };
 
 module.exports = {
