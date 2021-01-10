@@ -5,11 +5,13 @@ const request = require('request');
 const logger = require('./logger.js');
 const config = require('../config.json');
 const Device = require('../models/device.js');
+const { DiscordMessage, DiscordEmbed, DiscordColors } = require('../models/discord.js');
 const utils = require('./utils.js');
 const devicesCheckInterval = (config.monitor.interval || 5) * 60 * 1000; // Check every 5 minutes
 const delta = (config.monitor.threshold || 15) * 60; // Amount of time in seconds before rendered offline
 const maxRebootCount = config.maxRebootCount || 10;
 const devicesRebooted = {};
+const deviceWebhooksSent = {};
 
 const start = () => {
     // Only start the device monitor if it's enabled in the config
@@ -36,11 +38,9 @@ const checkDevices = async () => {
         if (config.monitor.reboot && config.listeners.length > 0) {
             const listeners = config.listeners;
             for (let i = 0; i < listeners.length; i++) {
-                if (devicesRebooted[device.uuid]) {
-                    if (devicesRebooted[device.uuid] > maxRebootCount) {
-                        // Skip rebooting devices we've already rebooted passed the maximum count
-                        continue;
-                    }
+                if (devicesRebooted[device.uuid] && devicesRebooted[device.uuid] > maxRebootCount) {
+                    // Skip rebooting devices we've already rebooted passed the maximum count
+                    continue;
                 }
                 const url = listeners[i];
                 const options = {
@@ -72,37 +72,33 @@ const checkDevices = async () => {
             return;
         }
 
-        sendWebhook(device, 'device_offline');
+        sendOfflineMessage(device);
     }
 
     await utils.snooze(5000);
 };
 
-const sendWebhook = (device, type = 'device_offline') => {
-    const obj = {
-        type: type,
-        data: {
-            uuid: device.uuid,
-            config: device.config,
-            last_seen: device.last_seen
-        }
-    };
+const sendOfflineMessage = (device) => {
     const webhooks = config.monitor.webhooks;
+    const payload = createPayload(device);
     for (let i = 0; i < webhooks.length; i++) {
         const webhook = webhooks[i];
-        request.post(
-            webhook,
-            obj,
-            /* eslint-disable no-unused-vars */
-            (error, res, body) => {
-            /* eslint-enable no-unused-vars */
-                if (error) {
-                    logger('dcm').error(error);
-                    return;
-                }
-            }
-        );
+        sendWebhook(webhook, payload);
     }
+    deviceWebhooksSent[device.uuid] = new Date();
 };
 
-module.exports = { start };
+const sendWebhook = (url, payload) => {
+    utils.postRequest(url, payload);
+};
+
+const createPayload = (device) => {
+    const time = delta / 60;
+    const date = utils.convertTz(new Date()).format(config.logging.format);
+    const message = `[${date}] Device **${device.uuid}** has not requested config **${device.config}** in over **${time}** minutes`;
+    const embed = DiscordEmbed.createAdvancedEmbed(null, message, null, null, DiscordColors.Red);
+    const discordMessage = new DiscordMessage(null, config.title || 'DeviceConfigManager', null, [embed]);
+    return discordMessage;
+};
+
+module.exports = { start, sendOfflineMessage };
