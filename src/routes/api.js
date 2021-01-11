@@ -657,7 +657,7 @@ router.get('/logs/delete_all', (req, res) => {
     if (result) {
         // Success
     }
-    res.redirect('/settings');
+    res.redirect('/utilities');
 });
 
 router.get('/logs/:uuid', async (req, res) => {
@@ -726,7 +726,7 @@ router.get('/utilities/clear_device_ips', async (req, res) => {
     if (result) {
         // Success
     }
-    res.redirect('/settings');
+    res.redirect('/utilities');
 });
 
 const get = async (uuid, url) => {
