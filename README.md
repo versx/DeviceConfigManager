@@ -87,6 +87,3 @@ module.exports = {
   ]
 };
 ```
-
-## Discord  
-https://discordapp.com/invite/zZ9h9Xa  
