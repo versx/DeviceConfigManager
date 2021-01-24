@@ -2,6 +2,7 @@
     "title": "Device Config Manager",
     "interface": "0.0.0.0",
     "port": 9991,
+    "token": "Replace with GC/Kevin/AI token",
     "locale": "en",
     "style": "dark",
     "timezone": "America/Denver",
