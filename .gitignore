@@ -101,6 +101,7 @@ config.json
 # No logs
 /logs/
 *.log
+*.log*
 
 # No screenshots
 screenshots
