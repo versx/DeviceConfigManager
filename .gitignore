@@ -107,7 +107,6 @@ dist
 config.json
 
 # No logs
-logs
 
 # No screenshots
 screenshots
@@ -117,3 +116,4 @@ schedules.json
 
 # No docker-compose.yml
 docker-compose.yml
+/.vs/
