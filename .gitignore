@@ -111,4 +111,6 @@ schedules.json
 
 # No docker-compose.yml
 docker-compose.yml
+
+# No visualstudio caches
 /.vs/
