@@ -8,7 +8,7 @@ module.exports = (req, res, next) => {
         return false;
     }
     const bearer = authHeader.split(' ')[1];
-    if (config.tokens.length > 0 && !config.tokens.includes(bearer || '').toLowerCase()) {
+    if (config.tokens.length > 0 && !config.tokens.includes((bearer || '').toLowerCase())) {
         return false;
     }
     //return true;
