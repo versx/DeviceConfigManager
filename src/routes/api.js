@@ -11,6 +11,7 @@ const screenshotsDir = path.resolve(__dirname, '../../screenshots');
 const upload = multer({ dest: screenshotsDir });
 
 const config = require('../config.json');
+const AuthTokenMiddleware = require('../middleware/auth-header.js');
 const Account = require('../models/account.js');
 const Config = require('../models/config.js');
 const Device = require('../models/device.js');
@@ -307,7 +308,7 @@ router.post('/device/edit/:uuid', async (req, res) => {
 });
 
 // Kevin screenshot support
-router.post('/device/:uuid/screen', upload.single('file'), (req, res) => {
+router.post('/device/:uuid/screen', AuthTokenMiddleware, upload.single('file'), (req, res) => {
     const uuid = req.params.uuid;
     const fileName = uuid + '.png';
     const tempPath = req.file.path;
@@ -344,7 +345,7 @@ router.post('/device/:uuid/screen', upload.single('file'), (req, res) => {
     }
 });
 
-router.post('/device/screen/:uuid', (req, res) => {
+router.post('/device/screen/:uuid', AuthTokenMiddleware, (req, res) => {
     const uuid = req.params.uuid;
     logger('dcm').info(`Received screen ${uuid}`);
     const data = Buffer.from(req.body.body, 'base64');
@@ -399,7 +400,7 @@ router.get('/configs', async (req, res) => {
     }
 });
 
-router.post('/config', async (req, res) => {
+router.post('/config', AuthTokenMiddleware, async (req, res) => {
     const { uuid, ios_version, ipa_version, model, webserver_port } = req.body;
     let device = await Device.getByName(uuid);
     let noConfig = false;
@@ -672,7 +673,7 @@ router.get('/logs/:uuid', async (req, res) => {
     });
 });
 
-router.post('/log/new', async (req, res) => {
+router.post('/log/new', AuthTokenMiddleware, async (req, res) => {
     if (!config.logging.enabled) {
         // Logs are disabled
         res.send('OK');
