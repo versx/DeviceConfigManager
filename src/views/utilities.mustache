@@ -9,6 +9,8 @@
             <div class="card bg-dark p-1 m-3">
                 <div class="card-body">
                     <div class="container text-center">
+                        <button type="submit" class="btn btn-danger"><a href="/api/stats/delete_all" class="text-light" onclick="return confirm('Are you sure you want to delete all device stats?');">{{Delete All Stats}}</a></button>
+                        &nbsp;
                         <button type="submit" class="btn btn-danger"><a href="/api/logs/delete_all" class="text-light" onclick="return confirm('Are you sure you want to delete all device logs?');">{{Delete All Logs}}</a></button>
                         &nbsp;
                         <button type="submit" class="btn btn-warning"><a href="/api/utilities/clear_device_ips" class="text-light" onclick="return confirm('Are you sure you want to clear all device IP addresses?');">{{Clear Device IP Addresses}}</a></button>
