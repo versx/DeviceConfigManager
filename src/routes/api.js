@@ -661,6 +661,14 @@ router.get('/logs/delete_all', (req, res) => {
     res.redirect('/utilities');
 });
 
+router.get('/stats/delete_all', (req, res) => {
+    const result = Stats.deleteAll();
+    if (result) {
+        // Success
+    }
+    res.redirect('/utilities');
+});
+
 router.get('/logs/:uuid', async (req, res) => {
     const uuid = req.params.uuid;
     const logs = uuid === 'all' ?

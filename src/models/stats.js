@@ -24,6 +24,11 @@ class Stats {
         const result = await query(sql, args);
         return result.affectedRows === 1;
     }
+
+    static async deleteAll() {
+        return query('TRUNCATE stats');
+        
+    }
 }
 
 module.exports = Stats;
