@@ -9,7 +9,7 @@ const { DiscordMessage, DiscordEmbed, DiscordColors } = require('../models/disco
 const utils = require('./utils.js');
 const devicesCheckInterval = (config.monitor.interval || 5) * 60 * 1000; // Check every 5 minutes
 const delta = (config.monitor.threshold || 15) * 60; // Amount of time in seconds before rendered offline
-const maxRebootCount = config.maxRebootCount || 10;
+const maxRebootCount = config.monitor.maxRebootCount || 10;
 const devicesRebooted = {};
 const deviceWebhooksSent = {};
 
