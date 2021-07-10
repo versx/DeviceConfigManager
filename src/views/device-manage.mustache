@@ -59,6 +59,20 @@
                         <th><button type='button' class='btn btn-success' onclick='reboot("{{{listeners}}}", "{{name}}", "{{exclude_reboots}}")'>{{REBOOT}}</button></th>
                         <th><div id='reboot'></div></th>
                     </tr>
+                                        <tr>
+                        <th>{{Max Brightness}}</th>
+                        <form action="http://{{clientip}}:{{webserver_port}}/brightness?value=100" method="post">
+                        <th><button type='submit' class='btn btn-danger'>{{SEND}}</button></th>
+                        </form>
+                        <th><div id='restart'></div></th>
+                    </tr>
+                    <tr>
+                        <th>{{Min Brightness}}</th>
+                        <form action="http://{{clientip}}:{{webserver_port}}/brightness?value=0" method="post">
+                        <th><button type='submit' class='btn btn-danger'>{{SEND}}</button></th>
+                        </form>
+                        <th><div id='restart'></div></th>
+                    </tr>
                     <tr>
                         <th>{{Device Logs}}</th>
                         <th><a href='/device/logs/{{name}}' type='button' class='btn btn-success'>{{VIEW}}</a></th>
