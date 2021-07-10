@@ -145,6 +145,5 @@
     "Clear Device IP Addresses": "Clear Device IP Addresses",
     "Model": "Model",
     "Exclude From Reboots": "Exclude From Reboots",
-    "Max Brightness": "Max Brightness",
-    "Min Brightness": "Min Brightness"
+    "Brightness": "Brightness"
 }
