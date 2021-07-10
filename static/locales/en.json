@@ -144,5 +144,6 @@
     "Timezone": "Timezone",
     "Clear Device IP Addresses": "Clear Device IP Addresses",
     "Model": "Model",
-    "Exclude From Reboots": "Exclude From Reboots"
+    "Exclude From Reboots": "Exclude From Reboots",
+    "Brightness": "Brightness"
 }

@@ -59,6 +59,13 @@
                         <th><button type='button' class='btn btn-success' onclick='reboot("{{{listeners}}}", "{{name}}", "{{exclude_reboots}}")'>{{REBOOT}}</button></th>
                         <th><div id='reboot'></div></th>
                     </tr>
+                        <th>{{Brightness}}</th>
+                        <!--<form action="http://{{clientip}}:{{webserver_port}}/brightness?value=100" method="post">-->
+                        <th>
+                            <input type="range" min="0" max="100" value="50" class="slider" onchange="sendBrightness(this);" id="brightness">
+                        </th>
+                        <th></th>
+                    </tr>
                     <tr>
                         <th>{{Device Logs}}</th>
                         <th><a href='/device/logs/{{name}}' type='button' class='btn btn-success'>{{VIEW}}</a></th>
@@ -179,6 +186,26 @@
             },
             error: function(xhr, textStatus, errorThrown) {
                 $('#' + id).text('Error');
+                console.error('Error:', textStatus);
+                console.error('Error Thrown:', errorThrown);
+            } 
+        });
+    }
+
+    function sendBrightness(brightnessElement) {
+        const clientip = $('#client_ip').val();
+        const brightness = $('#brightness').val();
+        const url = `http://${clientip}:{{webserver_port}}/brightness?value=${brightness}`;
+        console.log('brightness:', url);
+        $.ajax({
+            url: url,
+            type: 'POST',
+            async: true,
+            success: function (result, textStatus, jqXHR) {
+                //$('#' + id).text(text);
+            },
+            error: function(xhr, textStatus, errorThrown) {
+                //$('#' + id).text('Error');
                 console.error('Error:', textStatus);
                 console.error('Error Thrown:', errorThrown);
             } 
