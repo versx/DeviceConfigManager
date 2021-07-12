@@ -236,6 +236,10 @@ router.post('/devices/mass_action', async (req, res) => {
         logger('dcm').info('Received restart by config mass action');
         endpoint = 'restart';
         break;
+    case 'brightness':
+        logger('dcm').info('Received brightness mass action');
+        endpoint = 'brightness?value=0';
+        break;
     default:
         res.send('Error Occurred');
     }
@@ -740,6 +744,7 @@ router.get('/utilities/clear_device_ips', async (req, res) => {
 
 const get = async (uuid, url) => {
     const isScreen = url.includes('/screen');
+    const isBrightness = url.includes('/brightness');
     if (isScreen) {
         const screenshotFile = path.resolve(__dirname, '../../screenshots/' + uuid + '.png');
         const fileStream = fs.createWriteStream(screenshotFile);
@@ -749,6 +754,14 @@ const get = async (uuid, url) => {
                 logger('dcm').error(`Failed to get screenshot for ${uuid} at ${url}. Are you sure the device is up? ${err.code}`);
             })
             .pipe(fileStream);
+         }else if (isBrightness){
+      request.post(url, (err) => {
+            if (err) {
+                logger('dcm').error(`Error: ${err}`);
+            }
+        }).on('error', (err) => {
+            logger('dcm').error(`Error occurred: ${err}`);
+        });
     } else {
         request.get(url, (err) => {
             if (err) {
