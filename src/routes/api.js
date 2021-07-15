@@ -754,14 +754,14 @@ const get = async (uuid, url) => {
                 logger('dcm').error(`Failed to get screenshot for ${uuid} at ${url}. Are you sure the device is up? ${err.code}`);
             })
             .pipe(fileStream);
-} else if (isBrightness) {
-    request.post(url, (err) => {
-        if (err) {
-            logger('dcm').error(`Error: ${err}`);
-        }
-    }).on('error', (err) => {
-        logger('dcm').error(`Error occurred: ${err}`);
-    });
+    } else if (isBrightness) {
+        request.post(url, (err) => {
+            if (err) {
+                logger('dcm').error(`Error: ${err}`);
+            }
+        }).on('error', (err) => {
+            logger('dcm').error(`Error occurred: ${err}`);
+        });
     } else {
         request.get(url, (err) => {
             if (err) {
