@@ -5,10 +5,8 @@ name: Node.js CI
 
 on:
   push:
-    branches: [ master, develop ]
-  pull_request:
-    branches: [ master, develop ]
-
+    branches: [ master ]
+    
 jobs:
 #  eslint:
 #    runs-on: ubuntu-latest
