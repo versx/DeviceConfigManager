@@ -417,8 +417,8 @@ router.post('/config', AuthTokenMiddleware, async (req, res) => {
     if (device) {
         // Device exists
         device.lastSeen = utils.convertTz(new Date()) / 1000;
-        // Only update client IP if it hasn't been set yet.
-        if (device.clientip === null || device.clientip !== clientip) {
+        // Only update client IP if it hasn't been set yet or if auto sync is enabled while IP doesn't match
+        if (device.clientip === null || (device.clientip !== clientip && config.autoSyncIP)) {
             device.clientip = clientip;
         }
         device.iosVersion = ios_version;
