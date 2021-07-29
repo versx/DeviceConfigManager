@@ -29,5 +29,6 @@
         "password": "pass123",
         "database": "dcm",
         "charset": "utf8mb4"
-    }
+    },
+    "autoSyncIP": true
 }
