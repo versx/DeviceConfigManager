@@ -10,8 +10,8 @@
 
 To be used with RealDeviceMap macless solutions.  
 
-Central repository for macless client configurations without having to keep track of multiple remote configs and urls. Assign different configurations to different devices and different backends (RealDeviceMap / Lorgnette). When devices connect for the first time, if they don't exist they are created, if they don't have a config assigned, it will try to auto-assign it a default config if one exists.  
-You can also pre-create devices and assign configs yourself if needed.  
+Central repository for macless client configurations without having to keep track of multiple remote configs and urls. Assign different configurations to different devices and different backends (RealDeviceMap / Lorgnette). When devices connect for the first time, if they don't exist they are created, if the device doesn't have a config assigned, it will try to auto-assign a default config if one exists.  
+You can also pre-create devices and assign configs yourself if needed. Rest endpoint tooling to get screenshot, active logged in account, restart game, reboot device, or view device logs and more.  
 
 ## Features  
 - Custom config assignments  
@@ -26,35 +26,37 @@ You can also pre-create devices and assign configs yourself if needed.
 - AI  
 
 ## Installation
-1.) Create new database `dcm` with utf8_unicode_ci/utf8mb4 character sets and collation  
-2.) Clone repository `git clone https://github.com/versx/DeviceConfigManager`  
-3.) Install dependencies `npm install`  
-4.) Copy config `cp src/config.example.json src/config.json`  
-5.) Fill out config `vi src/config.json`  
-6.) Run `npm start`  
-7.) Access via http://machineip:port/ using username: `root` and password `pass123!`  
-8.) Change default password via the Settings page  
-9.) (Optional) Setup [DCMRemoteListener](https://github.com/versx/DCMRemoteListener) on the machines the phones are connected to in order to restart the actual device.  
+**Normal**  
+1. Create new database `dcm` with utf8_unicode_ci/utf8mb4 character sets and collation  
+1. Clone repository `git clone https://github.com/versx/DeviceConfigManager`  
+1. Install dependencies `npm install`  
+1. Copy config `cp src/config.example.json src/config.json`  
+1. Fill out config `vi src/config.json`  
+1. Run `npm start`  
+1. Access via http://machineip:port/ using username: `root` and password `pass123!`  
+1. Change default password via the Settings page  
+1. (Optional) Setup [DCMRemoteListener](https://github.com/versx/DCMRemoteListener) on the machines the phones are connected to in order to restart the actual device.  
 
-## Installation (Docker)  
-1.) Create new database `dcm` with utf8_unicode_ci/utf8mb4 character sets and collation  
-2.) Clone repository `git clone https://github.com/versx/DeviceConfigManager`  
-3.) Copy docker-compose `cp docker-compose.example.yml docker-compose.yml`  
-4.) Copy config `cp src/config.example.json src/config.json`  
-5.) Fill out config `vi src/config.json`  
-6.) Run `docker-compose up -d --build`  
-7.) Access via http://machineip:port/ using username: `root` and password `pass123!`  
-8.) Change default password via the Settings page  
-9.) (Optional) Setup [DCMRemoteListener](https://github.com/versx/DCMRemoteListener) on the machines the phones are connected to in order to restart the actual device.  
+**Docker**  
+1. Create new database `dcm` with utf8_unicode_ci/utf8mb4 character sets and collation  
+1. Clone repository `git clone https://github.com/versx/DeviceConfigManager`  
+1. Copy docker-compose `cp docker-compose.example.yml docker-compose.yml`  
+1. Copy config `cp src/config.example.json src/config.json`  
+1. Fill out config `vi src/config.json`  
+1. Run `docker-compose up -d --build`  
+1. Access via http://machineip:port/ using username: `root` and password `pass123!`  
+1. Change default password via the Settings page  
+1. (Optional) Setup [DCMRemoteListener](https://github.com/versx/DCMRemoteListener) on the machines the phones are connected to in order to restart the actual device.  
 
 ## Updating  
-1.) `git pull`  
-2.) Run `npm install` in root folder  
-3.) Run `npm start`  
+**Normal**  
+1. `git pull`  
+1. Run `npm install` in root folder  
+1. Run `npm start`  
 
-## Updating (Docker)  
-1.) `git pull`  
-2.) Run `docker-compose up -d --build`
+**Docker**  
+1. `git pull`  
+1. Run `docker-compose up -d --build`
 
 ## FAQ
 Q.) Why are devices showing my HAProxy IP address?  
