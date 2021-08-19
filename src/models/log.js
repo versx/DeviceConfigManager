@@ -20,11 +20,9 @@ class Log {
     static async getAll() {
         const logs = [];
         const devices = await Device.getAll();
-        for (let i = 0; i < devices.length; i++) {
-            const device = devices[i];
+        for (const device of devices) {
             const logData = await this.getByDevice(device.uuid, true);
-            for (let j = 0; j < logData.length; j++) {
-                const log = logData[j];
+            for (let log of logData) {
                 logs.push(log);
             }
         }
@@ -41,19 +39,25 @@ class Log {
         const data = await utils.readFile(logFile);
         const split = data.split('\n');
         if (split) {
-            split.forEach((log) => {
-                if (log) {
-                    const l = JSON.parse(log);
+            split.forEach((line) => {
+                if (line) {
+                    const log = JSON.parse(line);
                     if (includeUuid) {
                         logs.push({
-                            message: l.msg,
+                            message: log.msg,
                             uuid: uuid,
-                            date: utils.getDateTime(l.time)
+                            date: {
+                                formatted: utils.getDateTime(log.time),
+                                timestamp: log.time,
+                            }
                         });
                     } else {
                         logs.push({
-                            message: l.msg,
-                            date: utils.getDateTime(l.time)
+                            message: log.msg,
+                            date: {
+                                formatted: utils.getDateTime(log.time),
+                                timestamp: log.time,
+                            }
                         });
                     }
                 }

@@ -57,7 +57,12 @@
             "lengthMenu": [[25, 50, 100, -1], [25, 50, 100, "All"]],
             "pageLength": 100,
             "columns": [
-                { "data": "date" },
+                {
+                    "data": {
+                        "_": "date.formatted",
+                        "sort": "date.timestamp",
+                    }
+                },
                 { "data": "uuid" },
                 { "data": "message" }
             ],

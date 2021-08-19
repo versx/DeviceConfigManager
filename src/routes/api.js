@@ -491,6 +491,7 @@ router.post('/config', AuthTokenMiddleware, async (req, res) => {
 
     // Build json config
     const json = utils.buildConfig(
+        // TODO: Use spread operator and pass in just one object
         c.provider,
         c.backendUrl,
         c.dataEndpoints,
@@ -656,17 +657,17 @@ router.get('/schedule/delete_all', (req, res) => {
 });
 
 
-// Logging API requests
-router.get('/logs/delete_all', (req, res) => {
-    const result = Log.deleteAll();
+router.get('/stats/delete_all', (req, res) => {
+    const result = Stats.deleteAll();
     if (result) {
         // Success
     }
     res.redirect('/utilities');
 });
 
-router.get('/stats/delete_all', (req, res) => {
-    const result = Stats.deleteAll();
+// Logging API requests
+router.get('/logs/delete_all', (req, res) => {
+    const result = Log.deleteAll();
     if (result) {
         // Success
     }
