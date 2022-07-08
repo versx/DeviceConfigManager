@@ -35,7 +35,7 @@ You can also pre-create devices and assign configs yourself if needed. Rest endp
 1. Run `npm start`  
 1. Access via http://machineip:port/ using username: `root` and password `pass123!`  
 1. Change default password via the Settings page  
-1. (Optional) Setup [DCMRemoteListener](https://github.com/versx/DCMRemoteListener) on the machines the phones are connected to in order to restart the actual device.  
+1. (Optional) Setup [DCMAgent](https://github.com/versx/DCMAgent) on the machines the phones are connected to in order to restart the actual device.  
 
 **Docker**  
 1. Create new database `dcm` with utf8_unicode_ci/utf8mb4 character sets and collation  
@@ -46,7 +46,7 @@ You can also pre-create devices and assign configs yourself if needed. Rest endp
 1. Run `docker-compose up -d --build`  
 1. Access via http://machineip:port/ using username: `root` and password `pass123!`  
 1. Change default password via the Settings page  
-1. (Optional) Setup [DCMRemoteListener](https://github.com/versx/DCMRemoteListener) on the machines the phones are connected to in order to restart the actual device.  
+1. (Optional) Setup [DCMAgent](https://github.com/versx/DCMAgent) on the machines the phones are connected to in order to restart the actual device.  
 
 ## Updating  
 **Normal**  
