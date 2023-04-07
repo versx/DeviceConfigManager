@@ -117,3 +117,6 @@ schedules.json
 
 # No docker-compose.yml
 docker-compose.yml
+
+# No files
+static/files/*
