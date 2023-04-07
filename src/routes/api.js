@@ -22,23 +22,6 @@ const ScheduleManager = require('../models/schedule-manager.js');
 const logger = require('../services/logger.js');
 const utils = require('../services/utils.js');
 
-router.use(async (req, res, next) => {
-    if (req.path === '/api/login' || req.path === '/login' ||
-        req.path === '/api/register' || req.path === '/register' ||
-        req.path === '/config' || req.path === '/log/new') {
-        return next();
-    }
-    if (!await Migrator.getValueForKey('SETUP')) {
-        res.redirect('/register');
-        return;
-    }
-    if (req.session.loggedin) {
-        next();
-        return;
-    }
-    res.redirect('/login');
-});
-
 router.post('/register', async (req, res) => {
     const isSetup = await Migrator.getValueForKey('SETUP');
     if (isSetup) {
