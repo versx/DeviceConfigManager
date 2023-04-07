@@ -390,7 +390,7 @@ router.get('/configs', async (req, res) => {
 router.post('/download/:file', AuthTokenMiddleware, async (req, res) => {
     const { uuid } = req.body;
     const clientip = ((req.headers['x-forwarded-for'] || '').split(', ')[0]) || (req.connection.remoteAddress || req.connection.localAddress).match('[0-9]+.[0-9].+[0-9]+.[0-9]+$')[0];
-    var filePath = 'static/file/' + req.params.file;
+    var filePath = 'static/files/' + req.params.file;
     var fileName = req.params.file;
     logger('dcm').info(`Client ${uuid} at ${clientip} is requesting ` + req.params.file);
     res.download(filePath, fileName);
