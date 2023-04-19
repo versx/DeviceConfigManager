@@ -128,6 +128,10 @@ router.post('/settings/change', (req, res) => {
         database: data.database,
         charset: data.charset
     };
+    newConfig.jailbreak = {
+        pogo_version: data.pogo_version,
+        gc_version: data.gc_version
+    };
     fs.writeFileSync(path.resolve(__dirname, '../config.json'), JSON.stringify(newConfig, null, 4));
     res.redirect('/settings');
 });
