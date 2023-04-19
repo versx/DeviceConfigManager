@@ -400,6 +400,14 @@ router.post('/download/:file', AuthTokenMiddleware, async (req, res) => {
     res.download(filePath, fileName);
 });
 
+router.get('/version.txt', AuthTokenMiddleware, async (req, res) => {
+    const clientip = ((req.headers['x-forwarded-for'] || '').split(', ')[0]) || (req.connection.remoteAddress || req.connection.localAddress).match('[0-9]+.[0-9].+[0-9]+.[0-9]+$')[0];
+    // TODO: Do better
+    res.status(200)
+    .attachment(`version.txt`)
+    .send('gc: '+ config.jailbreak.gc_version +'\npogo: ' + config.jailbreak.pogo_version)
+});
+
 router.post('/config', AuthTokenMiddleware, async (req, res) => {
     const { uuid, ios_version, ipa_version, model, webserver_port } = req.body;
     let device = await Device.getByName(uuid);
