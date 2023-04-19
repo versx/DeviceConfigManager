@@ -110,7 +110,7 @@ const run = async () => {
     app.use(async (req, res, next) => {
         if (req.path === '/api/login' || req.path === '/login' ||
             req.path === '/api/register' || req.path === '/register' ||
-            req.path.includes('/api/download') ||
+            req.path.includes('/api/download') || req.path === '/api/version.txt' ||
             req.path === '/api/config' || req.path == '/api/log/new') {
             return next();
         }
