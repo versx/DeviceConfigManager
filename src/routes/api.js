@@ -22,23 +22,6 @@ const ScheduleManager = require('../models/schedule-manager.js');
 const logger = require('../services/logger.js');
 const utils = require('../services/utils.js');
 
-router.use(async (req, res, next) => {
-    if (req.path === '/api/login' || req.path === '/login' ||
-        req.path === '/api/register' || req.path === '/register' ||
-        req.path === '/config' || req.path === '/log/new') {
-        return next();
-    }
-    if (!await Migrator.getValueForKey('SETUP')) {
-        res.redirect('/register');
-        return;
-    }
-    if (req.session.loggedin) {
-        next();
-        return;
-    }
-    res.redirect('/login');
-});
-
 router.post('/register', async (req, res) => {
     const isSetup = await Migrator.getValueForKey('SETUP');
     if (isSetup) {
@@ -144,6 +127,10 @@ router.post('/settings/change', (req, res) => {
         password: data.db_password,
         database: data.database,
         charset: data.charset
+    };
+    newConfig.jailbreak = {
+        pogo_version: data.pogo_version,
+        gc_version: data.gc_version
     };
     fs.writeFileSync(path.resolve(__dirname, '../config.json'), JSON.stringify(newConfig, null, 4));
     res.redirect('/settings');
@@ -402,6 +389,23 @@ router.get('/configs', async (req, res) => {
     } catch (e) {
         logger('dcm').error(`Configs error: ${e}`);
     }
+});
+
+router.post('/download/:file', AuthTokenMiddleware, async (req, res) => {
+    const { uuid } = req.body;
+    const clientip = ((req.headers['x-forwarded-for'] || '').split(', ')[0]) || (req.connection.remoteAddress || req.connection.localAddress).match('[0-9]+.[0-9].+[0-9]+.[0-9]+$')[0];
+    var filePath = 'static/files/' + req.params.file;
+    var fileName = req.params.file;
+    logger('dcm').info(`Client ${uuid} at ${clientip} is requesting ` + req.params.file);
+    res.download(filePath, fileName);
+});
+
+router.get('/version.txt', AuthTokenMiddleware, async (req, res) => {
+    const clientip = ((req.headers['x-forwarded-for'] || '').split(', ')[0]) || (req.connection.remoteAddress || req.connection.localAddress).match('[0-9]+.[0-9].+[0-9]+.[0-9]+$')[0];
+    // TODO: Do better
+    res.status(200)
+    .attachment(`version.txt`)
+    .send('gc: '+ config.jailbreak.gc_version +'\npogo: ' + config.jailbreak.pogo_version)
 });
 
 router.post('/config', AuthTokenMiddleware, async (req, res) => {

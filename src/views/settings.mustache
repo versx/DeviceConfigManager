@@ -19,6 +19,9 @@
                 <li class="nav-item">
                     <a class="nav-link" data-toggle="pill" href="#logging">{{Logging}}</a>
                 </li>
+                <li class="nav-item">
+                    <a class="nav-link" data-toggle="pill" href="#jailbreak">{{Jailbreak}}</a>
+                </li>
             </ul>
             <form action="/api/settings/change" method="post" novalidate>
                 <div class="tab-content">
@@ -158,6 +161,25 @@
                         </div>
                     </div>
                     <!-- End Logging Tab -->
+                    <!-- Start Jailbreak Tab -->
+                    <div class="tab-pane container" id="jailbreak">
+                        <div class="card bg-dark p-1 m-3">
+                            <div class="card-header text-center bg-dark"><b>{{Jailbreak}}</b></div>
+                            <div class="card-body">
+                                <div class="container">
+                                    <div class="form-group">
+                                        {{Pokémon GO version}}
+                                        <input type="number" class="form-control" name="pogo_version" value="{{pogo_version}}" placeholder="" required>
+                                    </div>
+                                    <div class="form-group">
+                                        {{GoCheats version}}
+                                        <input type="text" class="form-control" name="gc_version" value="{{gc_version}}" placeholder="" required>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- End Jailbreak Tab -->
                     <br>
                     <div class="text-center">
                         <button type="submit" class="btn btn-primary">{{Save}}</button>

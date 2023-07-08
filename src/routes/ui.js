@@ -298,6 +298,8 @@ router.get('/settings', (req, res) => {
     data.logging = config.logging.enabled ? 'checked' : '';
     data.max_size = config.logging.max_size;
     data.log_format = config.logging.format || 'YYYY-MM-DD hh:mm:ss A';
+    data.gc_version = config.jailbreak.gc_version;
+    data.pogo_version = config.jailbreak.pogo_version;
     res.render('settings', data);
 });
 
