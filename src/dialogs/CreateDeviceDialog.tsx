@@ -86,20 +86,20 @@ export const CreateDeviceDialog = (props: CreateDeviceDialogProps) => {
           onChange={e => setLocalDevice({ ...localDevice, ipAddr: e.target.value })}
         />
         <div style={{display: 'flex', flexDirection: 'row', justifyContent: 'space-between'}}>
-        <TextField
-          fullWidth
-          margin="normal"
-          label="iOS Version"
-          value={localDevice.iosVersion || ''}
-          onChange={e => setLocalDevice({ ...localDevice, iosVersion: e.target.value })}
-        />
-        <TextField
-          fullWidth
-          margin="normal"
-          label="IPA Version"
-          value={localDevice.ipaVersion || ''}
-          onChange={e => setLocalDevice({ ...localDevice, ipaVersion: e.target.value })}
-        />
+          <TextField
+            fullWidth
+            margin="normal"
+            label="iOS Version"
+            value={localDevice.iosVersion || ''}
+            onChange={e => setLocalDevice({ ...localDevice, iosVersion: e.target.value })}
+          />
+          <TextField
+            fullWidth
+            margin="normal"
+            label="IPA Version"
+            value={localDevice.ipaVersion || ''}
+            onChange={e => setLocalDevice({ ...localDevice, ipaVersion: e.target.value })}
+          />
         </div>
         <TextField
           fullWidth
@@ -108,7 +108,6 @@ export const CreateDeviceDialog = (props: CreateDeviceDialogProps) => {
           value={localDevice.notes || ''}
           onChange={e => setLocalDevice({ ...localDevice, notes: e.target.value })}
         />
-        {/* Consider using a date picker for the `lastSeen` property if you allow editing it */}
         <FormControlLabel
           control={<Switch checked={localDevice.enabled} onChange={e => setLocalDevice({ ...localDevice, enabled: e.target.checked })} />}
           label="Enabled"

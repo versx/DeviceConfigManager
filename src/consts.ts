@@ -6,6 +6,9 @@ export const ActiveMenuItemColor = '#0088fe'; //'#1e90ff';
 export const DefaultEnableRegistration = true;
 export const DefaultUserTheme = 'system';
 
+export const DeviceOnlineIcon = 'https://raw.githubusercontent.com/versx/DeviceConfigManager/master/static/img/online.png';
+export const DeviceOfflineIcon = 'https://raw.githubusercontent.com/versx/DeviceConfigManager/master/static/img/offline.png';
+
 export const StorageKeys = {
   AdminOpen: 'adminOpen',
   ColorMode: 'colorMode',

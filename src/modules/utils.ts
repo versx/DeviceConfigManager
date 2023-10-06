@@ -47,6 +47,8 @@ export function stableSort<T>(array: readonly T[], comparator: (a: T, b: T) => n
   return stabilizedThis.map((el) => el[0]);
 };
 
+export const getUnix = () => Math.round(new Date().getTime() / 1000);
+
 export const formatDateForDateTimeInput = (date: Date): string => {
   const yyyy = date.getFullYear();
   const mm = String(date.getMonth() + 1).padStart(2, '0'); // January is 0!
@@ -54,6 +56,16 @@ export const formatDateForDateTimeInput = (date: Date): string => {
   const hh = String(date.getHours()).padStart(2, '0');
   const mi = String(date.getMinutes()).padStart(2, '0');
   return `${yyyy}-${mm}-${dd}T${hh}:${mi}`;
+};
+
+export const isDeviceOnline = (lastSeen: Date | string | null, threshold: number = 15) => {
+  if (!lastSeen) {
+    return false;
+  }
+  const tsNow = getUnix();
+  const tsLastSeen = Math.round(new Date(lastSeen).getTime() / 1000);
+  const diff = tsNow - tsLastSeen;
+  return diff <= threshold * 60;
 };
 
 export const aggregateData = <T>(data: T[], key: keyof T) => data.reduce((acc: any, item: any) => {

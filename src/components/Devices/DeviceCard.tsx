@@ -1,23 +1,19 @@
-import React, { useState } from 'react';
 import {
   Card,
   CardContent,
   CardHeader,
-  IconButton,
-  Menu,
-  MenuItem,
+  Divider,
   Typography,
 } from '@mui/material';
-import {
-  ArrowForwardIos as ArrowForwardIosIcon,
-  MoreVert as MoreVertIcon,
-} from '@mui/icons-material';
 
+import { DropdownMenu } from '..';
+import { DeviceOnlineIcon, DeviceOfflineIcon } from '../../consts';
+import { isDeviceOnline } from '../../modules';
 import { Config, Device } from '../../types';
 
 interface DeviceCardProps {
   device: Device;
-  configs: Config[]; // Add this to provide a list of configs for the assign action
+  configs: Config[];
   onAssign: (uuid: string, config: string | null) => void;
   onEdit: (device: Device) => void;
   onDelete: (uuid: string) => void;
@@ -28,29 +24,31 @@ export const DeviceCard = (props: DeviceCardProps) => {
     device, configs,
     onAssign, onEdit, onDelete,
   } = props;
-  const imageUrl = 'https://raw.githubusercontent.com/versx/DeviceConfigManager/master/static/img/device.png';
+  const isOnline = isDeviceOnline(device?.lastSeen);
+
+  const handleViewDevice = () => {
+    // TODO: Open device manager page
+  };
 
   return (
     <Card
-      onClick={() => console.log('clicked')} // TODO: Open device manager page
+      onClick={handleViewDevice}
       style={{borderRadius: 16}}
     >
       <CardHeader
         avatar={
           // eslint-disable-next-line jsx-a11y/img-redundant-alt
           <img
-            src={imageUrl}
+            src={isOnline ? DeviceOnlineIcon : DeviceOfflineIcon}
             alt="device image"
             style={{
-              width: 48,
-              height: 84,
-              backgroundColor: device.lastSeen ? 'green' : 'red',
-              //borderRadius: '50%',
+              width: 64,
+              height: 64,
             }}
           />
         }
         title={device.uuid}
-        subheader={device.model}
+        subheader={device.model ?? 'Unknown Model'}
         action={
           <DropdownMenu
             configs={configs}
@@ -60,22 +58,28 @@ export const DeviceCard = (props: DeviceCardProps) => {
             onDelete={onDelete}
           />
         }
+        style={{paddingBottom: 3}}
       />
-      <CardContent>
-        <Typography variant="body2" color="textSecondary" component="p">
-          Config: {device.config ?? 'Not Assigned'}
-        </Typography>
-        <Typography variant="body2" color="textSecondary" component="p">
-          IP Address: {device.ipAddr}
-        </Typography>
-        <Typography variant="body2" color="textSecondary" component="p">
-          iOS Version: {device.iosVersion}
-        </Typography>
-        <Typography variant="body2" color="textSecondary" component="p">
-          IPA Version: {device.ipaVersion}
-        </Typography>
-        <Typography variant="body2" color="textSecondary" component="p">
-          Last Seen: {device.lastSeen ? new Date(device.lastSeen).toLocaleString() : 'N/A'}
+      <Divider />
+      <CardContent style={{paddingTop: 8, marginTop: 0}}>
+        <div style={{display: 'flex', flexDirection: 'row', justifyContent: 'space-between', marginBottom: 8}}>
+          <Typography variant="body2" color="textSecondary" component="p">
+            Config: {device.config ?? 'Not Assigned'}
+          </Typography>
+          <Typography variant="body2" color="textSecondary" component="p">
+            IP Address: {device.ipAddr ?? '--'}
+          </Typography>
+        </div>
+        <div style={{display: 'flex', flexDirection: 'row', justifyContent: 'space-between', marginBottom: 8}}>
+          <Typography variant="body2" color="textSecondary" component="p">
+            iOS Version: {device.iosVersion ?? '--'}
+          </Typography>
+          <Typography variant="body2" color="textSecondary" component="p">
+            IPA Version: {device.ipaVersion ?? '--'}
+          </Typography>
+        </div>
+        <Typography variant="body2" color="textSecondary" component="p" style={{marginBottom: 8}}>
+          Last Seen: {device.lastSeen ? new Date(device.lastSeen).toLocaleString() : 'Never'}
         </Typography>
         {device.notes && (
           <Typography variant="body2" color="textSecondary" component="p">
@@ -84,99 +88,5 @@ export const DeviceCard = (props: DeviceCardProps) => {
         )}
       </CardContent>
     </Card>
-  );
-};
-
-interface DropdownMenuProps {
-  configs: Config[];
-  device: Device;
-  onAssign: (uuid: string, config: string | null) => void;
-  onEdit: (device: Device) => void;
-  onDelete: (uuid: string) => void;
-};
-
-export const DropdownMenu = (props: DropdownMenuProps) => {
-  const { configs, device, onAssign, onEdit, onDelete } = props;
-  const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
-  const [subMenuAnchorEl, setSubMenuAnchorEl] = useState<null | HTMLElement>(null);
-
-  const handleMenuOpen = (event: any) => setAnchorEl(event.currentTarget);
-
-  const handleMenuClose = () => {
-    setAnchorEl(null);
-    // close the sub-menu as well
-    setSubMenuAnchorEl(null);
-  };
-
-  const handleSubMenuOpen = (event: any) => {
-    // prevent main menu from closing
-    event.stopPropagation();
-    // anchor to the same element as main menu
-    setSubMenuAnchorEl(anchorEl);
-  };
-
-  const handleSubMenuClose = (event: React.MouseEvent) => {
-    // prevent main menu from closing
-    event.stopPropagation();
-    setSubMenuAnchorEl(null);
-  };
-
-  const handleAssign = (uuid: string, config: string | null) => {
-    handleMenuClose();
-    onAssign(uuid, config);
-  };
-
-  const handleEdit = (device: Device) => {
-    handleMenuClose();
-    onEdit(device);
-  };
-
-  const handleDelete = (uuid: string) => {
-    handleMenuClose();
-    onDelete(uuid);
-  };
-
-  return (
-    <div>
-      <IconButton
-        aria-label="settings"
-        onClick={handleMenuOpen}
-      >
-        <MoreVertIcon />
-      </IconButton>
-
-      <Menu anchorEl={anchorEl} open={Boolean(anchorEl)} onClose={handleMenuClose}>
-        <MenuItem 
-          onClick={handleSubMenuOpen} 
-          // open sub-menu on hover for better UX
-          //onMouseOver={handleSubMenuOpen}
-          //onMouseOut={handleSubMenuClose}
-        >
-          Assign Config&nbsp;
-          <ArrowForwardIosIcon fontSize="small" />
-        </MenuItem>
-        <MenuItem key="edit" onClick={() => handleEdit(device)}>Edit</MenuItem>
-        <MenuItem key="delete" onClick={() => handleDelete(device.uuid)}>Delete</MenuItem>
-      </Menu>
-
-      <Menu
-        anchorEl={subMenuAnchorEl}
-        open={Boolean(subMenuAnchorEl)}
-        onClose={handleSubMenuClose}
-        anchorOrigin={{ vertical: 'bottom', horizontal: 'left' }}
-        transformOrigin={{ vertical: 'top', horizontal: 'right' }}
-        // adjust this value based on the width of the main menu
-        style={{ marginLeft: '200px' }}
-      >
-        <MenuItem key="none" onClick={() => handleAssign(device.uuid, null)}>None</MenuItem>
-        
-        <MenuItem divider disabled sx={{p: 0}} />
-        {configs.map((config: Config, index: number) => (
-          <MenuItem key={index} onClick={() => handleAssign(device.uuid, config.name)}>
-            {config.name}
-          </MenuItem>
-        ))}
-      </Menu>
-    </div>
   );
 };

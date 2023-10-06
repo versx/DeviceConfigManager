@@ -7,29 +7,24 @@ import {
   Tooltip,
   Typography,
 } from '@mui/material';
-import {
-  Person as PersonIcon,
-  Settings as SettingsIcon,
-} from '@mui/icons-material';
+import { Settings as SettingsIcon } from '@mui/icons-material';
 import { useSnackbar } from 'notistack';
 
+import { BreadcrumbItem, Breadcrumbs, StatTile } from '../../components';
 import { Routes } from '../../consts';
-import { BreadcrumbItem, Breadcrumbs, CardDisplay, StatTile } from '../../components';
 import { UserService } from '../../services';
-import { User } from '../../types';
 
 const crumbs: BreadcrumbItem[] = [{
   text: 'Dashboard',
-  href: '/',
+  href: Routes.dashboard,
   selected: false,
 },{
   text: 'Admin',
-  href: '/admin',
+  href: Routes.admin.dashboard,
   selected: true,
 }];
 
 export const AdminDashboardPage = () => {
-  const [users, setUsers] = useState<User[]>([]);
   const [userStats, setUserStats] = useState<any>({
     total: 0,
     admins: 0,
@@ -48,11 +43,10 @@ export const AdminDashboardPage = () => {
         return;
       }
       const users = response.users;
-      setUsers(users);
       setUserStats({
         total: users.length,
-        admins: users.filter((user: any) => user.admin).length,
-        users: users.filter((user: any) => !user.admin).length,
+        admins: users.filter((user: any) => user.root).length,
+        users: users.filter((user: any) => !user.root).length,
         enabled: users.filter((user: any) => user.enabled).length,
         disabled: users.filter((user: any) => !user.enabled).length,
       });
@@ -81,24 +75,6 @@ export const AdminDashboardPage = () => {
         Admin - Dashboard
       </Typography>
 
-      <Container component={Paper} elevation={6} style={{ padding: '16px', marginTop: '24px', marginBottom: '24px', border: '1px solid grey', borderRadius: '8px' }}>
-        <Typography variant="h5" gutterBottom style={{textAlign: 'center'}}>
-          Overall Statistics
-        </Typography>
-        <Grid container spacing={2}>
-          <Grid item xs={12} sm={6}>
-            <CardDisplay
-              text="Users"
-              icon={<PersonIcon sx={{fontSize: 48}} />}
-              value={users.length.toLocaleString()}
-              elevation={0}
-              href={Routes.admin.users}
-              width="100%"
-              height="130px"
-            />
-          </Grid>
-        </Grid>
-      </Container>
       <Container component={Paper} elevation={6} style={{ padding: '16px', marginTop: '24px', marginBottom: '24px', border: '1px solid grey', borderRadius: '8px' }}>
         <Typography variant="h5" gutterBottom style={{textAlign: 'center'}}>
           User Statistics
