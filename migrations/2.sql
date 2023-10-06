@@ -1,1 +1,0 @@
-ALTER TABLE `devices` ADD COLUMN `clientip` VARCHAR(40) DEFAULT NULL;

@@ -1,0 +1,237 @@
+import React, { useState } from 'react';
+import {
+  Chip,
+  Fab,
+  Grid,
+  Paper,
+  Table,
+  TableBody,
+  TableContainer,
+  TableHead,
+  ToggleButton,
+  ToggleButtonGroup,
+  Tooltip,
+} from '@mui/material';
+import {
+  Add as AddIcon,
+  GridOn as GridOnIcon,
+  Info as InfoIcon,
+  TableRows as TableRowsIcon,
+} from '@mui/icons-material';
+import { useSnackbar } from 'notistack';
+
+import {
+  DeviceActionsButtonGroup,
+  DeviceCard,
+  StyledTableCell,
+  StyledTableRow,
+} from '..';
+import { CreateDeviceDialog } from '../../dialogs';
+import { DeviceService } from '../../services';
+import { Config, Device } from '../../types';
+
+interface DeviceGridProps {
+  configs: Config[];
+  devices: Device[];
+  onReload: () => void;
+};;
+
+interface PhoneModelState {
+  open: boolean;
+  editModel: Device | undefined;
+};
+
+export const DeviceGrid = (props: DeviceGridProps) => {
+  const { configs, devices, onReload } = props;
+  const [view, setView] = useState<'grid' | 'table'>('grid');
+  const [state, setState] = useState<PhoneModelState>({
+    open: false,
+    editModel: undefined,
+  });
+  const { enqueueSnackbar } = useSnackbar();
+
+  const [alignment, setAlignment] = React.useState<string | null>('left');
+
+  const handleAlignment = (
+    event: React.MouseEvent<HTMLElement>,
+    newAlignment: string | null,
+  ) => {
+    setAlignment(newAlignment);
+  };
+
+  const handleOpen = () => setState({open: true, editModel: undefined});
+  const handleClose = () => setState({open: false, editModel: undefined});
+
+  const handleSubmit = async (isNew: boolean, device: Device) => {
+    const response = isNew
+      ? await DeviceService.createDevice(device)
+      : await DeviceService.updateDevice(device.uuid, device);
+    if (response?.status !== 'ok') {
+      enqueueSnackbar(`Failed to ${isNew ? 'create' : 'update'} device with error: ${response?.error}`, { variant: 'error' });
+      return;
+    }
+
+    enqueueSnackbar(`Device ${!isNew ? 'updated' : 'created'} successfully!`, { variant: 'success' });
+    setState({open: false, editModel: undefined});
+    onReload();
+  };
+
+  const handleAssign = async (uuid: string, config: string | null) => {
+    const response = await DeviceService.assignConfig(uuid, config);
+    if (response?.status !== 'ok') {
+      enqueueSnackbar(`Failed to assign config with error: ${response?.error}`, { variant: 'error' });
+      return;
+    }
+
+    enqueueSnackbar(`Config assigned successfully!`, { variant: 'success' });
+    onReload();
+  };
+
+  const handleEdit = async (device: Device) => {
+    setState({open: true, editModel: device});
+  };
+
+  const handleDelete = async (uuid: string) => {
+    const result = window.confirm(`Are you sure you want to delete device ${uuid}?`);
+    if (!result) {
+      return;
+    }
+
+    const response = await DeviceService.deleteDevice(uuid);
+    if (response?.status !== 'ok') {
+      enqueueSnackbar(`Failed to delete device with error: ${response?.error}`, { variant: 'error' });
+      return;
+    }
+
+    enqueueSnackbar(`Device deleted successfully!`, { variant: 'success' });
+    onReload();
+  };
+
+  return (
+    <>
+      <div style={{ display: 'flex', justifyContent: 'end' }}>
+        <ToggleButtonGroup
+          exclusive
+          aria-label="device display type"
+          value={alignment}
+          size="small"
+          onChange={handleAlignment}
+          style={{
+            marginBottom: 8,
+          }}
+        >
+          <ToggleButton
+            aria-label="Grid"
+            value="left"
+            onClick={() => setView('grid')}
+          >
+            <GridOnIcon />
+          </ToggleButton>
+          <ToggleButton
+            aria-label="Table"
+            value="center"
+            onClick={() => setView('table')}
+          >
+            <TableRowsIcon />
+          </ToggleButton>
+        </ToggleButtonGroup>
+      </div>
+
+      <Tooltip title="Create new device" arrow>
+        <Fab
+          color="primary"
+          aria-label="add"
+          onClick={handleOpen}
+          style={{
+            margin: '0px',
+            top: 'auto',
+            right: '32px',
+            bottom: '32px',
+            left: 'auto',
+            position: 'fixed',
+          }}
+        >
+          <AddIcon />
+        </Fab>
+      </Tooltip>
+
+      {view === 'grid' ? (
+        <Grid container spacing={3}>
+          {devices.map((device: Device) => (
+            <Grid item xs={12} sm={6} md={4} key={device.uuid}>
+              <DeviceCard
+                device={device}
+                configs={configs}
+                onAssign={handleAssign}
+                onEdit={handleEdit}
+                onDelete={handleDelete}
+              />
+            </Grid>
+          ))}
+        </Grid>
+      ) : (
+        <TableContainer component={Paper}>
+          <Table>
+            <TableHead>
+              <StyledTableRow>
+                <StyledTableCell>UUID</StyledTableCell>
+                <StyledTableCell>Model</StyledTableCell>
+                <StyledTableCell>Config</StyledTableCell>
+                <StyledTableCell>IP Address</StyledTableCell>
+                <StyledTableCell>iOS Version</StyledTableCell>
+                <StyledTableCell>IPA Version</StyledTableCell>
+                <StyledTableCell>Last Seen</StyledTableCell>
+                <StyledTableCell>Notes</StyledTableCell>
+                <StyledTableCell>Status</StyledTableCell>
+                <StyledTableCell>Actions</StyledTableCell>
+              </StyledTableRow>
+            </TableHead>
+            <TableBody>
+              {devices.map((device: Device, index: number) => (
+                <StyledTableRow key={index}>
+                  <StyledTableCell>{device.uuid}</StyledTableCell>
+                  <StyledTableCell>{device.model || '-'}</StyledTableCell>
+                  <StyledTableCell>{device.config || '-'}</StyledTableCell>
+                  <StyledTableCell>{device.ipAddr || '-'}</StyledTableCell>
+                  <StyledTableCell>{device.iosVersion || '-'}</StyledTableCell>
+                  <StyledTableCell>{device.ipaVersion || '-'}</StyledTableCell>
+                  <StyledTableCell>{device.lastSeen ? new Date(device.lastSeen).toLocaleDateString() : '-'}</StyledTableCell>
+                  <StyledTableCell>
+                    {!device.notes ? '-' : (
+                      <Tooltip title={device.notes || '-'} arrow>
+                        <InfoIcon fontSize="small" />
+                      </Tooltip>
+                    )}
+                  </StyledTableCell>
+                  <StyledTableCell>
+                    <Chip
+                      label={device.enabled ? 'Enabled' : 'Disabled'}
+                      color={device.enabled ? 'primary' : 'error'}
+                      size="small"
+                    />
+                  </StyledTableCell>
+                  <StyledTableCell>
+                    <DeviceActionsButtonGroup
+                      model={device}
+                      //onAssign={handleAssign}
+                      onEdit={handleEdit}
+                      onDelete={handleDelete}
+                    />
+                  </StyledTableCell>
+                </StyledTableRow>
+              ))}
+            </TableBody>
+          </Table>
+        </TableContainer>
+      )}
+
+      <CreateDeviceDialog
+        open={state.open}
+        configs={configs}
+        device={state.editModel}
+        onClose={handleClose}
+        onSave={handleSubmit}
+      />
+    </>
+  );
+};

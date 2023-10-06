@@ -1,1 +1,0 @@
-ALTER TABLE `stats` MODIFY COLUMN `uuid_date_type` VARCHAR(191) UNIQUE;

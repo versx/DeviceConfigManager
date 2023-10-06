@@ -1,1 +1,0 @@
-ALTER TABLE `devices` ADD COLUMN `model` VARCHAR(255) DEFAULT NULL AFTER `uuid`;
