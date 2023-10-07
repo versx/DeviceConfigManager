@@ -30,19 +30,8 @@ interface DeviceTableProps {
   onReload: () => void;
 };
 
-interface DeviceTableState {
-  open: boolean;
-  editMode: boolean;
-  editModel: Device | undefined;
-};
-
 export const DeviceTable = (props: DeviceTableProps) => {
   const { devices, onEdit, onDelete, onReload } = props;
-  const [state, setState] = useState<DeviceTableState>({
-    open: false,
-    editMode: false,
-    editModel: undefined,
-  });
   const [search, setSearch] = useState('');
   const [order, setOrder] = useState<Order>('asc');
   const [orderBy, setOrderBy] = useState<keyof Device>('uuid');
@@ -50,15 +39,6 @@ export const DeviceTable = (props: DeviceTableProps) => {
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(50);
   const { enqueueSnackbar } = useSnackbar();
-
-  const handleEditDevice = (device: Device) => {
-    setState({
-      ...state,
-      open: true,
-      editMode: true,
-      editModel: device,
-    });
-  };
 
   const handleDeleteDevices = async () => {
     if (selected.length === 0) {
@@ -85,24 +65,6 @@ export const DeviceTable = (props: DeviceTableProps) => {
     if (!error) {
       enqueueSnackbar(`Device(s) deleted successfully!`, { variant: 'success' });
     }
-  };
-
-  const handleDeleteDevice = async (uuid: string) => {
-    const result = window.confirm(`Are you sure you want to delete device ${uuid}?`);
-    if (!result) {
-      return;
-    }
-
-    const response = await DeviceService.deleteDevice(uuid);
-    if (response?.status !== 'ok') {
-      enqueueSnackbar('Error occurred deleting device.', { variant: 'error' });
-      return;
-    }
-
-    enqueueSnackbar('Device deleted successfully!', { variant: 'success' });
-
-    setSelected([]);
-    onReload();
   };
 
   const handleRequestSort = (property: keyof Device) => (event: MouseEvent<unknown>) => {
@@ -188,14 +150,15 @@ export const DeviceTable = (props: DeviceTableProps) => {
               {visibleRows.map((row: Device, index: number) => {
                 const isItemSelected = isSelected(row.uuid);
                 const labelId = `enhanced-table-checkbox-${index}`;
-                if (search !== '' && !(
-                  row.uuid.includes(search) ||
-                  row.config?.includes(search) ||
-                  row.model?.includes(search) ||
-                  row.ipAddr?.includes(search) ||
-                  row.iosVersion?.includes(search) ||
-                  row.ipaVersion?.includes(search) ||
-                  row.notes?.includes(search))
+                const keyword = search.toLowerCase();
+                if (keyword !== '' && !(
+                  row.uuid.toLowerCase().includes(keyword) ||
+                  row.config?.toLowerCase().includes(keyword) ||
+                  row.model?.toLowerCase().includes(keyword) ||
+                  row.ipAddr?.toLowerCase().includes(keyword) ||
+                  row.iosVersion?.toLowerCase().includes(keyword) ||
+                  row.ipaVersion?.toLowerCase().includes(keyword) ||
+                  row.notes?.toLowerCase().includes(keyword))
                 ) {
                   return '';
                 }

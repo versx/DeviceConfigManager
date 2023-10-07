@@ -1,3 +1,5 @@
+import { DateTime } from 'luxon';
+
 import { Order } from '../components';
 import { Setting } from '../types';
 
@@ -66,6 +68,12 @@ export const isDeviceOnline = (lastSeen: Date | string | null, threshold: number
   const tsLastSeen = Math.round(new Date(lastSeen).getTime() / 1000);
   const diff = tsNow - tsLastSeen;
   return diff <= threshold * 60;
+};
+
+export const getTimezoneName = (offset: number): string => {
+  const timezone = `Etc/GMT${offset >= 0 ? '+' : '-'}${Math.abs(offset)}`;
+  const dateTime = DateTime.now().setZone(timezone);
+  return dateTime.zoneName!;
 };
 
 export const aggregateData = <T>(data: T[], key: keyof T) => data.reduce((acc: any, item: any) => {

@@ -26,14 +26,58 @@ const getLog = async (req: Request, res: Response) => {
 };
 
 const createLog = async (req: Request, res: Response) => {
-  const { name, data } = req.body;
-  const result = await LogService.createLog({ name, data });
+  console.log('createLog:', req.body);
+  //const { name, data } = req.body;
+  //const result = await LogService.createLog({ name, data });
 
+  //const { uuid, messages } = req.body;
+  //for (let i = messages.length - 1; i >= 0; i--) {
+  //  // TODO: Log to file
+  //  if (messages[i].includes('Initializing')) {
+  //    const date = new Date(); //utils.convertTz(new Date());
+  //    const today = date.toLocaleString('YYYY-M-D');
+  //    //const today = date.format('YYYY-M-D');
+  //    //const result = await Stats.counter(uuid + '-' + today + '-gamerestarts');
+  //    //if (result) {
+  //      // Success
+  //    //}
+  //    //console.log('[RESTART]', messages[i]);
+  //  }
+  //  //console.log('[SYSLOG]', messages[i]);
+  //}
+
+  const result = true;
   res.json({
     status: !result ? 'error' : 'ok',
     error: !result ? 'Failed to create log.' : undefined,
   });
 };
+/*
+    if (!config.logging.enabled) {
+        // Logs are disabled
+        res.send('OK');
+        return;
+    }
+
+    // REVIEW: Update device last_seen?
+    const { uuid, messages } = req.body;
+    if (messages) {
+        for (let i = messages.length - 1; i >= 0; i--) {
+            logger(uuid).info(messages[i]);
+            if (messages[i].includes('Initializing')) {
+                const date = utils.convertTz(new Date());
+                const today = date.format('YYYY-M-D');
+                const result = await Stats.counter(uuid + '-' + today + '-gamerestarts');
+                if (result) {
+                    // Success
+                }
+                //console.log('[RESTART]', messages[i]);
+            }
+            //console.log('[SYSLOG]', messages[i]);
+        }
+    }
+    res.send('OK');
+*/
 
 const deleteLog = async (req: Request, res: Response) => {
   const { name } = req.query;

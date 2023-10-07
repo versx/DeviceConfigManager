@@ -65,6 +65,7 @@ export const UserTable = () => {
 
   const handleOpen = () => setState({...state, open: true, editMode: false, editModel: undefined});
   const handleClose = () => setState({...state, open: false, editMode: false, editModel: undefined});
+
   const handleSubmit = () => {
     enqueueSnackbar(`User account ${state.editMode ? 'updated' : 'created'} successfully!`, { variant: 'success' });
 
@@ -241,7 +242,11 @@ export const UserTable = () => {
               {visibleRows.map((row: User, index: number) => {
                 const isItemSelected = isSelected(row.id!);
                 const labelId = `enhanced-table-checkbox-${index}`;
-                if (search !== '' && !(row.id!.toString().includes(search) || row.username.includes(search))) {
+                const keyword = search.toLowerCase();
+                if (keyword !== '' && !(
+                  row.id!.toString().toLowerCase().includes(keyword) ||
+                  row.username?.toLowerCase().includes(keyword))
+                ) {
                   return '';
                 }
 

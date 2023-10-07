@@ -3,6 +3,8 @@ export const DrawerWidth = 240;
 
 export const ActiveMenuItemColor = '#0088fe'; //'#1e90ff';
 
+export const DefaultWebServerPort = 8080;
+
 export const DefaultEnableRegistration = true;
 export const DefaultUserTheme = 'system';
 
@@ -27,6 +29,7 @@ export const Routes = {
   dashboard: '/',
   configs: '/configs',
   devices: '/devices',
+  device: '/devices/:uuid',
   schedules: '/schedules',
   logs: '/logs',
   settings: '/settings',

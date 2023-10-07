@@ -16,6 +16,7 @@ import {
   AdminUsersPage,
   ConfigsPage,
   DashboardPage,
+  DeviceManagerPage,
   DevicesPage,
   LoginPage,
   NotFoundPage,
@@ -36,6 +37,7 @@ const App = () => {
             <Route index element={<DashboardPage />} />
             <Route path={Routes.configs} element={<ConfigsPage />} />
             <Route path={Routes.devices} element={<DevicesPage />} />
+            <Route path={Routes.device} element={<DeviceManagerPage />} />
             <Route path={Routes.schedules} element={<SchedulesPage />} />
             <Route path={Routes.settings} element={<SettingsPage />} />
             <Route path={Routes.admin.dashboard} element={<AdminProtectedRoute />}>

@@ -4,6 +4,7 @@ import helmet from 'helmet';
 import { AuthRouter } from './auth.routes';
 import { ConfigRouter } from './config.routes';
 import { DeviceRouter } from './device.routes';
+import { LogRouter } from './log.routes';
 import { ScheduleRouter } from './schedule.routes';
 import { SettingsRouter } from './settings.routes';
 import { UserRouter } from './user.routes';
@@ -28,6 +29,9 @@ export const ApiRouter = (app: Application) => {
 
   // Initialize device routes
   DeviceRouter(app);
+
+  // Initialize log routes
+  LogRouter(app);
 
   // Initialize schedule routes
   ScheduleRouter(app);

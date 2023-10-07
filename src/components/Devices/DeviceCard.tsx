@@ -3,10 +3,12 @@ import {
   CardContent,
   CardHeader,
   Divider,
+  Tooltip,
   Typography,
 } from '@mui/material';
+import moment from 'moment';
 
-import { DropdownMenu } from '..';
+import { DeviceDropdownMenu } from '..';
 import { DeviceOnlineIcon, DeviceOfflineIcon } from '../../consts';
 import { isDeviceOnline } from '../../modules';
 import { Config, Device } from '../../types';
@@ -28,10 +30,20 @@ export const DeviceCard = (props: DeviceCardProps) => {
 
   const handleViewDevice = () => {
     // TODO: Open device manager page
+    window.location.href = `/devices/${device.uuid}`;
   };
 
   return (
+    <Tooltip
+      title={`Click or tap to view device ${device.uuid}`}
+      placement="left-start"
+      arrow
+    >
     <Card
+      //title="Test"
+      variant="elevation"
+      elevation={3}
+      onMouseOver={(event: any) => event.currentTarget.style.cursor = 'pointer'}
       onClick={handleViewDevice}
       style={{borderRadius: 16}}
     >
@@ -50,7 +62,7 @@ export const DeviceCard = (props: DeviceCardProps) => {
         title={device.uuid}
         subheader={device.model ?? 'Unknown Model'}
         action={
-          <DropdownMenu
+          <DeviceDropdownMenu
             configs={configs}
             device={device}
             onAssign={onAssign}
@@ -79,7 +91,7 @@ export const DeviceCard = (props: DeviceCardProps) => {
           </Typography>
         </div>
         <Typography variant="body2" color="textSecondary" component="p" style={{marginBottom: 8}}>
-          Last Seen: {device.lastSeen ? new Date(device.lastSeen).toLocaleString() : 'Never'}
+          Last Seen: {device.lastSeen ? moment(device.lastSeen).calendar() : 'Never'}
         </Typography>
         {device.notes && (
           <Typography variant="body2" color="textSecondary" component="p">
@@ -88,5 +100,6 @@ export const DeviceCard = (props: DeviceCardProps) => {
         )}
       </CardContent>
     </Card>
+    </Tooltip>
   );
 };

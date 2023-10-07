@@ -7,14 +7,14 @@ import {
 } from '@mui/material';
 import {
   ArrowForwardIos as ArrowForwardIosIcon,
-  Edit as EditIcon,
   Delete as DeleteIcon,
+  Edit as EditIcon,
   MoreVert as MoreVertIcon,
 } from '@mui/icons-material';
 
 import { Config, Device } from '../../types';
 
-interface DropdownMenuProps {
+interface DeviceDropdownMenuProps {
   configs: Config[];
   device: Device;
   onAssign: (uuid: string, config: string | null) => void;
@@ -22,44 +22,58 @@ interface DropdownMenuProps {
   onDelete: (uuid: string) => void;
 };
 
-export const DropdownMenu = (props: DropdownMenuProps) => {
+export const DeviceDropdownMenu = (props: DeviceDropdownMenuProps) => {
   const { configs, device, onAssign, onEdit, onDelete } = props;
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
   const [subMenuAnchorEl, setSubMenuAnchorEl] = useState<null | HTMLElement>(null);
 
-  const handleMenuOpen = (event: any) => setAnchorEl(event.currentTarget);
+  const handleMenuOpen = (event: any) => {
+    event.stopPropagation();
 
-  const handleMenuClose = () => {
+    setAnchorEl(event.currentTarget);
+  };
+
+  const handleMenuClose = (event: any) => {
+    event.stopPropagation();
+
     setAnchorEl(null);
-    // close the sub-menu as well
+    // Close the sub-menu as well
     setSubMenuAnchorEl(null);
   };
 
   const handleSubMenuOpen = (event: any) => {
-    // prevent main menu from closing
+    // Prevent main menu from closing
     event.stopPropagation();
-    // anchor to the same element as main menu
+
+    // Anchor to the same element as main menu
     setSubMenuAnchorEl(anchorEl);
   };
 
   const handleSubMenuClose = (event: React.MouseEvent) => {
-    // prevent main menu from closing
+    // Prevent main menu from closing
     event.stopPropagation();
+
     setSubMenuAnchorEl(null);
   };
 
-  const handleAssign = (uuid: string, config: string | null) => {
-    handleMenuClose();
+  const handleAssign = (event: any, uuid: string, config: string | null) => {
+    event.stopPropagation();
+
+    handleMenuClose(event);
     onAssign(uuid, config);
   };
 
-  const handleEdit = (device: Device) => {
-    handleMenuClose();
+  const handleEdit = (event: any, device: Device) => {
+    event.stopPropagation();
+
+    handleMenuClose(event);
     onEdit(device);
   };
 
-  const handleDelete = (uuid: string) => {
-    handleMenuClose();
+  const handleDelete = (event: any, uuid: string) => {
+    event.stopPropagation();
+
+    handleMenuClose(event);
     onDelete(uuid);
   };
 
@@ -68,9 +82,12 @@ export const DropdownMenu = (props: DropdownMenuProps) => {
       <Tooltip title="Edit device" arrow>
         <IconButton
           aria-label="Edit device"
-          color="primary"
+          //color="primary"
           size="small"
-          onClick={() => handleEdit(device)}
+          onClick={(e) => handleEdit(e, device)}
+          style={{
+            color: 'dodgerblue',
+          }}
         >
           <EditIcon />
         </IconButton>
@@ -81,13 +98,13 @@ export const DropdownMenu = (props: DropdownMenuProps) => {
           aria-label="Delete device"
           color="error"
           size="small"
-          onClick={() => handleDelete(device.uuid)}
+          onClick={(e) => handleDelete(e, device.uuid)}
         >
           <DeleteIcon />
         </IconButton>
       </Tooltip>
 
-      <Tooltip title="Edit device" arrow>
+      <Tooltip title="Device settings" arrow>
         <IconButton
           aria-label="settings"
           onClick={handleMenuOpen}
@@ -106,8 +123,7 @@ export const DropdownMenu = (props: DropdownMenuProps) => {
           Assign Config&nbsp;
           <ArrowForwardIosIcon fontSize="small" />
         </MenuItem>
-        <MenuItem key="edit" onClick={() => handleEdit(device)}>Edit</MenuItem>
-        <MenuItem key="delete" onClick={() => handleDelete(device.uuid)}>Delete</MenuItem>
+        {/*<MenuItem key="edit" onClick={(e) => handleEdit(e, device)}>Edit</MenuItem>*/}
       </Menu>
 
       <Menu
@@ -119,13 +135,13 @@ export const DropdownMenu = (props: DropdownMenuProps) => {
         // adjust this value based on the width of the main menu
         style={{ marginLeft: '200px' }}
       >
-        <MenuItem key="none" onClick={() => handleAssign(device.uuid, null)}>
+        <MenuItem key="none" onClick={(e) => handleAssign(e, device.uuid, null)}>
           None
         </MenuItem>
         
         <MenuItem divider disabled sx={{p: 0}} />
         {configs.map((config: Config, index: number) => (
-          <MenuItem key={index} onClick={() => handleAssign(device.uuid, config.name)}>
+          <MenuItem key={index} onClick={(e) => handleAssign(e, device.uuid, config.name)}>
             {config.name}
           </MenuItem>
         ))}

@@ -84,7 +84,16 @@ export const ConfigCard = (props: ConfigCardProps) => {
   };
 
   return (
-    <Card style={classes.card}>
+    <Tooltip
+      title={`Click or tap to view device config ${config.name}`}
+      placement="left-start"
+      arrow
+    >
+    <Card
+      variant="elevation"
+      elevation={3}
+      style={{...classes.card, borderRadius: 16}}
+    >
       <Container component={Paper} elevation={3}>
         <CardContent>
           <Grid container spacing={0}>
@@ -169,5 +178,6 @@ export const ConfigCard = (props: ConfigCardProps) => {
         </CardActions>
       </Container>
     </Card>
+    </Tooltip>
   );
 };

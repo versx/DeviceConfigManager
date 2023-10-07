@@ -80,9 +80,7 @@ export const DeviceGrid = (props: DeviceGridProps) => {
     onReload();
   };
 
-  const handleEdit = async (device: Device) => {
-    setState({open: true, editModel: device});
-  };
+  const handleEdit = async (device: Device) => setState({open: true, editModel: device});
 
   const handleDelete = async (uuid: string) => {
     const result = window.confirm(`Are you sure you want to delete device ${uuid}?`);
