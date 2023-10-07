@@ -12,6 +12,7 @@ export const DeviceOfflineIcon = 'https://raw.githubusercontent.com/versx/Device
 export const StorageKeys = {
   AdminOpen: 'adminOpen',
   ColorMode: 'colorMode',
+  DeviceDisplay: 'deviceDisplay',
   IsAuthenticated: 'isAuthenticated',
   ServerSettings: 'serverSettings',
   SettingsETag: 'settingsETag',

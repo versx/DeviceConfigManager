@@ -139,7 +139,7 @@ export const ConfigCard = (props: ConfigCardProps) => {
         <CardActions style={{ justifyContent: 'space-between', whiteSpace: 'nowrap' }}>
           <div style={{ flex: 1 }}>
             <Tooltip title="View Config" arrow>
-              <IconButton color="primary" size="small" onClick={() => onView(config)}>
+              <IconButton size="small" onClick={() => onView(config)}>
                 <ViewIcon />
               </IconButton>
             </Tooltip>

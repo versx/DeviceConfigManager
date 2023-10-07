@@ -16,7 +16,7 @@ import {
 } from '@mui/icons-material';
 
 import { DropdownItem } from '..';
-import { ActiveMenuItemColor, Routes, Title } from '../../consts';
+import { ActiveMenuItemColor, Routes, StorageKeys, Title } from '../../consts';
 import { get } from '../../modules';
 import { getUserToken } from '../../stores';
 import { User } from '../../types';
@@ -36,7 +36,7 @@ export const SidebarDrawer = (props: SidebarDrawerProps) => {
   } = props;
 
   const currentUser = getUserToken() as User;
-  const isAuthenticated = Boolean(get('isAuthenticated'));
+  const isAuthenticated = Boolean(get(StorageKeys.IsAuthenticated));
   const isAdmin = Boolean(currentUser?.root);
 
   return (

@@ -13,7 +13,7 @@ import {
   StyledTableRow,
   TableProps,
 } from '..';
-import { Config, User } from '../../types';
+import { Config, Device, User } from '../../types';
 
 export const ConfigTableHeadCells: readonly HeadCell<Config>[] = [
   {
@@ -46,6 +46,66 @@ export const ConfigTableHeadCells: readonly HeadCell<Config>[] = [
     id: 'createdAt',
     disablePadding: false,
     align: 'right',
+    label: 'Created',
+    style: { display: { xs: 'none', sm: 'none', md: 'none', lg: 'table-cell' } },
+  },
+];
+
+export const DeviceTableHeadCells: readonly HeadCell<Device>[] = [
+  {
+    id: 'uuid',
+    disablePadding: true,
+    align: 'left',
+    label: 'UUID',
+  },
+  {
+    id: 'config',
+    disablePadding: false,
+    align: 'left',
+    label: 'Config',
+    style: { display: { xs: 'none', sm: 'table-cell' } },
+  },
+  {
+    id: 'model',
+    disablePadding: false,
+    align: 'left',
+    label: 'Model',
+  },
+  {
+    id: 'iosVersion',
+    disablePadding: false,
+    align: 'left',
+    label: 'iOS Version',
+  },
+  {
+    id: 'ipaVersion',
+    disablePadding: false,
+    align: 'left',
+    label: 'IPA Version',
+  },
+  {
+    id: 'ipAddr',
+    disablePadding: false,
+    align: 'left',
+    label: 'IP Address',
+  },
+  {
+    id: 'lastSeen',
+    disablePadding: false,
+    align: 'left',
+    label: 'Last Seen',
+  },
+  {
+    id: 'enabled',
+    disablePadding: false,
+    align: 'left',
+    label: 'Enabled',
+    style: { display: { xs: 'none', sm: 'none', md: 'table-cell' } },
+  },
+  {
+    id: 'createdAt',
+    disablePadding: false,
+    align: 'left',
     label: 'Created',
     style: { display: { xs: 'none', sm: 'none', md: 'none', lg: 'table-cell' } },
   },
@@ -133,7 +193,7 @@ export const SortableTableHead = <T extends unknown>(props: TableProps<T>) => {
             </TableSortLabel>
           </StyledTableCell>
         ))}
-        <StyledTableCell align="right">
+        <StyledTableCell align="left">
           <strong>Actions</strong>
         </StyledTableCell>
       </StyledTableRow>

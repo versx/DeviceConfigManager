@@ -97,7 +97,7 @@ const changePassword = async (userId: number, oldPassword: string, newPassword: 
 const resetApiKey = async (id: number) => {
   try {
     const user = await getUser(id);
-    const accessToken = AuthService.generateAccessToken(user.username, user.admin);
+    const accessToken = AuthService.generateAccessToken(user.username, user.root);
     const apiKey = btoa(accessToken);
 
     user.set({ apiKey });

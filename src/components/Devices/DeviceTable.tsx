@@ -1,0 +1,297 @@
+import React, { ChangeEvent, MouseEvent, useMemo, useState } from 'react';
+import {
+  Checkbox,
+  Paper,
+  Table,
+  TableBody,
+  TableContainer,
+  TablePagination,
+} from '@mui/material';
+import moment from 'moment';
+import { useSnackbar } from 'notistack';
+
+import {
+  DeviceActionsButtonGroup,
+  DeviceTableHeadCells,
+  Order, 
+  SortableTableHead,
+  SortableTableToolbar,
+  StyledTableCell,
+  StyledTableRow,
+} from '..';
+import { getComparator, stableSort } from '../../modules';
+import { DeviceService } from '../../services';
+import { Device } from '../../types';
+
+interface DeviceTableProps {
+  devices: Device[];
+  onEdit: (device: Device) => void;
+  onDelete: (uuid: string) => void;
+  onReload: () => void;
+};
+
+interface DeviceTableState {
+  open: boolean;
+  editMode: boolean;
+  editModel: Device | undefined;
+};
+
+export const DeviceTable = (props: DeviceTableProps) => {
+  const { devices, onEdit, onDelete, onReload } = props;
+  const [state, setState] = useState<DeviceTableState>({
+    open: false,
+    editMode: false,
+    editModel: undefined,
+  });
+  const [search, setSearch] = useState('');
+  const [order, setOrder] = useState<Order>('asc');
+  const [orderBy, setOrderBy] = useState<keyof Device>('uuid');
+  const [selected, setSelected] = useState<readonly string[]>([]);
+  const [page, setPage] = useState(0);
+  const [rowsPerPage, setRowsPerPage] = useState(50);
+  const { enqueueSnackbar } = useSnackbar();
+
+  const handleEditDevice = (device: Device) => {
+    setState({
+      ...state,
+      open: true,
+      editMode: true,
+      editModel: device,
+    });
+  };
+
+  const handleDeleteDevices = async () => {
+    if (selected.length === 0) {
+      return;
+    }
+
+    const result = window.confirm(`Are you sure you want to delete ${selected.length.toLocaleString()} devices?`);
+    if (!result) {
+      return;
+    }
+
+    let error = false;
+    for (const uuid of selected) {
+      const response = await DeviceService.deleteDevice(uuid);
+      if (response?.status !== 'ok') {
+        enqueueSnackbar(`Error occurred deleting device with error ${response.error}`, { variant: 'error' });
+        error = true;
+      }
+    }
+
+    setSelected([]);
+    onReload();
+
+    if (!error) {
+      enqueueSnackbar(`Device(s) deleted successfully!`, { variant: 'success' });
+    }
+  };
+
+  const handleDeleteDevice = async (uuid: string) => {
+    const result = window.confirm(`Are you sure you want to delete device ${uuid}?`);
+    if (!result) {
+      return;
+    }
+
+    const response = await DeviceService.deleteDevice(uuid);
+    if (response?.status !== 'ok') {
+      enqueueSnackbar('Error occurred deleting device.', { variant: 'error' });
+      return;
+    }
+
+    enqueueSnackbar('Device deleted successfully!', { variant: 'success' });
+
+    setSelected([]);
+    onReload();
+  };
+
+  const handleRequestSort = (property: keyof Device) => (event: MouseEvent<unknown>) => {
+    const isAsc = orderBy === property && order === 'asc';
+    setOrder(isAsc ? 'desc' : 'asc');
+    setOrderBy(property);
+  };
+
+  const handleSelectAllClick = (event: ChangeEvent<HTMLInputElement>) => {
+    if (event.target.checked) {
+      const newSelected = devices.map((n: any) => n.id);
+      setSelected(newSelected);
+      return;
+    }
+    setSelected([]);
+  };
+
+  const handleRowClick = (event: MouseEvent<unknown>, uuid: string) => {
+    const selectedIndex = selected.indexOf(uuid);
+    let newSelected: readonly string[] = [];
+
+    if (selectedIndex === -1) {
+      newSelected = newSelected.concat(selected, uuid);
+    } else if (selectedIndex === 0) {
+      newSelected = newSelected.concat(selected.slice(1));
+    } else if (selectedIndex === selected.length - 1) {
+      newSelected = newSelected.concat(selected.slice(0, -1));
+    } else if (selectedIndex > 0) {
+      newSelected = newSelected.concat(
+        selected.slice(0, selectedIndex),
+        selected.slice(selectedIndex + 1),
+      );
+    }
+
+    setSelected(newSelected);
+  };
+
+  const handleChangePage = (event: unknown, newPage: number) => setPage(newPage);
+
+  const handleChangeRowsPerPage = (event: ChangeEvent<HTMLInputElement>) => {
+    setRowsPerPage(parseInt(event.target.value, 10));
+    setPage(0);
+  };
+
+  const isSelected = (uuid: string) => selected.indexOf(uuid) !== -1;
+
+  // Avoid a layout jump when reaching the last page with empty devices.
+  const emptyRows = page > 0 ? Math.max(0, (1 + page) * rowsPerPage - devices.length) : 0;
+
+  const visibleRows = useMemo(() =>
+    stableSort(devices, getComparator<Device, keyof Device>(order, orderBy)).slice(
+      page * rowsPerPage,
+      page * rowsPerPage + rowsPerPage,
+    ),
+  [order, orderBy, page, devices, rowsPerPage]);
+
+  return (
+    <>
+      <SortableTableToolbar
+        numSelected={selected.length}
+        search={search}
+        onDelete={handleDeleteDevices}
+        onSearch={setSearch}
+      />
+      <Paper sx={{ width: '100%', mb: 2, border: '1px solid grey', borderRadius: '8px' }}>
+        <TableContainer>
+          <Table
+            stickyHeader
+            //sx={{ minWidth: 750 }}
+            aria-labelledby="tableTitle"
+          >
+            <SortableTableHead
+              headCells={DeviceTableHeadCells}
+              numSelected={selected.length}
+              order={order}
+              orderBy={orderBy}
+              onSelectAllClick={handleSelectAllClick}
+              onRequestSort={handleRequestSort}
+              rowCount={devices.length}
+              isAdmin={true}
+            />
+            <TableBody>
+              {visibleRows.map((row: Device, index: number) => {
+                const isItemSelected = isSelected(row.uuid);
+                const labelId = `enhanced-table-checkbox-${index}`;
+                if (search !== '' && !(
+                  row.uuid.includes(search) ||
+                  row.config?.includes(search) ||
+                  row.model?.includes(search) ||
+                  row.ipAddr?.includes(search) ||
+                  row.iosVersion?.includes(search) ||
+                  row.ipaVersion?.includes(search) ||
+                  row.notes?.includes(search))
+                ) {
+                  return '';
+                }
+
+                return (
+                  <StyledTableRow
+                    hover
+                    key={row.uuid}
+                    role="checkbox"
+                    aria-checked={isItemSelected}
+                    tabIndex={-1}
+                    selected={isItemSelected}
+                    sx={{ cursor: 'pointer' }}
+                    onClick={(event: any) => handleRowClick(event, row.uuid)}
+                  >
+                    <StyledTableCell padding="checkbox">
+                      <Checkbox
+                        color="primary"
+                        checked={isItemSelected}
+                        inputProps={{
+                          'aria-labelledby': labelId,
+                        }}
+                      />
+                    </StyledTableCell>
+                    <StyledTableCell
+                      id={labelId}
+                      component="th"
+                      scope="row"
+                      padding="none"
+                    >
+                      <strong>{row.uuid}</strong>
+                    </StyledTableCell>
+                    <StyledTableCell align="left">
+                      {row.config ?? '-'}
+                    </StyledTableCell>
+                    <StyledTableCell align="left" sx={{ display: { xs: 'none', sm: 'none', md: 'table-cell' } }}>
+                      {row.model ?? '-'}
+                    </StyledTableCell>
+                    <StyledTableCell align="left" sx={{ display: { xs: 'none', sm: 'none', md: 'table-cell' } }}>
+                      {row.iosVersion ?? '-'}
+                    </StyledTableCell>
+                    <StyledTableCell align="left" sx={{ display: { xs: 'none', sm: 'none', md: 'table-cell' } }}>
+                      {row.ipaVersion ?? '-'}
+                    </StyledTableCell>
+                    <StyledTableCell align="left" sx={{ display: { xs: 'none', sm: 'none', md: 'table-cell' } }}>
+                      {row.ipAddr ?? '-'}
+                    </StyledTableCell>
+                    <StyledTableCell
+                      align="left"
+                      title={moment(row.createdAt).format('MMMM Do YYYY, h:mm:ss a')}
+                      sx={{ display: { xs: 'none', sm: 'none', md: 'table-cell' } }}
+                    >
+                      {row.lastSeen ? moment(row.lastSeen).calendar() : 'Never'}
+                    </StyledTableCell>
+                    <StyledTableCell align="left" sx={{ display: { xs: 'none', sm: 'table-cell' } }}>
+                      {row.enabled ? 'Yes' : 'No'}
+                    </StyledTableCell>
+                    <StyledTableCell
+                      align="left"
+                      title={moment(row.createdAt).format('MMMM Do YYYY, h:mm:ss a')}
+                      sx={{ display: { xs: 'none', sm: 'none', md: 'table-cell' } }}
+                    >
+                      {moment(row.createdAt).calendar()}
+                    </StyledTableCell>
+                    <StyledTableCell align="left">
+                      <DeviceActionsButtonGroup
+                        model={row}
+                        onEdit={onEdit}
+                        onDelete={onDelete}
+                      />
+                    </StyledTableCell>
+                  </StyledTableRow>
+                );
+              })}
+              {emptyRows > 0 && (
+                <StyledTableRow
+                  style={{
+                    height: 53 * emptyRows,
+                  }}
+                >
+                  <StyledTableCell colSpan={6} />
+                </StyledTableRow>
+              )}
+            </TableBody>
+          </Table>
+        </TableContainer>
+        <TablePagination
+          rowsPerPageOptions={[5, 10, 25, 50, 100, { value: -1, label: 'All' }]}
+          component="div"
+          count={devices.length}
+          rowsPerPage={rowsPerPage}
+          page={page}
+          onPageChange={handleChangePage}
+          onRowsPerPageChange={handleChangeRowsPerPage}
+        />
+      </Paper>
+    </>
+  );
+};

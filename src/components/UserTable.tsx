@@ -56,7 +56,7 @@ export const UserTable = () => {
     }
     UserService.getUsers().then((response: any) => {
       if (response.status !== 'ok') {
-        enqueueSnackbar('Error occurred reloading short URLs.', { variant: 'error' });
+        enqueueSnackbar('Error occurred reloading user account.', { variant: 'error' });
         return;
       }
       setRows(response.users);

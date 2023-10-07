@@ -1,13 +1,7 @@
 import React, { useState } from 'react';
 import {
-  Chip,
   Fab,
   Grid,
-  Paper,
-  Table,
-  TableBody,
-  TableContainer,
-  TableHead,
   ToggleButton,
   ToggleButtonGroup,
   Tooltip,
@@ -15,18 +9,17 @@ import {
 import {
   Add as AddIcon,
   GridOn as GridOnIcon,
-  Info as InfoIcon,
   TableRows as TableRowsIcon,
 } from '@mui/icons-material';
 import { useSnackbar } from 'notistack';
 
 import {
-  DeviceActionsButtonGroup,
   DeviceCard,
-  StyledTableCell,
-  StyledTableRow,
+  DeviceTable,
 } from '..';
+import { StorageKeys } from '../../consts';
 import { CreateDeviceDialog } from '../../dialogs';
+import { get, set } from '../../modules';
 import { DeviceService } from '../../services';
 import { Config, Device } from '../../types';
 
@@ -43,20 +36,20 @@ interface PhoneModelState {
 
 export const DeviceGrid = (props: DeviceGridProps) => {
   const { configs, devices, onReload } = props;
-  const [view, setView] = useState<'grid' | 'table'>('grid');
+  const deviceDisplayMode = get(StorageKeys.DeviceDisplay, 'grid');
+  const [view, setView] = useState<'grid' | 'table'>(deviceDisplayMode);
+  const [alignment, setAlignment] = React.useState<string | null>(deviceDisplayMode === 'grid' ? 'left' : 'right');
   const [state, setState] = useState<PhoneModelState>({
     open: false,
     editModel: undefined,
   });
   const { enqueueSnackbar } = useSnackbar();
 
-  const [alignment, setAlignment] = React.useState<string | null>('left');
+  const handleAlignment = (event: any, newAlignment: string | null) => setAlignment(newAlignment);
 
-  const handleAlignment = (
-    event: React.MouseEvent<HTMLElement>,
-    newAlignment: string | null,
-  ) => {
-    setAlignment(newAlignment);
+  const handleDeviceDisplayChange = (mode: 'grid' | 'table') => {
+    set(StorageKeys.DeviceDisplay, mode);
+    setView(mode);
   };
 
   const handleOpen = () => setState({open: true, editModel: undefined});
@@ -123,14 +116,14 @@ export const DeviceGrid = (props: DeviceGridProps) => {
           <ToggleButton
             aria-label="Grid"
             value="left"
-            onClick={() => setView('grid')}
+            onClick={() => handleDeviceDisplayChange('grid')}
           >
             <GridOnIcon />
           </ToggleButton>
           <ToggleButton
             aria-label="Table"
-            value="center"
-            onClick={() => setView('table')}
+            value="right"
+            onClick={() => handleDeviceDisplayChange('table')}
           >
             <TableRowsIcon />
           </ToggleButton>
@@ -170,59 +163,12 @@ export const DeviceGrid = (props: DeviceGridProps) => {
           ))}
         </Grid>
       ) : (
-        <TableContainer component={Paper}>
-          <Table>
-            <TableHead>
-              <StyledTableRow>
-                <StyledTableCell>UUID</StyledTableCell>
-                <StyledTableCell>Model</StyledTableCell>
-                <StyledTableCell>Config</StyledTableCell>
-                <StyledTableCell>IP Address</StyledTableCell>
-                <StyledTableCell>iOS Version</StyledTableCell>
-                <StyledTableCell>IPA Version</StyledTableCell>
-                <StyledTableCell>Last Seen</StyledTableCell>
-                <StyledTableCell>Notes</StyledTableCell>
-                <StyledTableCell>Status</StyledTableCell>
-                <StyledTableCell>Actions</StyledTableCell>
-              </StyledTableRow>
-            </TableHead>
-            <TableBody>
-              {devices.map((device: Device, index: number) => (
-                <StyledTableRow key={index}>
-                  <StyledTableCell>{device.uuid}</StyledTableCell>
-                  <StyledTableCell>{device.model || '-'}</StyledTableCell>
-                  <StyledTableCell>{device.config || '-'}</StyledTableCell>
-                  <StyledTableCell>{device.ipAddr || '-'}</StyledTableCell>
-                  <StyledTableCell>{device.iosVersion || '-'}</StyledTableCell>
-                  <StyledTableCell>{device.ipaVersion || '-'}</StyledTableCell>
-                  <StyledTableCell>{device.lastSeen ? new Date(device.lastSeen).toLocaleDateString() : '-'}</StyledTableCell>
-                  <StyledTableCell>
-                    {!device.notes ? '-' : (
-                      <Tooltip title={device.notes || '-'} arrow>
-                        <InfoIcon fontSize="small" />
-                      </Tooltip>
-                    )}
-                  </StyledTableCell>
-                  <StyledTableCell>
-                    <Chip
-                      label={device.enabled ? 'Enabled' : 'Disabled'}
-                      color={device.enabled ? 'primary' : 'error'}
-                      size="small"
-                    />
-                  </StyledTableCell>
-                  <StyledTableCell>
-                    <DeviceActionsButtonGroup
-                      model={device}
-                      //onAssign={handleAssign}
-                      onEdit={handleEdit}
-                      onDelete={handleDelete}
-                    />
-                  </StyledTableCell>
-                </StyledTableRow>
-              ))}
-            </TableBody>
-          </Table>
-        </TableContainer>
+        <DeviceTable
+          devices={devices}
+          onEdit={handleEdit}
+          onDelete={handleDelete}
+          onReload={onReload}
+        />
       )}
 
       <CreateDeviceDialog
