@@ -194,7 +194,7 @@ export const DeviceTable = (props: DeviceTableProps) => {
                     <StyledTableCell align="left">
                       {row.config ?? '-'}
                     </StyledTableCell>
-                    <StyledTableCell align="left" sx={{ display: { xs: 'none', sm: 'none', md: 'table-cell' } }}>
+                    <StyledTableCell align="left" sx={{ display: { xs: 'none', sm: 'table-cell' } }}>
                       {row.model ?? '-'}
                     </StyledTableCell>
                     <StyledTableCell align="left" sx={{ display: { xs: 'none', sm: 'none', md: 'table-cell' } }}>
@@ -209,7 +209,7 @@ export const DeviceTable = (props: DeviceTableProps) => {
                     <StyledTableCell
                       align="left"
                       title={moment(row.createdAt).format('MMMM Do YYYY, h:mm:ss a')}
-                      sx={{ display: { xs: 'none', sm: 'none', md: 'table-cell' } }}
+                      sx={{ display: { xs: 'none', sm: 'none', md: 'none', lg: 'table-cell' } }}
                     >
                       {row.lastSeen ? moment(row.lastSeen).calendar() : 'Never'}
                     </StyledTableCell>
@@ -219,7 +219,7 @@ export const DeviceTable = (props: DeviceTableProps) => {
                     <StyledTableCell
                       align="left"
                       title={moment(row.createdAt).format('MMMM Do YYYY, h:mm:ss a')}
-                      sx={{ display: { xs: 'none', sm: 'none', md: 'table-cell' } }}
+                      sx={{ display: { xs: 'none', sm: 'none', md: 'none', lg: 'table-cell' } }}
                     >
                       {moment(row.createdAt).calendar()}
                     </StyledTableCell>
