@@ -6,6 +6,7 @@ import {
 } from '@mui/material';
 import { ArrowDownward as ArrowDownwardIcon } from '@mui/icons-material';
 import { visuallyHidden } from '@mui/utils';
+import moment from 'moment';
 
 import {
   HeadCell,
@@ -13,6 +14,8 @@ import {
   StyledTableRow,
   TableProps,
 } from '..';
+import { DeviceOnlineIcon, DeviceOfflineIcon } from '../../consts';
+import { isDeviceOnline } from '../../modules';
 import { Config, Device, User } from '../../types';
 
 export const ConfigTableHeadCells: readonly HeadCell<Config>[] = [
@@ -53,8 +56,28 @@ export const ConfigTableHeadCells: readonly HeadCell<Config>[] = [
 
 export const DeviceTableHeadCells: readonly HeadCell<Device>[] = [
   {
-    id: 'uuid',
+    id: 'status' as 'uuid',
     disablePadding: true,
+    align: 'left',
+    label: 'Status',
+    format: (row: Device, value: any) => {
+      const isOnline = isDeviceOnline(row.lastSeen);
+      return (
+        /* eslint-disable-next-line jsx-a11y/img-redundant-alt */
+        <img
+          src={isOnline ? DeviceOnlineIcon : DeviceOfflineIcon}
+          alt="device status image"
+          style={{
+            width: 64,
+            height: 64,
+          }}
+        />
+      );
+    },
+  },
+  {
+    id: 'uuid',
+    disablePadding: false,
     align: 'left',
     label: 'UUID',
   },
@@ -63,6 +86,7 @@ export const DeviceTableHeadCells: readonly HeadCell<Device>[] = [
     disablePadding: false,
     align: 'left',
     label: 'Config',
+    format: (row: Device, value: any) => value ?? '--',
   },
   {
     id: 'model',
@@ -70,6 +94,7 @@ export const DeviceTableHeadCells: readonly HeadCell<Device>[] = [
     align: 'left',
     label: 'Model',
     style: { display: { xs: 'none', sm: 'table-cell' } },
+    format: (row: Device, value: any) => value ?? '--',
   },
   {
     id: 'iosVersion',
@@ -77,6 +102,8 @@ export const DeviceTableHeadCells: readonly HeadCell<Device>[] = [
     align: 'left',
     label: 'iOS Version',
     style: { display: { xs: 'none', sm: 'none', md: 'table-cell' } },
+    hidden: true,
+    format: (row: Device, value: any) => value ?? '--',
   },
   {
     id: 'ipaVersion',
@@ -84,6 +111,8 @@ export const DeviceTableHeadCells: readonly HeadCell<Device>[] = [
     align: 'left',
     label: 'IPA Version',
     style: { display: { xs: 'none', sm: 'none', md: 'table-cell' } },
+    hidden: true,
+    format: (row: Device, value: any) => value ?? '--',
   },
   {
     id: 'ipAddr',
@@ -91,6 +120,7 @@ export const DeviceTableHeadCells: readonly HeadCell<Device>[] = [
     align: 'left',
     label: 'IP Address',
     style: { display: { xs: 'none', sm: 'none', md: 'table-cell' } },
+    format: (row: Device, value: any) => value ?? '--',
   },
   {
     id: 'lastSeen',
@@ -98,6 +128,7 @@ export const DeviceTableHeadCells: readonly HeadCell<Device>[] = [
     align: 'left',
     label: 'Last Seen',
     style: { display: { xs: 'none', sm: 'none', md: 'none', lg: 'table-cell' } },
+    format: (row: Device, value: any) => value ? moment(value).calendar() : 'Never',
   },
   {
     id: 'enabled',
@@ -105,6 +136,7 @@ export const DeviceTableHeadCells: readonly HeadCell<Device>[] = [
     align: 'left',
     label: 'Enabled',
     style: { display: { xs: 'none', sm: 'table-cell' } },
+    format: (row: Device, value: any) => value ? 'Yes' : 'No',
   },
   {
     id: 'createdAt',
@@ -112,6 +144,7 @@ export const DeviceTableHeadCells: readonly HeadCell<Device>[] = [
     align: 'left',
     label: 'Created',
     style: { display: { xs: 'none', sm: 'none', md: 'none', lg: 'table-cell' } },
+    format: (row: Device, value: any) => moment(value).calendar() ?? '--',
   },
 ];
 
@@ -179,7 +212,13 @@ export const SortableTableHead = <T extends unknown>(props: TableProps<T>) => {
             align={headCell.align ?? 'left'}
             padding={headCell.disablePadding ? 'none' : 'normal'}
             sortDirection={orderBy === headCell.id ? order : false}
-            sx={{ minWidth: headCell.minWidth, color: 'white', ...headCell.style, whiteSpace: 'nowrap' }}
+            sx={{
+              minWidth: headCell.minWidth,
+              color: 'white',
+              ...headCell.style,
+              whiteSpace: 'nowrap',
+              display: headCell.hidden ?? false ? 'none' : 'table-cell',
+            }}
           >
             <TableSortLabel
               active={orderBy === headCell.id}
@@ -197,7 +236,7 @@ export const SortableTableHead = <T extends unknown>(props: TableProps<T>) => {
             </TableSortLabel>
           </StyledTableCell>
         ))}
-        <StyledTableCell align="left">
+        <StyledTableCell align="left" sx={{ display: { xs: 'table-cell' } }}>
           <strong>Actions</strong>
         </StyledTableCell>
       </StyledTableRow>

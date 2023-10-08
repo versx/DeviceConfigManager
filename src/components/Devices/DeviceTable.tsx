@@ -7,12 +7,12 @@ import {
   TableContainer,
   TablePagination,
 } from '@mui/material';
-import moment from 'moment';
 import { useSnackbar } from 'notistack';
 
 import {
   DeviceActionsButtonGroup,
   DeviceTableHeadCells,
+  HeadCell,
   Order, 
   SortableTableHead,
   SortableTableToolbar,
@@ -183,13 +183,47 @@ export const DeviceTable = (props: DeviceTableProps) => {
                         }}
                       />
                     </StyledTableCell>
+                    {DeviceTableHeadCells.map((headCell: HeadCell<Device>, index: number) => (headCell.isAdmin || !headCell.isAdmin) && (
+                      <StyledTableCell
+                        key={index}
+                        id={index === 0 ? labelId : undefined}
+                        component={index === 0 ? 'th' : undefined}
+                        scope={index === 0 ? 'row' : undefined}
+                        align={headCell.align ?? 'left'}
+                        padding={headCell.disablePadding ? 'none' : 'normal'}
+                        sx={{
+                          ...headCell.style,
+                          display: index > 0 && (headCell.hidden ?? false) ? 'none' : 'table-cell',
+                        }}
+
+                      >
+                        {headCell.format
+                          ? headCell.format(row, row[headCell.id])
+                          : String(row[headCell.id])
+                        }
+                      </StyledTableCell>
+                    ))}
+                    {/*
                     <StyledTableCell
                       id={labelId}
                       component="th"
                       scope="row"
                       padding="none"
+                      align="left"
+                      sx={{ display: { xs: 'table-cell' } }}
                     >
-                      <strong>{row.uuid}</strong>
+                      {// eslint-disable-next-line jsx-a11y/img-redundant-alt //}
+                      <img
+                        src={isOnline ? DeviceOnlineIcon : DeviceOfflineIcon}
+                        alt="device status image"
+                        style={{
+                          width: 64,
+                          height: 64,
+                        }}
+                      />
+                    </StyledTableCell>
+                    <StyledTableCell align="left">
+                      {row.uuid}
                     </StyledTableCell>
                     <StyledTableCell align="left">
                       {row.config ?? '-'}
@@ -197,10 +231,17 @@ export const DeviceTable = (props: DeviceTableProps) => {
                     <StyledTableCell align="left" sx={{ display: { xs: 'none', sm: 'table-cell' } }}>
                       {row.model ?? '-'}
                     </StyledTableCell>
-                    <StyledTableCell align="left" sx={{ display: { xs: 'none', sm: 'none', md: 'table-cell' } }}>
+                    <StyledTableCell
+                      align="left"
+                      sx={{ display: { xs: 'none', sm: 'none', md: 'table-cell' } }}
+                    >
                       {row.iosVersion ?? '-'}
                     </StyledTableCell>
-                    <StyledTableCell align="left" sx={{ display: { xs: 'none', sm: 'none', md: 'table-cell' } }}>
+                    <StyledTableCell
+                      align="left"
+                      sx={{ display: { xs: 'none', sm: 'none', md: 'table-cell' } }}
+                      //display: headCell.hidden ?? false ? 'none' : 'flex-inline',
+                    >
                       {row.ipaVersion ?? '-'}
                     </StyledTableCell>
                     <StyledTableCell align="left" sx={{ display: { xs: 'none', sm: 'none', md: 'table-cell' } }}>
@@ -223,7 +264,8 @@ export const DeviceTable = (props: DeviceTableProps) => {
                     >
                       {moment(row.createdAt).calendar()}
                     </StyledTableCell>
-                    <StyledTableCell align="left">
+                    */}
+                    <StyledTableCell align="left" sx={{ display: { xs: 'table-cell' } }}>
                       <DeviceActionsButtonGroup
                         model={row}
                         onEdit={onEdit}

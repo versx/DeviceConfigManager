@@ -8,9 +8,10 @@ export interface HeadCell<T> {
   disablePadding: boolean;
   minWidth?: number;
   align?: 'left' | 'right' | 'center' | 'justify' | 'inherit' | undefined;
-  //format?: (value: number) => string;
+  format?: (row: T, value: any) => any;
   isAdmin?: boolean;
   style?: any;
+  hidden?: boolean;
 };
 
 export interface TableProps<T> {
