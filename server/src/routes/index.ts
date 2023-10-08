@@ -15,7 +15,7 @@ export const ApiRouter = (app: Application) => {
   app.use(helmet());
 
   // Body method parsers
-  app.use(json({ limit: '1mb' }));
+  app.use(json({ limit: '10mb' }));
   app.use(urlencoded({ extended: true }));
 
   // Middlewares

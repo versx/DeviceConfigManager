@@ -1,3 +1,4 @@
+import { Buffer } from 'buffer';
 import React, { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import {
@@ -12,13 +13,18 @@ import { DefaultWebServerPort } from '../consts';
 import { DeviceService } from '../services';
 import { Device } from '../types';
 
+// @ts-ignore
+window.Buffer = Buffer;
+
+const imageHeader = 'data:image/png;base64,';
+
 export const DeviceManagerPage = () => {
   const { uuid } = useParams();
   const [devices, setDevices] = useState<Device[]>([]);
   const [selectedDevice, setSelectedDevice] = useState<string | null>('');
   const [response, setResponse] = useState<any>('');
   const [error, setError] = useState<string | null>('');
-  const [screenshot, setScreenshot] = useState<string>('');
+  const [screenshot, setScreenshot] = useState<string>();
 
   const sendRequest = async (actionType: string) => {
     try {
@@ -32,27 +38,28 @@ export const DeviceManagerPage = () => {
       });
       console.log('sendRequest response:', response);
 
-      if (actionType === 'screen') {
-        const data = await response.text();
-        if (data.length < 1) {
-          setScreenshot('data:image/png;base64,');
-          return;
-        }
-        let binary = '';
-        for (let i = 0; i < data.length; i++) {
-          binary += String.fromCharCode(data.charCodeAt(i) & 255)
-        }
-        const screenshotData = 'data:image/png;base64,' + btoa(binary);
-        console.log('screenshotData:', screenshotData);
-        setScreenshot(screenshotData);
-      } else if (actionType === 'restart') {
-        const data = await response.text();
-        console.log('restart response:', data);
-        setResponse(data);
-      } else {
-        const data = await response.json();
-        setResponse(data);
+      let responseData: string = '';
+      switch (actionType) {
+        case 'screen':
+          const arrayBuffer = await response.arrayBuffer();
+          if (arrayBuffer.byteLength <= 0) {
+            setScreenshot(imageHeader);
+            return;
+          }
+
+          const base64 = imageHeader + Buffer.from(arrayBuffer).toString('base64');
+          setScreenshot(base64);
+          // TODO: Send screenshot to backend to save
+          break;
+        case 'restart':
+          responseData = await response.text();
+          break;
+        default:
+          responseData = await response.json();
+          break;
       }
+
+      setResponse(responseData);
     } catch (err: any) {
       setError(err.message);
     }
@@ -82,17 +89,22 @@ export const DeviceManagerPage = () => {
         Manage Device {uuid}
       </Typography>
 
-      <Select value={selectedDevice} onChange={(e) => setSelectedDevice(e.target.value as string)}>
+      <Select
+        value={selectedDevice || 'none'}
+        variant="outlined"
+        onChange={(e) => setSelectedDevice(e.target.value as string)}
+      >
+        <MenuItem key="none" value="none" selected disabled>Select a device</MenuItem>
         {devices.map((device: Device, index: number) => (
           <MenuItem key={index} value={device.ipAddr!}>{device.uuid}</MenuItem>
         ))}
       </Select>
+      <br />
   
       <Button onClick={() => sendRequest('screen')}>Screenshot</Button>
       <Button onClick={() => sendRequest('account')}>Account</Button>
       <Button onClick={() => sendRequest('restart')}>Restart Game</Button>
       <Button onClick={() => sendRequest('reboot')}>Reboot Device</Button>
-      <Button onClick={() => sendRequest('logs')}>View Logs</Button>
 
       <br />
       {response && <Typography variant="body1">{JSON.stringify(response)}</Typography>}
