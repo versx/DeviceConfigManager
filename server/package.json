@@ -27,6 +27,8 @@
     "jsonwebtoken": "^9.0.2",
     "mariadb": "^3.2.1",
     "moment-timezone": "^0.5.43",
+    "pino": "^8.15.6",
+    "pino-pretty": "^10.2.3",
     "reflect-metadata": "^0.1.13",
     "sequelize": "^6.33.0",
     "sequelize-typescript": "^2.1.5"

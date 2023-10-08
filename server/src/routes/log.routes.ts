@@ -5,8 +5,6 @@ import { LogController } from '../controllers';
 import { ValidateMiddleware } from '../middleware';
 
 export const LogRouter = (app: Application) => {
-  app.post('/api/log/new', LogController.createLog);
-
   app.use(ValidateMiddleware)
     .route(LogsApiRoute)
       .get(LogController.getLogs)

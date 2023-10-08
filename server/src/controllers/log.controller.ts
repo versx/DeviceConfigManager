@@ -2,17 +2,17 @@ import { Request, Response } from 'express';
 
 import { LogService } from '../services';
 
-const getLogs = async (req: Request, res: Response) => {
-  const results = await LogService.getLogs();
+const getLogs = (req: Request, res: Response) => {
+  const results = LogService.getLoggers();
   res.json({
     status: 'ok',
     logs: results,
   });
 };
 
-const getLog = async (req: Request, res: Response) => {
+const getLog = (req: Request, res: Response) => {
   const { name } = req.params;
-  const log = await LogService.getLog(name);
+  const log = LogService.getLogger(name);
   if (!log) {
     return res.json({
       status: 'error',
@@ -25,34 +25,25 @@ const getLog = async (req: Request, res: Response) => {
   });
 };
 
-const createLog = async (req: Request, res: Response) => {
-  console.log('createLog:', req.body);
-  //const { uuid, messages } = req.body;
-  //const result = await LogService.createLog({ name, data });
+const createLog = (req: Request, res: Response) => {
+  const { uuid, messages } = req.body;
+  const logger = LogService.getLogger(uuid);
 
-  //for (let i = messages.length - 1; i >= 0; i--) {
-  //  // TODO: Log to file
-  //  if (messages[i].includes('Initializing')) {
-  //    const date = new Date(); //utils.convertTz(new Date());
-  //    const today = date.toLocaleString('YYYY-M-D');
-  //    //const today = date.format('YYYY-M-D');
-  //    //const result = await Stats.counter(uuid + '-' + today + '-gamerestarts');
-  //    //if (result) {
-  //      // Success
-  //    //}
-  //    //console.log('[RESTART]', messages[i]);
-  //  }
-  //  //console.log('[SYSLOG]', messages[i]);
-  //}
+  for (let i = messages.length - 1; i >= 0; i--) {
+    const message = messages[i];
+    if (message.includes('Initializing')) {
+      // TODO: Add device restarts to Device model
+      //const result = await Stats.counter(uuid + '-' + today + '-gamerestarts');
+      logger.info(message);
+      continue;
+    }
+    logger.info(message);
+  }
 
-  const result = true;
-  res.json({
-    status: !result ? 'error' : 'ok',
-    error: !result ? 'Failed to create log.' : undefined,
-  });
+  res.json({ status: 'ok' });
 };
 
-const deleteLog = async (req: Request, res: Response) => {
+const deleteLog = (req: Request, res: Response) => {
   const { name } = req.query;
   if (!name) {
     return res.json({
@@ -61,7 +52,7 @@ const deleteLog = async (req: Request, res: Response) => {
     });
   }
 
-  const log = await LogService.deleteLog(name.toString());
+  const log = LogService.deleteLogger(name.toString());
   if (!log) {
     return res.json({
       status: 'error',
