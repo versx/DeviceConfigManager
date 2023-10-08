@@ -52,32 +52,6 @@ const createLog = async (req: Request, res: Response) => {
     error: !result ? 'Failed to create log.' : undefined,
   });
 };
-/*
-    if (!config.logging.enabled) {
-        // Logs are disabled
-        res.send('OK');
-        return;
-    }
-
-    // REVIEW: Update device last_seen?
-    const { uuid, messages } = req.body;
-    if (messages) {
-        for (let i = messages.length - 1; i >= 0; i--) {
-            logger(uuid).info(messages[i]);
-            if (messages[i].includes('Initializing')) {
-                const date = utils.convertTz(new Date());
-                const today = date.format('YYYY-M-D');
-                const result = await Stats.counter(uuid + '-' + today + '-gamerestarts');
-                if (result) {
-                    // Success
-                }
-                //console.log('[RESTART]', messages[i]);
-            }
-            //console.log('[SYSLOG]', messages[i]);
-        }
-    }
-    res.send('OK');
-*/
 
 const deleteLog = async (req: Request, res: Response) => {
   const { name } = req.query;

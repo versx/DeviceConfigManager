@@ -29,7 +29,6 @@ const getDevices = async (): Promise<DeviceModel[]> => {
 
 const getDevice = async (uuid: string) => {
   const model = await db.device.findByPk(uuid);
-  console.log('device model type:', typeof model);
   return model;
 };
 

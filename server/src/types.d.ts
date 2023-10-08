@@ -26,6 +26,7 @@ export type AppConfig = {
     };
   };
   timezone: string;
+  autoSyncIP: boolean;
 };
 
 export type SequelizeDatabaseConnection = {

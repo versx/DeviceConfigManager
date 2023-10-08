@@ -36,18 +36,8 @@ const getDevice = async (req: Request, res: Response) => {
 };
 
 const createDevice = async (req: Request, res: Response) => {
-  const { uuid, config, ipAddr, model, iosVersion, ipaVersion, lastSeen, enabled, notes } = req.body;
-  const result = await DeviceService.createDevice({
-    uuid,
-    config: config ?? null,
-    ipAddr: ipAddr ?? null,
-    model: model ?? null,
-    iosVersion: iosVersion ?? null,
-    ipaVersion: ipaVersion ?? null,
-    notes: notes ?? null,
-    lastSeen: lastSeen ?? null,
-    enabled: enabled ?? true,
-  });
+  const { device } = req.body;
+  const result = await DeviceService.createDevice(device);
 
   res.json({
     status: !result ? 'error' : 'ok',
@@ -57,18 +47,9 @@ const createDevice = async (req: Request, res: Response) => {
 };
 
 const updateDevice = async (req: Request, res: Response) => {
-  const { uuid, config, ipAddr, model, iosVersion, ipaVersion, notes, lastSeen, enabled } = req.body;
-  const result = await DeviceService.updateDevice(uuid, {
-    uuid,
-    config,
-    ipAddr,
-    model,
-    iosVersion,
-    ipaVersion,
-    notes,
-    lastSeen,
-    enabled,
-  });
+  const { uuid } = req.query;
+  const { device } = req.body;
+  const result = await DeviceService.updateDevice(uuid?.toString()!, device);
 
   res.json({
     status: !result ? 'error' : 'ok',

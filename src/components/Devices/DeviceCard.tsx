@@ -29,7 +29,7 @@ export const DeviceCard = (props: DeviceCardProps) => {
   const isOnline = isDeviceOnline(device?.lastSeen);
 
   const handleViewDevice = () => {
-    // TODO: Open device manager page
+    // Open device manager page
     window.location.href = `/devices/${device.uuid}`;
   };
 

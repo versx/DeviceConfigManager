@@ -1,6 +1,11 @@
 import { Request, Response } from 'express';
 
-import { ConfigService, DeviceService, getIpAddress, log, logDebug, logError, logWarn } from '../services';
+import config from '../config.json';
+import {
+  ConfigService, DeviceService,
+  getIpAddress,
+  log, logDebug, logError, logWarn,
+} from '../services';
 
 const getConfigs = async (req: Request, res: Response) => {
   const results = await ConfigService.getConfigs();
@@ -11,18 +16,6 @@ const getConfigs = async (req: Request, res: Response) => {
 };
 
 const getConfig = async (req: Request, res: Response) => {
-  //const { name } = req.params;
-  //const config = await ConfigService.getConfig(name);
-  //if (!config) {
-  //  return res.json({
-  //    status: 'error',
-  //    message: 'Config not found.',
-  //  });
-  //}
-  //res.json({
-  //  status: 'ok',
-  //  config,
-  //});
   const { uuid, ios_version, ipa_version, model, webserver_port } = req.body;
   let noConfig = false;
   let assignDefault = false;
@@ -34,11 +27,10 @@ const getConfig = async (req: Request, res: Response) => {
   // Check if device config is set, if not provide it as json response
   if (device) {
     // Device exists
-    // TODO: device.lastSeen = convertTz(new Date()) / 1000;
-    device.lastSeen = new Date();
-    // Only update client IP if it hasn't been set yet or if auto sync is enabled while IP doesn't match
-    // TODO: if (device.clientip === null || (device.clientip !== clientip && config.autoSyncIP)) {
-    if (!device.ipAddr || device.ipAddr !== ipAddr) {
+    device.lastSeen = new Date(); //convertTz(new Date()) / 1000;
+    // Only update client IP if it hasn't been set yet or if auto sync is
+    // enabled while IP doesn't match.
+    if ((!device.ipAddr || device.ipAddr !== ipAddr) && config.autoSyncIP) {
       device.ipAddr = ipAddr;
     }
     device.iosVersion = ios_version;
@@ -47,7 +39,7 @@ const getConfig = async (req: Request, res: Response) => {
     if (device.model === null) {
       device.model = model;
     }
-    device.save();
+    await device.save();
     if (device.config) {
       // Nothing to do besides respond with config
     } else {
@@ -58,7 +50,6 @@ const getConfig = async (req: Request, res: Response) => {
   } else {
     logDebug('Device does not exist, creating...');
     // Device doesn't exist, create db entry
-    // TODO: const ts = convertTz(new Date()) / 1000;
     device = await DeviceService.createDevice({
       uuid,
       config: null,
@@ -66,9 +57,8 @@ const getConfig = async (req: Request, res: Response) => {
       ipAddr,
       iosVersion: ios_version,
       ipaVersion: ipa_version,
-      lastSeen: new Date(), //ts,
+      lastSeen: new Date(),
       enabled: true,
-      //webserver_port,
     });
     if (device) {
       // Success, assign default config if there is one.
@@ -88,16 +78,15 @@ const getConfig = async (req: Request, res: Response) => {
   }  
 
   if (assignDefault) {
-    // TODO: Get and assign default config
-    // const defaultConfig = await Config.getDefault();
-    //if (defaultConfig !== null) {
-    //  log(`Assigning device ${uuid} default config ${defaultConfig.name}`);
-    //  device.config = defaultConfig.name;
-    //  device.save();
-    //} else {  
-    //  // No default config so don't give config response
-    //  noConfig = true;
-    //}
+    const defaultConfig = await ConfigService.getDefaultConfig();
+    if (defaultConfig) {
+      log(`Assigning device ${uuid} default config ${defaultConfig.name}`);
+      device.config = defaultConfig.name;
+      await device.save();
+    } else {  
+      // No default config so don't give config response
+      noConfig = true;
+    }
   }
 
   if (noConfig) {
@@ -108,8 +97,7 @@ const getConfig = async (req: Request, res: Response) => {
     });
   }
   
-  const config = await ConfigService.getConfig(device.config);
-  if (config === null) {
+  if (!await ConfigService.getConfig(device.config)) {
     logError(`Failed to grab config ${device.config}`);
     return res.json({
       status: 'error',
@@ -117,28 +105,21 @@ const getConfig = async (req: Request, res: Response) => {
     });
   }
 
-  log(`[${uuid}, ${ipAddr}] Config response: ${config}`);
+  const cfg = await ConfigService.getConfig(device.config);
+  log(`[${uuid}, ${ipAddr}] Config response: ${cfg}`);
   res.json({
     status: 'ok',
     config: {
-      backend_url: config.backendUrl,
-      data_endpoints: config.dataEndpoints,
-      backend_secret_token: config.bearerToken,
+      backend_url: cfg.backendUrl,
+      data_endpoints: cfg.dataEndpoints,
+      backend_secret_token: cfg.bearerToken,
     },
   });
 };
 
 const createConfig = async (req: Request, res: Response) => {
-  const { name, provider, backendUrl, dataEndpoints, bearerToken, enabled } = req.body;
-  const result = await ConfigService.createConfig({
-    name,
-    provider,
-    backendUrl,
-    dataEndpoints,
-    bearerToken,
-    default: req.body.default,
-    enabled,
-  });
+  const { config } = req.body;
+  const result = await ConfigService.createConfig(config);
 
   res.json({
     status: !result ? 'error' : 'ok',
@@ -149,16 +130,8 @@ const createConfig = async (req: Request, res: Response) => {
 
 const updateConfig = async (req: Request, res: Response) => {
   const { name } = req.query;
-  const { provider, backendUrl, dataEndpoints, bearerToken, enabled } = req.body;
-  const result = await ConfigService.updateConfig(name?.toString()!, {
-    name: name?.toString()!,
-    provider,
-    backendUrl,
-    dataEndpoints,
-    bearerToken,
-    default: req.body.default,
-    enabled,
-  });
+  const { config } = req.body;
+  const result = await ConfigService.updateConfig(name?.toString()!, config);
 
   res.json({
     status: !result ? 'error' : 'ok',
@@ -207,11 +180,24 @@ const setDefaultConfig = async (req: Request, res: Response) => {
   res.json({ status: 'ok', config });
 };
 
+const getDefaultConfig = async (req: Request, res: Response) => {
+  const config = await ConfigService.getDefaultConfig();
+  if (!config) {
+    return res.json({
+      status: 'error',
+      error: `Failed to get default config.`,
+    });
+  }
+
+  res.json({ status: 'ok', config });
+};
+
 export const ConfigController = {
   getConfig,
   getConfigs,
   createConfig,
   updateConfig,
   deleteConfig,
+  getDefaultConfig,
   setDefaultConfig,
 };

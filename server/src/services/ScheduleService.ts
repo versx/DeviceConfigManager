@@ -15,7 +15,7 @@ const createSchedule = async (payload: ScheduleModel): Promise<ScheduleModel> =>
   const { name } = payload;
   const model = await getSchedule(name);
   if (model) {
-    // Config already exists, return model
+    // Schedule already exists, return model
     return model;
   }
 

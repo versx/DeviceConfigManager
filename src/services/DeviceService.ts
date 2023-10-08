@@ -24,7 +24,7 @@ const getDevices = async () => {
 const createDevice = async (payload: Device) => {
   try {
     const response = await http()
-      .post(`devices`, payload);
+      .post(`devices`, { device: payload });
     return response.data;
   } catch (err) {
     console.error(err);
@@ -34,7 +34,7 @@ const createDevice = async (payload: Device) => {
 const updateDevice = async (uuid: string, payload: Device) => {
   try {
     const response = await http()
-      .put(`devices?uuid=${uuid}`, payload);
+      .put(`devices?uuid=${uuid}`, { device: payload });
     return response.data;
   } catch (err) {
     console.error(err);

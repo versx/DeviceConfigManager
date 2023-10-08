@@ -22,10 +22,11 @@ interface ScheduleCardProps {
   schedule: any;
   onEdit: (schedule: Schedule) => void;
   onDelete: (name: string) => void;
+  onEnable: (schedule: Schedule, enabled: boolean) => void;
 };
 
 export const ScheduleCard = (props: ScheduleCardProps) => {
-  const { schedule, onEdit, onDelete } = props;
+  const { schedule, onEdit, onDelete, onEnable } = props;
 
   return (
     <Card elevation={3} style={{borderRadius: 16}}>
@@ -78,15 +79,17 @@ export const ScheduleCard = (props: ScheduleCardProps) => {
             </IconButton>
           </Tooltip>
         </div>
-        {schedule.enabled ? (
-          <Tooltip title="Schedule Enabled" arrow>
-            <CheckCircleIcon color="primary" />
+        <IconButton
+          onClick={() => onEnable(schedule, !schedule.enabled)}
+          aria-label={schedule.enabled ? 'Schedule Enabled' : 'Schedule Disabled'}
+        >
+          <Tooltip title={schedule.enabled ? 'Schedule Enabled' : 'Schedule Disabled'} arrow>
+            {schedule.enabled
+              ? <CheckCircleIcon color="primary" />
+              : <CancelIcon color="error" />
+            }
           </Tooltip>
-        ) : (
-          <Tooltip title="Schedule Disabled" arrow>
-            <CancelIcon color="error" />
-          </Tooltip>
-        )}
+        </IconButton>
       </CardActions>
     </Card>
   );

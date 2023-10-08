@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import {
   Container,
   Fab,
@@ -6,6 +6,7 @@ import {
   Typography,
 } from '@mui/material';
 import { Add as AddIcon } from '@mui/icons-material';
+import { useSnackbar } from 'notistack';
 
 import { ScheduleList } from '../components';
 import { CreateScheduleDialog } from '../dialogs';
@@ -18,39 +19,21 @@ export const SchedulesPage = () => {
   const [schedules, setSchedules] = useState<Schedule[]>([]);
   const [configs, setConfigs] = useState<Config[]>([]);
   const [devices, setDevices] = useState<Device[]>([]);
+  const { enqueueSnackbar } = useSnackbar();
 
-  const handleReload = () => {
+  const handleReload = useCallback(() => {
     ScheduleService.getSchedules().then((response: any) => {
       if (response?.status !== 'ok') {
-        // TODO Error
+        enqueueSnackbar(`Error occurred getting schedules with error ${response.error}`, { variant: 'error' });
         return;
       }
 
-      //setSchedules(response.schedules);
-      setSchedules([{
-        name: 'Test',
-        config: 'Main',
-        startTime: new Date(),
-        endTime: new Date(),
-        uuids: ["TestSE", "Test2SE"],
-        timezoneOffset: -7,
-        nextConfig: 'Test',
-        enabled: true,
-      },{
-        name: 'Test2',
-        config: 'Test',
-        startTime: new Date(),
-        endTime: new Date(),
-        uuids: ["Test2SE"],
-        timezoneOffset: -7,
-        nextConfig: 'Main',
-        enabled: false,
-      }]);
+      setSchedules(response.schedules);
     });
 
     ConfigService.getConfigs().then((response: any) => {
       if (response?.status !== 'ok') {
-        // TODO Error
+        enqueueSnackbar(`Error occurred getting configs with error ${response.error}`, { variant: 'error' });
         return;
       }
 
@@ -59,15 +42,38 @@ export const SchedulesPage = () => {
 
     DeviceService.getDevices().then((response: any) => {
       if (response?.status !== 'ok') {
-        // TODO Error
+        enqueueSnackbar(`Error occurred getting devices with error ${response.error}`, { variant: 'error' });
         return;
       }
 
       setDevices(response.devices);
     });
+  }, [enqueueSnackbar]);
+
+  const handleSubmit = async (isNew: boolean, schedule: Schedule) => {
+    const response = isNew
+      ? await ScheduleService.createSchedule(schedule)
+      : await ScheduleService.updateSchedule(schedule.name, schedule);
+    if (response?.status !== 'ok') {
+      enqueueSnackbar(`Failed to ${isNew ? 'create' : 'update'} schedule with error: ${response?.error}`, { variant: 'error' });
+      return;
+    }
+
+    enqueueSnackbar(`Schedule ${isNew ? 'created' : 'updated'} successfully!`, { variant: 'success' });
+    setOpen(false);
+    setEditModel(null);
+    handleReload();
   };
 
-  const handleSubmit = (isNew: boolean, schedule: Schedule) => {
+  const handleEnable = async (schedule: Schedule, enabled: boolean) => {
+    const response = await ScheduleService.updateSchedule(schedule.name, {...schedule, enabled});
+    if (response?.status !== 'ok') {
+      enqueueSnackbar(`Failed to ${enabled ? 'enable' : 'disable'} schedule with error: ${response?.error}`, { variant: 'error' });
+      return;
+    }
+
+    enqueueSnackbar(`Schedule ${enabled ? 'enabled' : 'disabled'} successfully!`, { variant: 'success' });
+    handleReload();
   };
 
   const handleEdit = (schedule: Schedule) => {
@@ -83,7 +89,7 @@ export const SchedulesPage = () => {
 
     ScheduleService.deleteSchedule(name).then((response: any) => {
       if (response?.status !== 'ok') {
-        // TODO Error
+        enqueueSnackbar(`Error occurred deleting schedule ${name} with error ${response.error}`, { variant: 'error' });
         return;
       }
 
@@ -91,7 +97,7 @@ export const SchedulesPage = () => {
     });
   };
 
-  useEffect(() => handleReload(), []);
+  useEffect(() => handleReload(), [handleReload]);
 
   return (
     <Container>
@@ -127,7 +133,9 @@ export const SchedulesPage = () => {
         schedules={schedules}
         onEdit={handleEdit}
         onDelete={handleDelete}
+        onEnable={handleEnable}
       />
+
       <CreateScheduleDialog
         open={open}
         configs={configs}

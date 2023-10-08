@@ -8,6 +8,7 @@
     },
     "secret": "auth token"
   },
+  "autoSyncIP": true,
   "database": {
     "dialect": "mysql",
     "host": "127.0.0.1",

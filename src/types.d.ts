@@ -32,8 +32,8 @@ export type Schedule = {
   name: string;
   config: string;
   uuids: string[];
-  startTime: Date;
-  endTime: Date;
+  startTime: Date | string;
+  endTime: Date | string;
   timezoneOffset: number;
   nextConfig: string;
   enabled: boolean;

@@ -1,6 +1,6 @@
 import { Request } from 'express';
 import { createHash } from 'crypto';
-import moment from 'moment';
+import moment from 'moment-timezone';
 
 import { logWarn } from '.';
 import { ColorType } from '../types';
@@ -144,14 +144,22 @@ export const timeToSeconds = (time: string) => {
   return hours * 3600 + minutes * 60 + seconds;
 };
 
-export const todaySeconds = (timezone: string) => {
-  const date = convertTimeZone(new Date(), timezone);
-  const formattedDate = moment(date).format('HH:mm:ss');
+export const todaySeconds = (date?: Date | null, timezone?: string) => {
+  const tzDate = !timezone
+    ? moment(date ?? new Date())
+    : convertTimeZone(date ?? new Date(), timezone);
+  const formattedDate = tzDate.format('HH:mm:ss');
   const seconds = timeToSeconds(formattedDate);
   return seconds;
 };
 
 export const convertTimeZone = (date: Date, timezone: string) => {
-  const tzDate = moment(date).to(timezone); //moment(date).tz(timezone);
+  const tzDate = moment(date).tz(timezone);
   return tzDate;
 };
+
+//export const sleep = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
+
+export const getUnix = () => Math.floor(Date.now() / 1000);
+
+export const getUnixTime = (date: Date) => Math.floor(date.getTime() / 1000);

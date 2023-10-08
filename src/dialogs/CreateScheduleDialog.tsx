@@ -11,6 +11,7 @@ import {
 } from '@mui/material';
 
 import { ConfigSelect, DeviceSelect } from '../components';
+import { formatDateForDateTimeInput } from '../modules';
 import { Config, Device, Schedule } from '../types';
 
 type CreateScheduleDialogProps = {
@@ -27,8 +28,8 @@ export const CreateScheduleDialog = (props: CreateScheduleDialogProps) => {
   const [localSchedule, setLocalSchedule] = useState<Schedule>({
     name: schedule ? schedule.name : '',
     config: schedule ? schedule.config : '',
-    startTime: schedule ? schedule.startTime : new Date(),
-    endTime: schedule ? schedule.endTime : new Date(),
+    startTime: schedule ? schedule.startTime : '',
+    endTime: schedule ? schedule.endTime : '',
     uuids: schedule ? schedule.uuids ?? [] : [],
     timezoneOffset: schedule ? schedule.timezoneOffset : 0,
     nextConfig: schedule ? schedule.nextConfig : '',
@@ -44,10 +45,10 @@ export const CreateScheduleDialog = (props: CreateScheduleDialogProps) => {
   };
 
   useEffect(() => {
-    if (localSchedule) {
-      setLocalSchedule(localSchedule);
+    if (schedule) {
+      setLocalSchedule(schedule);
     }
-  }, [localSchedule]);
+  }, [schedule]);
 
   return (
     <Dialog
@@ -69,11 +70,13 @@ export const CreateScheduleDialog = (props: CreateScheduleDialogProps) => {
         <ConfigSelect
           configs={configs}
           selectedConfig={localSchedule.config || null}
+          placeholder="Select Config"
           onConfigChange={configName => setLocalSchedule({ ...localSchedule, config: configName ?? '' })}
         />
         <DeviceSelect
           devices={devices}
           selectedDevices={localSchedule.uuids || null}
+          placeholder="Select Device(s)"
           onDeviceChange={uuids => setLocalSchedule({ ...localSchedule, uuids: uuids ?? [] })}
         />
         <div style={{display: 'flex', flexDirection: 'row', justifyContent: 'space-between'}}>
@@ -82,7 +85,7 @@ export const CreateScheduleDialog = (props: CreateScheduleDialogProps) => {
             margin="normal"
             label="Start Time"
             type="datetime-local"
-            value={localSchedule.startTime || ''}
+            value={localSchedule.startTime ? formatDateForDateTimeInput(new Date(localSchedule.startTime)) : ''}
             InputLabelProps={{
               shrink: true,
             }}
@@ -96,7 +99,7 @@ export const CreateScheduleDialog = (props: CreateScheduleDialogProps) => {
             margin="normal"
             label="End Time"
             type="datetime-local"
-            value={localSchedule.endTime || ''}
+            value={localSchedule.endTime ? formatDateForDateTimeInput(new Date(localSchedule.endTime)) : ''}
             InputLabelProps={{
               shrink: true,
             }}
@@ -106,6 +109,12 @@ export const CreateScheduleDialog = (props: CreateScheduleDialogProps) => {
             }}
           />
         </div>
+        <ConfigSelect
+          configs={configs}
+          selectedConfig={localSchedule.nextConfig || null}
+          placeholder="Select Next Config"
+          onConfigChange={configName => setLocalSchedule({ ...localSchedule, nextConfig: configName ?? '' })}
+        />
         <FormControlLabel
           control={<Switch checked={localSchedule.enabled} onChange={e => setLocalSchedule({ ...localSchedule, enabled: e.target.checked })} />}
           label="Enabled"

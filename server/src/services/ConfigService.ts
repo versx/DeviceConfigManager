@@ -40,6 +40,16 @@ const deleteConfig = async (name: string): Promise<boolean> => {
   return true;
 };
 
+const getDefaultConfig = async () => {
+  const model = await db.config.findOne({
+    where: {
+      default: true,
+      limit: 1,
+    },
+  });
+  return model;
+};
+
 const setDefaultConfig = async (name: string): Promise<ConfigModel | false> => {
   const model = await getConfig(name);
   if (!model) {
@@ -62,5 +72,6 @@ export const ConfigService = {
   createConfig,
   updateConfig,
   deleteConfig,
+  getDefaultConfig,
   setDefaultConfig,
 };

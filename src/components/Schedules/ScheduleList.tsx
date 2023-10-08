@@ -7,10 +7,11 @@ interface ScheduleListProps {
   schedules: Schedule[];
   onEdit: (schedule: Schedule) => void;
   onDelete: (name: string) => void;
+  onEnable: (schedule: Schedule, enabled: boolean) => void;
 };
 
 export const ScheduleList = (props: ScheduleListProps) => {
-  const { schedules, onEdit, onDelete } = props;
+  const { schedules, onEdit, onDelete, onEnable } = props;
 
   return (
     <Grid container spacing={3}>
@@ -20,6 +21,7 @@ export const ScheduleList = (props: ScheduleListProps) => {
             schedule={schedule}
             onEdit={onEdit}
             onDelete={onDelete}
+            onEnable={onEnable}
           />
         </Grid>
       ))}

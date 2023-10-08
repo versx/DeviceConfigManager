@@ -32,7 +32,13 @@ export const CreateConfigDialog = (props: CreateConfigDialogProps) => {
     enabled: true,
   });
 
-  const handleSave = () => onSave(!config?.name, localConfig);
+  const handleSave = () => {
+    if (!open || !localConfig) {
+      return;
+    }
+    onSave(!config?.name, localConfig);
+    onClose();
+  };
 
   useEffect(() => {
     if (config) {

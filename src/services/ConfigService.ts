@@ -14,7 +14,7 @@ const getConfigs = async () => {
 const createConfig = async (payload: Config) => {
   try {
     const response = await http()
-      .post(`configs`, payload);
+      .post(`configs`, { config: payload });
     return response.data;
   } catch (err) {
     console.error(err);
@@ -24,7 +24,7 @@ const createConfig = async (payload: Config) => {
 const updateConfig = async (name: string, payload: Config) => {
   try {
     const response = await http()
-      .put(`configs?name=${name}`, payload);
+      .put(`configs?name=${name}`, { config: payload });
     return response.data;
   } catch (err) {
     console.error(err);

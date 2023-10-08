@@ -11,42 +11,26 @@ const getSchedules = async (req: Request, res: Response) => {
 };
 
 const createSchedule = async (req: Request, res: Response) => {
-  //const { name, provider, backendUrl, dataEndpoints, bearerToken, enabled } = req.body;
-  //const result = await ScheduleService.createSchedule({
-  //  name,
-  //  provider,
-  //  backendUrl,
-  //  dataEndpoints,
-  //  bearerToken,
-  //  default: req.body.default,
-  //  enabled,
-  //});
-//
-  //res.json({
-  //  status: !result ? 'error' : 'ok',
-  //  error: !result ? 'Failed to create schedule.' : undefined,
-  //  schedule: !result ? undefined : result,
-  //});
+  const { schedule } = req.body;
+  const result = await ScheduleService.createSchedule(schedule);
+
+  res.json({
+    status: !result ? 'error' : 'ok',
+    error: !result ? 'Failed to create schedule.' : undefined,
+    schedule: !result ? undefined : result,
+  });
 };
 
 const updateSchedule = async (req: Request, res: Response) => {
-  //const { name } = req.query;
-  //const { provider, backendUrl, dataEndpoints, bearerToken, enabled } = req.body;
-  //const result = await ScheduleService.updateSchedule(name?.toString()!, {
-  //  name: name?.toString()!,
-  //  provider,
-  //  backendUrl,
-  //  dataEndpoints,
-  //  bearerToken,
-  //  default: req.body.default,
-  //  enabled,
-  //});
+  const { name } = req.query;
+  const { schedule } = req.body;
+  const result = await ScheduleService.updateSchedule(name?.toString()!, schedule);
 
-  //res.json({
-  //  status: !result ? 'error' : 'ok',
-  //  error: !result ? 'Failed to update schedule.' : undefined,
-  //  schedule: !result ? undefined : result,
-  //});
+  res.json({
+    status: !result ? 'error' : 'ok',
+    error: !result ? 'Failed to update schedule.' : undefined,
+    schedule: !result ? undefined : result,
+  });
 };
 
 const deleteSchedule = async (req: Request, res: Response) => {

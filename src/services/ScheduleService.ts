@@ -14,7 +14,7 @@ const getSchedules = async () => {
 const createSchedule = async (payload: Schedule) => {
   try {
     const response = await http()
-      .post(`schedules`, payload);
+      .post(`schedules`, { schedule: payload });
     return response.data;
   } catch (err) {
     console.error(err);
@@ -24,7 +24,7 @@ const createSchedule = async (payload: Schedule) => {
 const updateSchedule = async (name: string, payload: Schedule) => {
   try {
     const response = await http()
-      .put(`schedules?name=${name}`, payload);
+      .put(`schedules?name=${name}`, { schedule: payload });
     return response.data;
   } catch (err) {
     console.error(err);
