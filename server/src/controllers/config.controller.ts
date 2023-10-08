@@ -1,17 +1,13 @@
 import { Request, Response } from 'express';
 
 import config from '../config.json';
-import {
-  ConfigService,
-  getExternalIpAddress, getIpAddress,
-  log, logDebug,
-} from '../services';
+import { ConfigService, getIpAddress, log } from '../services';
 
 const getConfig = async (req: Request, res: Response) => {
   const { uuid, model, ios_version, ipa_version, webserver_port } = req.body;
   // Check for a proxied IP before the normal IP and set the first one that exists
-  const ipAddr = await getExternalIpAddress() ?? await getIpAddress(req, '127.0.0.1');
-  log(`[${uuid}] Is requesting a config.`);
+  const ipAddr = await getIpAddress(req, '127.0.0.1');
+  log(`[${uuid}] Is requesting a config...`);
   const device = {
     uuid,
     model,
@@ -21,7 +17,8 @@ const getConfig = async (req: Request, res: Response) => {
     webserver_port,
   };
   const response = await ConfigService.getDeviceConfig(device, config.autoSyncIP);
-  logDebug(`[${uuid}] Config response: ${JSON.stringify(response)}`);
+  //logDebug(`[${uuid}] Config response: ${response}`);
+  console.log(`[${uuid}] Config response:`, response);
   res.json(response);
 };
 

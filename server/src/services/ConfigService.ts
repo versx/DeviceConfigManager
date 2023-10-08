@@ -162,7 +162,7 @@ const getDeviceConfig = async (model: DeviceModel, autoSyncIP: boolean) => {
   return {
     backend_url: cfg.backendUrl,
     data_endpoints: cfg.dataEndpoints,
-    backend_secret_token: cfg.bearerToken,
+    backend_secret_token: cfg.bearerToken ?? '',
     webserver_port: DefaultWebServerPort,
   };
 }
