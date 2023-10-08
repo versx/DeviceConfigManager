@@ -60,6 +60,7 @@ export const DeviceTableHeadCells: readonly HeadCell<Device>[] = [
     disablePadding: true,
     align: 'left',
     label: 'Status',
+    style: { display: { xs: 'table-cell' } },
     format: (row: Device, value: any) => {
       const isOnline = isDeviceOnline(row.lastSeen);
       return (
@@ -80,12 +81,14 @@ export const DeviceTableHeadCells: readonly HeadCell<Device>[] = [
     disablePadding: false,
     align: 'left',
     label: 'UUID',
+    style: { display: { xs: 'table-cell' } },
   },
   {
     id: 'config',
     disablePadding: false,
     align: 'left',
     label: 'Config',
+    style: { display: { xs: 'table-cell' } },
     format: (row: Device, value: any) => value ?? '--',
   },
   {
@@ -101,7 +104,7 @@ export const DeviceTableHeadCells: readonly HeadCell<Device>[] = [
     disablePadding: false,
     align: 'left',
     label: 'iOS Version',
-    style: { display: { xs: 'none', sm: 'none', md: 'table-cell' } },
+    style: { display: { xs: 'none', sm: 'none' } }, //, md: 'table-cell' } },
     hidden: true,
     format: (row: Device, value: any) => value ?? '--',
   },
@@ -110,7 +113,7 @@ export const DeviceTableHeadCells: readonly HeadCell<Device>[] = [
     disablePadding: false,
     align: 'left',
     label: 'IPA Version',
-    style: { display: { xs: 'none', sm: 'none', md: 'table-cell' } },
+    style: { display: { xs: 'none', sm: 'none' } }, //, md: 'table-cell' } },
     hidden: true,
     format: (row: Device, value: any) => value ?? '--',
   },
@@ -136,6 +139,7 @@ export const DeviceTableHeadCells: readonly HeadCell<Device>[] = [
     align: 'left',
     label: 'Enabled',
     style: { display: { xs: 'none', sm: 'table-cell' } },
+    maxWidth: 75,
     format: (row: Device, value: any) => value ? 'Yes' : 'No',
   },
   {
@@ -214,10 +218,11 @@ export const SortableTableHead = <T extends unknown>(props: TableProps<T>) => {
             sortDirection={orderBy === headCell.id ? order : false}
             sx={{
               minWidth: headCell.minWidth,
+              maxWidth: headCell.maxWidth,
               color: 'white',
-              ...headCell.style,
               whiteSpace: 'nowrap',
-              display: headCell.hidden ?? false ? 'none' : 'table-cell',
+              display: headCell.hidden ? 'none' : 'table-cell',
+              ...headCell.style,
             }}
           >
             <TableSortLabel

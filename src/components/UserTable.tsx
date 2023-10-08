@@ -140,7 +140,7 @@ export const UserTable = () => {
 
   const handleSelectAllClick = (event: ChangeEvent<HTMLInputElement>) => {
     if (event.target.checked) {
-      const newSelected = rows.map((n: any) => n.id);
+      const newSelected = rows.map(u => u.id!);
       setSelected(newSelected);
       return;
     }

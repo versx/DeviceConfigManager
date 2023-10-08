@@ -21,6 +21,7 @@ import {
 } from '..';
 import { getComparator, stableSort } from '../../modules';
 import { DeviceService } from '../../services';
+import { getUserToken } from '../../stores';
 import { Device } from '../../types';
 
 interface DeviceTableProps {
@@ -38,6 +39,7 @@ export const DeviceTable = (props: DeviceTableProps) => {
   const [selected, setSelected] = useState<readonly string[]>([]);
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(50);
+  const currentUser = getUserToken();
   const { enqueueSnackbar } = useSnackbar();
 
   const handleDeleteDevices = async () => {
@@ -73,9 +75,9 @@ export const DeviceTable = (props: DeviceTableProps) => {
     setOrderBy(property);
   };
 
-  const handleSelectAllClick = (event: ChangeEvent<HTMLInputElement>) => {
-    if (event.target.checked) {
-      const newSelected = devices.map((n: any) => n.id);
+  const handleSelectAllClick = (event: ChangeEvent<HTMLInputElement>, checked: boolean) => {
+    if (checked) {
+      const newSelected = devices.map(d => d.uuid);
       setSelected(newSelected);
       return;
     }
@@ -144,7 +146,7 @@ export const DeviceTable = (props: DeviceTableProps) => {
               onSelectAllClick={handleSelectAllClick}
               onRequestSort={handleRequestSort}
               rowCount={devices.length}
-              isAdmin={true}
+              isAdmin={currentUser?.isRoot}
             />
             <TableBody>
               {visibleRows.map((row: Device, index: number) => {
@@ -186,14 +188,14 @@ export const DeviceTable = (props: DeviceTableProps) => {
                     {DeviceTableHeadCells.map((headCell: HeadCell<Device>, index: number) => (headCell.isAdmin || !headCell.isAdmin) && (
                       <StyledTableCell
                         key={index}
-                        id={index === 0 ? labelId : undefined}
+                        //id={labelId}
                         component={index === 0 ? 'th' : undefined}
                         scope={index === 0 ? 'row' : undefined}
                         align={headCell.align ?? 'left'}
                         padding={headCell.disablePadding ? 'none' : 'normal'}
                         sx={{
+                          display: index > 0 && headCell.hidden ? 'none' : 'table-cell',
                           ...headCell.style,
-                          display: index > 0 && (headCell.hidden ?? false) ? 'none' : 'table-cell',
                         }}
 
                       >

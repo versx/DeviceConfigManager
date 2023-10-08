@@ -7,6 +7,7 @@ export interface HeadCell<T> {
   label: string;
   disablePadding: boolean;
   minWidth?: number;
+  maxWidth?: number;
   align?: 'left' | 'right' | 'center' | 'justify' | 'inherit' | undefined;
   format?: (row: T, value: any) => any;
   isAdmin?: boolean;
@@ -18,7 +19,7 @@ export interface TableProps<T> {
   headCells: readonly HeadCell<T>[];
   numSelected: number;
   onRequestSort: (property: keyof T) => (event: MouseEvent<unknown>) => void;
-  onSelectAllClick: (event: ChangeEvent<HTMLInputElement>) => void;
+  onSelectAllClick: (event: ChangeEvent<HTMLInputElement>, checked: boolean) => void;
   order: Order;
   orderBy: string;
   rowCount: number;
