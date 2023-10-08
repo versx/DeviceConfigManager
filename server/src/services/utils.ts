@@ -29,11 +29,11 @@ export const isValidUrl = (url: string | null) => {
 export const getIpAddress = async (req: Request, defaultValue: string = '0.0.0.0') => {
   const cfHeader = req.get('cf-connecting-ip');
   const forwardedHost = req.get('x-forwarded-host');
-  const forwardedFor = req.get('x-forwarded-for');
+  //const forwardedFor = req.get('x-forwarded-for');
   const remoteIp = req.connection.remoteAddress;
   const localIp = req.connection.localAddress;
-  let ipAddr = cfHeader ?? forwardedHost ?? forwardedFor ?? remoteIp ?? localIp;
-  //const ipAddrTest = ipAddr?.match('[0-9]+.[0-9].+[0-9]+.[0-9]+$')![0];
+  //let ipAddr = cfHeader ?? forwardedHost ?? forwardedFor ?? remoteIp ?? localIp;
+  let ipAddr = cfHeader ?? forwardedHost ?? remoteIp ?? localIp;
   if (ipAddr === '127.0.0.1') {
     ipAddr = await getExternalIpAddress();
   }

@@ -13,10 +13,7 @@ import {
 } from '@mui/icons-material';
 import { useSnackbar } from 'notistack';
 
-import {
-  DeviceCard,
-  DeviceTable,
-} from '..';
+import { DeviceCard, DeviceTable } from '..';
 import { StorageKeys } from '../../consts';
 import { CreateDeviceDialog } from '../../dialogs';
 import { get, set } from '../../modules';

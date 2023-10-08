@@ -1,5 +1,6 @@
 import React, { useCallback, useEffect, useState } from 'react';
 import {
+  Button,
   Container,
   Typography,
 } from '@mui/material';
@@ -40,10 +41,17 @@ export const DevicesPage = () => {
         variant="h4"
         gutterBottom
         sx={{ flex: '1 1 100%' }}
-        style={{textAlign: 'center'}}
+        style={{ textAlign: 'center' }}
       >
         Devices
       </Typography>
+
+      <Button
+        variant="contained"
+        onClick={() => window.location.href = '/devices/Test2SE'}
+      >
+        Device Manager
+      </Button>
 
       <DeviceGrid
         configs={configs}

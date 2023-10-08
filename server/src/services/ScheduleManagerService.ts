@@ -28,7 +28,9 @@ export const checkSchedules = async () => {
     const startTimeSeconds = getUnixTime(new Date(schedule.startTime));
     const endTimeSeconds = getUnixTime(new Date(schedule.endTime));
     const timeLeft = startTimeSeconds - now;
-    log(`[${schedule.name}] Triggering schedule in ${color('variable', timeLeft)} seconds`);
+    if (timeLeft >= 0) {
+      log(`[${schedule.name}] Triggering schedule in ${color('variable', timeLeft)} seconds`);
+    }
 
     if (startTimeSeconds === 0 && endTimeSeconds === 0) {
       continue;

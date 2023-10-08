@@ -3,6 +3,7 @@ import React, { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import {
   Button,
+  ButtonGroup,
   Container,
   MenuItem,
   Select,
@@ -32,11 +33,9 @@ export const DeviceManagerPage = () => {
       const response = await fetch(url, {
         method: 'GET',
         headers: {
-          //'Content-Type': 'application/json',
           'Content-Type': 'text/plain; charset=x-user-defined',
         },
       });
-      console.log('sendRequest response:', response);
 
       let responseData: string = '';
       switch (actionType) {
@@ -101,10 +100,36 @@ export const DeviceManagerPage = () => {
       </Select>
       <br />
   
-      <Button onClick={() => sendRequest('screen')}>Screenshot</Button>
-      <Button onClick={() => sendRequest('account')}>Account</Button>
-      <Button onClick={() => sendRequest('restart')}>Restart Game</Button>
-      <Button onClick={() => sendRequest('reboot')}>Reboot Device</Button>
+      <ButtonGroup
+        variant="contained"
+        aria-label="outlined primary button group"
+        style={{ marginTop: 8, marginBottom: 8 }}
+      >
+        <Button
+          variant="contained"
+          onClick={() => sendRequest('screen')}
+        >
+          Screenshot
+        </Button>
+        <Button
+          variant="contained"
+          onClick={() => sendRequest('account')}
+        >
+          Account
+        </Button>
+        <Button
+          variant="contained"
+          onClick={() => sendRequest('restart')}
+        >
+          Restart Game
+        </Button>
+        <Button
+          variant="contained"
+          onClick={() => sendRequest('reboot')}
+        >
+          Reboot Device
+        </Button>
+      </ButtonGroup>
 
       <br />
       {response && <Typography variant="body1">{JSON.stringify(response)}</Typography>}

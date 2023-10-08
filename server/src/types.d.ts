@@ -53,14 +53,14 @@ export type ConfigModel = {
 
 export type DeviceModel = {
   uuid: string;
-  config: string | null;
-  model: string | null;
-  ipAddr: string | null;
-  iosVersion: string | null;
-  ipaVersion: string | null;
+  config?: string | null;
+  model?: string | null;
+  ipAddr?: string | null;
+  iosVersion?: string | null;
+  ipaVersion?: string | null;
   notes?: string | null;
-  lastSeen: Date | null;
-  enabled: boolean;
+  lastSeen?: Date | null;
+  enabled?: boolean;
 
   createdAt?: Date;
   updatedAt?: Date;

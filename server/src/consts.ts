@@ -11,7 +11,7 @@ export const UsersApiRoute = BaseApiRoute + 'users';
 
 export const DefaultExpiresIn = 365 * 86400; // 1 year
 export const DefaultMaxSlugLimit = 1000;
-export const DefaultScheduleInterval = 30; // seconds
+export const DefaultScheduleInterval = 60; // seconds
 export const DefaultWebServerPort = 8080;
 
 // Database table options

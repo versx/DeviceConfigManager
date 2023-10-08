@@ -27,10 +27,9 @@ const getLog = async (req: Request, res: Response) => {
 
 const createLog = async (req: Request, res: Response) => {
   console.log('createLog:', req.body);
-  //const { name, data } = req.body;
+  //const { uuid, messages } = req.body;
   //const result = await LogService.createLog({ name, data });
 
-  //const { uuid, messages } = req.body;
   //for (let i = messages.length - 1; i >= 0; i--) {
   //  // TODO: Log to file
   //  if (messages[i].includes('Initializing')) {
