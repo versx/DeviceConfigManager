@@ -2,7 +2,6 @@ import { Request } from 'express';
 import { createHash } from 'crypto';
 import moment from 'moment-timezone';
 
-import { logWarn } from '.';
 import { ColorType } from '../types';
 
 // 5 - ukhndyw
@@ -29,40 +28,11 @@ export const isValidUrl = (url: string | null) => {
 export const getIpAddress = async (req: Request, defaultValue: string = '0.0.0.0') => {
   const cfHeader = req.get('cf-connecting-ip');
   const forwardedHost = req.get('x-forwarded-host');
-  //const forwardedFor = req.get('x-forwarded-for');
+  const forwardedFor = (req.get('x-forwarded-for')?.toString() || '').split(', ')[0];
   const remoteIp = req.connection.remoteAddress;
   const localIp = req.connection.localAddress;
-  //let ipAddr = cfHeader ?? forwardedHost ?? forwardedFor ?? remoteIp ?? localIp;
-  let ipAddr = cfHeader ?? forwardedHost ?? remoteIp ?? localIp;
-  if (ipAddr === '127.0.0.1') {
-    ipAddr = await getExternalIpAddress();
-  }
-  return ipAddr ?? defaultValue;
-};
-
-export const getExternalIpAddress = async (defaultValue: string = '127.0.0.1') => {
-  const apiUrl = 'https://icanhazip.com';
-  const response = await fetch(apiUrl);
-  if (response?.status !== 200) {
-    //throw new Error('Unable to get external IP address.');
-    logWarn('Unable to get external IP address.');
-    return defaultValue;
-  }
-  const ipAddr = await response.text();
-  return ipAddr;
-};
-
-export const getGeolocationDetails = async (ipAddr: string) => {
-  // Reference: https://ip-api.com/docs/api:json
-  const apiUrl = 'http://ip-api.com/json';
-  const response = await fetch(`${apiUrl}/${ipAddr}?fields=66846719`);
-  if (response?.status !== 200) {
-    //throw new Error('Unable to get geolocation details.');
-    logWarn('Unable to get geolocation details.');
-    return null;
-  }
-  const data = await response.json();
-  return data;
+  const ipAddr = (cfHeader || forwardedHost || forwardedFor || remoteIp || localIp)?.match('[0-9]+.[0-9].+[0-9]+.[0-9]+$');
+  return ipAddr ? ipAddr[0] : defaultValue;
 };
 
 export const color = (color: ColorType, message: any) => {
@@ -132,25 +102,11 @@ export const formatBytes = (bytes: any) => {
   return (bytes / Math.pow(1024, index)).toFixed(1) + ' ' + sizes[index];
 };
 
-export const timeToSeconds = (time: string) => {
-  const split = time.split(':');
-  if (split.length < 3) {
-    return 0;
-  }
-
-  const hours = parseInt(split[0]) || 0;
-  const minutes = parseInt(split[1]) || 0;
-  const seconds = parseInt(split[2]) || 0;
-  return hours * 3600 + minutes * 60 + seconds;
-};
-
-export const todaySeconds = (date?: Date | null, timezone?: string) => {
-  const tzDate = !timezone
-    ? moment(date ?? new Date())
-    : convertTimeZone(date ?? new Date(), timezone);
-  const formattedDate = tzDate.format('HH:mm:ss');
-  const seconds = timeToSeconds(formattedDate);
-  return seconds;
+export const formatDate = (date: Date): string => {
+  const yyyy = date.getFullYear();
+  const mm = String(date.getMonth() + 1).padStart(2, '0'); // January is 0!
+  const dd = String(date.getDate()).padStart(2, '0');
+  return `${yyyy}-${mm}-${dd}`;
 };
 
 export const convertTimeZone = (date: Date, timezone: string) => {
@@ -158,8 +114,5 @@ export const convertTimeZone = (date: Date, timezone: string) => {
   return tzDate;
 };
 
-//export const sleep = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
-
 export const getUnix = () => Math.floor(Date.now() / 1000);
-
 export const getUnixTime = (date: Date) => Math.floor(date.getTime() / 1000);
