@@ -13,7 +13,7 @@
 [![Dashboard](.github/images/dashboard.png)](.github/images/dashboard.png)  
 | Configs | Devices (Grid) | Devices (Table) |  
 | ------------- | ------------- | ------------- |  
-| <a href="https://raw.githubusercontent.com/versx/DeviceConfigManager/react/.github/images/configs.png">![Configs](.github/images/configs.png)</a> | <a href="https://raw.githubusercontent.com/versx/DeviceConfigManager/react/.github/images/devices.png">![Devices (Grid)](.github/images/devices-grid2.png)</a> | <a href="https://raw.githubusercontent.com/versx/DeviceConfigManager/react/.github/images/devices-table.png">![Devices (Table)](.github/images/devices-table.png)</a> |  
+| <a href="https://raw.githubusercontent.com/versx/DeviceConfigManager/react/.github/images/configs.png">![Configs](.github/images/configs.png)</a> | <a href="https://raw.githubusercontent.com/versx/DeviceConfigManager/react/.github/images/devices-grid.png">![Devices (Grid)](.github/images/devices-grid.png)</a> | <a href="https://raw.githubusercontent.com/versx/DeviceConfigManager/react/.github/images/devices-table.png">![Devices (Table)](.github/images/devices-table.png)</a> |  
 
 | Schedules | Settings |  
 | ------------- | ------------- |  
