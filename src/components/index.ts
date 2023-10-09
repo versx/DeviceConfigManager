@@ -4,6 +4,7 @@ export * from './Breadcrumbs';
 export * from './CardDisplay';
 export * from './Charts';
 export * from './Configs';
+export * from './DashboardItem';
 export * from './Devices';
 export * from './Logs';
 export * from './Nav';

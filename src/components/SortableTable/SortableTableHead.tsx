@@ -19,8 +19,23 @@ import {
   TableProps,
 } from '..';
 import { DeviceOnlineIcon, DeviceOfflineIcon } from '../../consts';
-import { isDeviceOnline } from '../../modules';
+import { formatDate, isDeviceOnline } from '../../modules';
 import { Config, Device, User } from '../../types';
+
+const getDeviceRestartCount = (device: Device) => {
+  let restarts = 0;
+  if ((device.deviceStats ?? []).length === 0) {
+    return restarts;
+  }
+
+  for (const stat of device.deviceStats!) {
+    if (formatDate(new Date(stat.date)) !== formatDate(new Date())) {
+      continue;
+    }
+    restarts += stat.restarts;
+  }
+  return restarts;
+};
 
 export const ConfigTableHeadCells: readonly HeadCell<Config>[] = [
   {
@@ -130,6 +145,14 @@ export const DeviceTableHeadCells: readonly HeadCell<Device>[] = [
     format: (row: Device, value: any) => value ?? '--',
   },
   {
+    id: 'restarts' as 'uuid',
+    disablePadding: false,
+    align: 'left',
+    label: 'Restarts',
+    style: { display: { xs: 'none', sm: 'none', md: 'table-cell' } },
+    format: (row: Device, value: any) => getDeviceRestartCount(row).toLocaleString(),
+  },
+  {
     id: 'lastSeen',
     disablePadding: false,
     align: 'left',
@@ -154,6 +177,61 @@ export const DeviceTableHeadCells: readonly HeadCell<Device>[] = [
     label: 'Created',
     style: { display: { xs: 'none', sm: 'none', md: 'none', lg: 'table-cell' } },
     format: (row: Device, value: any) => moment(value).calendar() ?? '--',
+  },
+];
+
+export const OfflineDeviceTableHeadCells: readonly HeadCell<Device>[] = [
+  {
+    id: 'status' as 'uuid',
+    disablePadding: true,
+    align: 'right',
+    label: 'Status',
+    minWidth: 80,
+    maxWidth: 80,
+    style: { display: { xs: 'table-cell' } },
+    format: (row: Device, value: any) => {
+      const isOnline = isDeviceOnline(row.lastSeen);
+      return (
+        /* eslint-disable-next-line jsx-a11y/img-redundant-alt */
+        <img
+          src={isOnline ? DeviceOnlineIcon : DeviceOfflineIcon}
+          alt="device status image"
+          style={{
+            width: 64,
+            height: 64,
+          }}
+        />
+      );
+    },
+  },
+  {
+    id: 'uuid',
+    disablePadding: false,
+    align: 'left',
+    label: 'UUID',
+    minWidth: 150,
+    maxWidth: 150,
+    style: { display: { xs: 'table-cell' } },
+  },
+  {
+    id: 'config',
+    disablePadding: false,
+    align: 'left',
+    label: 'Config',
+    minWidth: 150,
+    maxWidth: 150,
+    style: { display: { xs: 'table-cell' } },
+    format: (row: Device, value: any) => value ?? '--',
+  },
+  {
+    id: 'lastSeen',
+    disablePadding: false,
+    align: 'left',
+    label: 'Last Seen',
+    //minWidth: 100,
+    //maxWidth: 100,
+    style: { display: { xs: 'none', sm: 'none', md: 'none', lg: 'table-cell' } },
+    format: (row: Device, value: any) => value ? moment(value).calendar() : 'Never',
   },
 ];
 
@@ -195,7 +273,7 @@ export const UserTableHeadCells: readonly HeadCell<User>[] = [
 
 export const SortableTableHead = <T extends unknown>(props: TableProps<T>) => {
   const {
-    headCells, isAdmin,
+    headCells, isAdmin, disableCheckbox,
     order, orderBy, numSelected, rowCount,
     onRequestSort, onSelectAllClick,
   } = props;
@@ -203,18 +281,20 @@ export const SortableTableHead = <T extends unknown>(props: TableProps<T>) => {
   return (
     <TableHead>
       <StyledTableRow>
-        <StyledTableCell padding="checkbox">
-          <Checkbox
-            color="primary"
-            indeterminate={numSelected > 0 && numSelected < rowCount}
-            checked={rowCount > 0 && numSelected === rowCount}
-            onChange={onSelectAllClick}
-            inputProps={{
-              'aria-label': 'select all',
-            }}
-            style={{color: 'white'}}
-          />
-        </StyledTableCell>
+        {!disableCheckbox && (
+          <StyledTableCell padding="checkbox">
+            <Checkbox
+              color="primary"
+              indeterminate={numSelected > 0 && numSelected < rowCount}
+              checked={rowCount > 0 && numSelected === rowCount}
+              onChange={onSelectAllClick}
+              inputProps={{
+                'aria-label': 'select all',
+              }}
+              style={{color: 'white'}}
+            />
+          </StyledTableCell>
+        )}
         {headCells.map((headCell: HeadCell<T>, index: number) => ((isAdmin && (headCell.isAdmin || !headCell.isAdmin)) || (!isAdmin && !headCell.isAdmin)) && (
           <StyledTableCell
             key={index}
@@ -224,6 +304,7 @@ export const SortableTableHead = <T extends unknown>(props: TableProps<T>) => {
             sx={{
               minWidth: headCell.minWidth,
               maxWidth: headCell.maxWidth,
+              width: headCell.minWidth,
               color: 'white',
               whiteSpace: 'nowrap',
               display: headCell.hidden ? 'none' : 'table-cell',
