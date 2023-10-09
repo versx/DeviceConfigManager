@@ -10,7 +10,7 @@ import { SettingsRouter } from './settings.routes';
 import { UserRouter } from './user.routes';
 import { ConfigApiRoute } from '../consts';
 import { ConfigController, LogController } from '../controllers';
-import { LoggingMiddleware } from '../middleware';
+import { BearerTokenMiddleware, LoggingMiddleware } from '../middleware';
 
 export const ApiRouter = (app: Application) => {
   // Initialize helmet basic security middleware
@@ -26,8 +26,8 @@ export const ApiRouter = (app: Application) => {
   // Initialize auth routes
   AuthRouter(app);
 
-  app.post(ConfigApiRoute, /* TODO: BearerTokenMiddleware */ ConfigController.getConfig);
-  app.post('/api/log/new', LogController.createLog);
+  app.post(ConfigApiRoute, BearerTokenMiddleware, ConfigController.getConfig);
+  app.post('/api/log/new', BearerTokenMiddleware, LogController.createLog);
 
   // Initialize config routes
   ConfigRouter(app);

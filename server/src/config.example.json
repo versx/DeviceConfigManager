@@ -6,7 +6,8 @@
       "username": "admin",
       "password": "p4ssw0rd!"
     },
-    "secret": "auth token"
+    "secret": "auth token",
+    "bearerTokens": []
   },
   "autoSyncIP": true,
   "database": {

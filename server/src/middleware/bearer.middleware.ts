@@ -1,18 +1,21 @@
 import { NextFunction, Request, Response } from 'express';
 
-const config = require('../config.json');
+import { AppConfig } from '../types';
+const config: AppConfig = require('../config.json');
 
-export const BearerMiddleware = async (req: Request, res: Response, next: NextFunction) => {
+export const BearerTokenMiddleware = async (req: Request, res: Response, next: NextFunction) => {
+  const tokens = config.auth?.bearerTokens || [];
   const authHeader = req.headers.authorization;
-  if (!authHeader) {
+
+  if (!authHeader && tokens.length > 0) {
     return res.json({
       status: 'error',
       error: 'Not Authorized!',
     });
   }
 
-  const bearer = authHeader.split(' ')[1] || '';
-  if (config.tokens.length > 0 && !config.tokens.includes(bearer.toLowerCase())) {
+  const bearer = authHeader!.split(' ')[1] || '';
+  if (tokens.length > 0 && !tokens.includes(bearer.toLowerCase())) {
     return res.json({
       status: 'error',
       error: 'Not Authorized!',

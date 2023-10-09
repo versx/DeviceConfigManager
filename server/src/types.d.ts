@@ -9,6 +9,7 @@ export type AppConfig = {
       password: string;
     };
     secret: string;
+    bearerTokens: string[];
   };
   database: {
     dialect: Dialect;
@@ -65,6 +66,7 @@ export type DeviceModel = {
   ipaVersion?: string | null;
   notes?: string | null;
   lastSeen?: Date | null;
+  webserverPort: number;
   enabled?: boolean;
 
   createdAt?: Date;
