@@ -36,15 +36,13 @@ export const DashboardPage = () => {
   const [configs, setConfigs] = useState<Config[]>([]);
   const [devices, setDevices] = useState<Device[]>([]);
   const [schedules, setSchedules] = useState<Schedule[]>([]);
+  const [order, setOrder] = useState<Order>('asc');
+  const [orderBy, setOrderBy] = useState<keyof Device>('uuid');
   const { enqueueSnackbar } = useSnackbar();
   const currentUser = getUserToken();
 
-  const [order, setOrder] = useState<Order>('asc');
-  const [orderBy, setOrderBy] = useState<keyof Device>('uuid');
-
   const devicesOnline = devices.filter((device: Device) => isDeviceOnline(device.lastSeen));
   const devicesOffline = devices.filter((device: Device) => !isDeviceOnline(device.lastSeen));
-  const deviceRestartsToday = devices.filter((device: Device) => device.deviceStats?.filter((stat: DeviceStat) => formatDate(new Date(stat.date)) === formatDate(new Date())));
 
   const getDeviceRestartCount = (devices: Device[]) => {
     let restarts = 0;
@@ -52,14 +50,15 @@ export const DashboardPage = () => {
       if ((device.deviceStats ?? []).length === 0) {
         continue;
       }
-      for (const stat of device.deviceStats!) {
+      const deviceStats = device.deviceStats?.filter((stat: DeviceStat) => formatDate(new Date(stat.date)) === formatDate(new Date())) ?? [];
+      for (const stat of deviceStats) {
         restarts += stat.restarts;
       }
     }
     return restarts;
   };
 
-  const restarts = getDeviceRestartCount(deviceRestartsToday);
+  const restarts = getDeviceRestartCount(devices);
 
   const handleRequestSort = (property: keyof Device) => (event: any) => {
     const isAsc = orderBy === property && order === 'asc';
