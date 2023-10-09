@@ -72,15 +72,12 @@ const setDefaultConfig = async (name: string): Promise<ConfigModel | false> => {
 };
 
 const getDeviceConfig = async (model: DeviceModel, autoSyncIP: boolean) => {
-  let noConfig = false;
-  let assignDefault = false;
-  let device = await DeviceService.getDevice(model.uuid);
-
   // Check if device config is set, if not provide it as json response
+  let device = await DeviceService.getDevice(model.uuid);
   if (device) {
-    logDebug(`[${model.uuid}] Device exists, updating...`);
     // Device exists
-    device.lastSeen = new Date(); //convertTz(new Date()) / 1000;
+    logDebug(`[${model.uuid}] Device exists, updating...`);
+    device.lastSeen = new Date(); // TODO: Timezone
     // Only update client IP if it hasn't been set yet or if auto sync is
     // enabled while IP doesn't match.
     if (model.ipAddr && (!device.ipAddr || device.ipAddr !== model.ipAddr) && autoSyncIP) {
@@ -88,20 +85,14 @@ const getDeviceConfig = async (model: DeviceModel, autoSyncIP: boolean) => {
     }
     device.iosVersion = model.iosVersion;
     device.ipaVersion = model.ipaVersion;
-    device.webserverPort = 8080; // TODO: model.webserverPort;
+    device.webserverPort = model.webserverPort ?? DefaultWebServerPort;
     if (!device.model) {
       device.model = model;
     }
     await device.save();
-
-    if (!device.config) {
-      logWarn(`[${model.uuid}] Device is not assigned a config, attempting to assign the default config if one is set...`);
-      // Not assigned a config
-      assignDefault = true;
-    }
   } else {
-    logDebug(`[${model.uuid}] Device does not exist, creating...`);
     // Device doesn't exist, create db entry
+    logDebug(`[${model.uuid}] Device does not exist, creating...`);
     device = await DeviceService.createDevice({
       uuid: model.uuid,
       config: null,
@@ -111,15 +102,9 @@ const getDeviceConfig = async (model: DeviceModel, autoSyncIP: boolean) => {
       ipaVersion: model.ipaVersion,
       notes: null,
       lastSeen: new Date(),
+      webserverPort: DefaultWebServerPort,
       enabled: true,
     });
-    if (device) {
-      // Success, assign default config if there is one.
-      assignDefault = true;
-    } else {
-      // Failed to create device so don't give config response
-      noConfig = true;
-    }
   }
 
   if (!device.enabled) {
@@ -130,32 +115,29 @@ const getDeviceConfig = async (model: DeviceModel, autoSyncIP: boolean) => {
     };
   }  
 
-  if (assignDefault) {
+  // Check if device is assigned config, if not try to assign default config if set.
+  if (!device?.config) {
     const defaultConfig = await ConfigService.getDefaultConfig();
+    // No default config so don't give config response
     if (defaultConfig) {
-      logDebug(`[${model.uuid}] Assigning device to default config ${defaultConfig.name}`);
-      device.config = defaultConfig.name;
-      await device.save();
-    } else {  
-      // No default config so don't give config response
-      noConfig = true;
+      logError(`[${model.uuid}] No config assigned to device and no default config is set!`);
+      return {
+        status: 'error',
+        error: 'Device is not assigned to a config!'
+      };
     }
-  }
 
-  if (noConfig) {
-    logError(`[${model.uuid}] No config assigned to device and no default config is set!`);
-    return {
-      status: 'error',
-      error: 'Device not assigned to config!'
-    };
+    logDebug(`[${model.uuid}] Assigning default config ${defaultConfig.name} to device.`);
+    device.config = defaultConfig.name;
+    await device.save();
   }
   
   const cfg = await ConfigService.getConfig(device.config);
   if (!cfg) {
-    logError(`[${model.uuid}] Failed to grab config ${device.config}`);
+    logError(`[${model.uuid}] Failed to fetch config ${device.config}.`);
     return {
       status: 'error',
-      error: 'Device not assigned to config!'
+      error: 'Device is not assigned to a config!'
     };
   }
 
@@ -163,7 +145,7 @@ const getDeviceConfig = async (model: DeviceModel, autoSyncIP: boolean) => {
     backend_url: cfg.backendUrl,
     data_endpoints: cfg.dataEndpoints,
     backend_secret_token: cfg.bearerToken ?? '',
-    webserver_port: DefaultWebServerPort,
+    webserver_port: DefaultWebServerPort, // TODO: Get device webserver port
   };
 }
 

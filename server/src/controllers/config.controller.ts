@@ -1,7 +1,8 @@
 import { Request, Response } from 'express';
 
 import config from '../config.json';
-import { ConfigService, getIpAddress, log } from '../services';
+import { DefaultWebServerPort } from '../consts';
+import { ConfigService, getIpAddress, log, logDebug } from '../services';
 
 const getConfig = async (req: Request, res: Response) => {
   const { uuid, model, ios_version, ipa_version, webserver_port } = req.body;
@@ -14,11 +15,10 @@ const getConfig = async (req: Request, res: Response) => {
     ipAddr,
     iosVersion: ios_version,
     ipaVersion: ipa_version,
-    webserver_port,
+    webserverPort: webserver_port ?? DefaultWebServerPort,
   };
   const response = await ConfigService.getDeviceConfig(device, config.autoSyncIP);
-  //logDebug(`[${uuid}] Config response: ${response}`);
-  console.log(`[${uuid}] Config response:`, response);
+  logDebug(`[${uuid}] Config response: ${JSON.stringify(response)}`);
   res.json(response);
 };
 

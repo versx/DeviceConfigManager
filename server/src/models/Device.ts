@@ -1,6 +1,6 @@
 import { DataTypes, Sequelize } from 'sequelize';
 
-import { SequelizeOptions } from '../consts';
+import { DefaultWebServerPort, SequelizeOptions } from '../consts';
 
 export const Device = (sequelize: Sequelize) =>
   sequelize.define('device', {
@@ -42,6 +42,11 @@ export const Device = (sequelize: Sequelize) =>
       type: DataTypes.DATE,
       allowNull: true,
       defaultValue: null,
+    },
+    webserverPort: {
+      type: DataTypes.INTEGER,
+      allowNull: false,
+      defaultValue: DefaultWebServerPort,
     },
     enabled: {
       type: DataTypes.BOOLEAN,
