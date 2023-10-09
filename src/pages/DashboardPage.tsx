@@ -7,6 +7,7 @@ import {
   Table,
   TableBody,
   TableContainer,
+  Tooltip,
   Typography,
 } from '@mui/material';
 import {
@@ -219,14 +220,20 @@ export const DashboardPage = () => {
                     </StyledTableCell>
                   ))}
                   <StyledTableCell align="right">
-                    <Button
-                      variant="contained"
-                      size="small"
-                      style={{backgroundColor: ActiveMenuItemColor, color: '#fff'}}
-                      onClick={() => handleRestartGame(device)}
+                    <Tooltip
+                      title="Restart Device"
+                      placement="left-start"
+                      arrow
                     >
-                      Restart
-                    </Button>
+                      <Button
+                        variant="contained"
+                        size="small"
+                        style={{backgroundColor: ActiveMenuItemColor, color: '#fff'}}
+                        onClick={() => handleRestartGame(device)}
+                      >
+                        Restart
+                      </Button>
+                    </Tooltip>
                   </StyledTableCell>
                 </StyledTableRow>
               ))}

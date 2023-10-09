@@ -7,6 +7,14 @@
 
 
 # Device Config Manager  
+To be used with RealDeviceMap macless solutions.  
+
+Central repository for macless client configurations without having to keep track of multiple remote configs and urls. Assign different configurations to different devices and different backends (RealDeviceMap, Lorgnette, Golbat, etc).  
+
+When a device connects for the first time an entry is created in the database. Otherwise, if the device does not have a config assigned and a default config is set, the default config will be auto-assigned.  
+
+Manually creating devices ahead of time is also possible, if needed. Rest endpoint tooling to get device screenshot, currently logged in account username, restart game, reboot device, view device logs, and more.  
+
 
 ## Prerequisites
 - [Node.js v18 or higher](https://nodejs.org/en/download)  
