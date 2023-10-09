@@ -10,14 +10,11 @@ import {
   Typography,
 } from '@mui/material';
 
-import { DefaultWebServerPort } from '../consts';
 import { DeviceService } from '../services';
 import { Device } from '../types';
 
 // @ts-ignore
 window.Buffer = Buffer;
-
-const imageHeader = 'data:image/png;base64,';
 
 export const DeviceManagerPage = () => {
   const { uuid } = useParams();
@@ -26,43 +23,6 @@ export const DeviceManagerPage = () => {
   const [response, setResponse] = useState<any>('');
   const [error, setError] = useState<string | null>('');
   const [screenshot, setScreenshot] = useState<string>();
-
-  const sendRequest = async (actionType: string) => {
-    try {
-      const url = `http://${selectedDevice}:${DefaultWebServerPort}/${actionType}`;
-      const response = await fetch(url, {
-        method: 'GET',
-        headers: {
-          'Content-Type': 'text/plain; charset=x-user-defined',
-        },
-      });
-
-      let responseData: string = '';
-      switch (actionType) {
-        case 'screen':
-          const arrayBuffer = await response.arrayBuffer();
-          if (arrayBuffer.byteLength <= 0) {
-            setScreenshot(imageHeader);
-            return;
-          }
-
-          const base64 = imageHeader + Buffer.from(arrayBuffer).toString('base64');
-          setScreenshot(base64);
-          // TODO: Send screenshot to backend to save
-          break;
-        case 'restart':
-          responseData = await response.text();
-          break;
-        default:
-          responseData = await response.json();
-          break;
-      }
-
-      setResponse(responseData);
-    } catch (err: any) {
-      setError(err.message);
-    }
-  };
 
   const handleReload = useCallback(() => {
     DeviceService.getDevices().then((response: any) => {
@@ -109,25 +69,58 @@ export const DeviceManagerPage = () => {
       >
         <Button
           variant="contained"
-          onClick={() => sendRequest('screen')}
+          onClick={async () => {
+            const response = await DeviceService.sendRequest(selectedDevice!, 8080, 'screen');
+            if (response?.error) {
+              setError(response.message);
+            } else {
+              setError('');
+              setScreenshot(response.data);
+            }
+          }}
         >
           Screenshot
         </Button>
         <Button
           variant="contained"
-          onClick={() => sendRequest('account')}
+          onClick={async () => {
+            const response = await DeviceService.sendRequest(selectedDevice!, 8080, 'account');
+            if (response?.error) {
+              setError(response.message);
+            } else {
+              setError('');
+              setResponse(response.data);
+            }
+          }}
         >
           Account
         </Button>
         <Button
           variant="contained"
-          onClick={() => sendRequest('restart')}
+          onClick={async () => {
+            const response = await DeviceService.sendRequest(selectedDevice!, 8080, 'restart');
+            if (response?.error) {
+              setError(response.message);
+            } else {
+              setError('');
+              setResponse(response.data);
+            }
+          }}
         >
           Restart Game
         </Button>
         <Button
           variant="contained"
-          onClick={() => sendRequest('reboot')}
+          // TODO: Send reboot request to backend
+          onClick={async () => {
+            const response = await DeviceService.sendRequest(selectedDevice!, 8080, 'reboot');
+            if (response?.error) {
+              setError(response.message);
+            } else {
+              setError('');
+              setResponse(response.data);
+            }
+          }}
         >
           Reboot Device
         </Button>

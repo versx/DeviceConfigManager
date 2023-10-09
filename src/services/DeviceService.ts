@@ -1,3 +1,4 @@
+import { Base64ImageHeader } from '../consts';
 import { http } from '../modules';
 import { Device } from '../types';
 
@@ -51,10 +52,52 @@ const deleteDevice = async (uuid: string) => {
   }
 };
 
+const sendRequest = async (ipAddr: string, port: number = 8080, actionType: string) => {
+  try {
+    const url = `http://${ipAddr}:${port}/${actionType}`;
+    const response = await fetch(url, {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'text/plain; charset=x-user-defined',
+      },
+    });
+
+    let responseData: string = '';
+    switch (actionType) {
+      case 'screen':
+        const arrayBuffer = await response.arrayBuffer();
+        if (arrayBuffer.byteLength <= 0) {
+          //return Base64ImageHeader;
+          return { error: false, data: Base64ImageHeader };
+        }
+
+        const base64 = Base64ImageHeader + Buffer.from(arrayBuffer).toString('base64');
+        //setScreenshot(base64);
+        return { error: false, data: base64 };
+        // TODO: Send screenshot to backend to save
+        //break;
+      case 'restart':
+        responseData = await response.text();
+        break;
+      default:
+        responseData = await response.json();
+        break;
+    }
+
+    //setResponse(responseData);
+    //return responseData;
+    return { error: false, data: responseData };
+  } catch (err: any) {
+    //setError(err.message);
+    return { error: true, message: err.message };
+  }
+};
+
 export const DeviceService = {
   assignConfig,
   getDevices,
   createDevice,
   updateDevice,
   deleteDevice,
+  sendRequest,
 };

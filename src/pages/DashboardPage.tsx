@@ -67,6 +67,20 @@ export const DashboardPage = () => {
     setOrderBy(property);
   };
 
+  const handleRestartGame = async (device: Device) => {
+    if (!device.ipAddr) {
+      enqueueSnackbar(`Failed to restart device ${device.uuid} because it has no IP address set.`, { variant: 'error' });
+      return;
+    }
+    const response = await DeviceService.sendRequest(device.ipAddr, device.webserverPort, 'restart');
+    if (response?.error) {
+      enqueueSnackbar(`Failed to restart device ${device.uuid} with error: ${response?.message}`, { variant: 'error' });
+      return;
+    }
+
+    enqueueSnackbar(`Successfully restarted device ${device.uuid}!`, { variant: 'success' });
+  };
+
   const handleReload = useCallback(() => {
     ScheduleService.getSchedules().then((response: any) => {
       if (response?.status !== 'ok') {
@@ -210,7 +224,7 @@ export const DashboardPage = () => {
                       variant="contained"
                       size="small"
                       style={{backgroundColor: ActiveMenuItemColor, color: '#fff'}}
-                      // TODO: onClick={() => handleRestart(device.uuid)}
+                      onClick={() => handleRestartGame(device)}
                     >
                       Restart
                     </Button>
