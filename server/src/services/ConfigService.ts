@@ -85,7 +85,7 @@ const getDeviceConfig = async (model: DeviceModel, autoSyncIP: boolean) => {
     }
     device.iosVersion = model.iosVersion;
     device.ipaVersion = model.ipaVersion;
-    device.webserverPort = model.webserverPort ?? DefaultWebServerPort;
+    device.webserverPort = model.webserverPort;
     if (!device.model) {
       device.model = model;
     }
@@ -102,7 +102,7 @@ const getDeviceConfig = async (model: DeviceModel, autoSyncIP: boolean) => {
       ipaVersion: model.ipaVersion,
       notes: null,
       lastSeen: new Date(),
-      webserverPort: DefaultWebServerPort,
+      webserverPort: model.webserverPort,
       enabled: true,
     });
   }
@@ -145,7 +145,7 @@ const getDeviceConfig = async (model: DeviceModel, autoSyncIP: boolean) => {
     backend_url: cfg.backendUrl,
     data_endpoints: cfg.dataEndpoints,
     backend_secret_token: cfg.bearerToken ?? '',
-    webserver_port: DefaultWebServerPort, // TODO: Get device webserver port
+    webserver_port: device.webserverPort ?? DefaultWebServerPort, // TODO: Get device webserver port
   };
 }
 

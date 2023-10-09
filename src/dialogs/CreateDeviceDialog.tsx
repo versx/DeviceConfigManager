@@ -11,6 +11,7 @@ import {
 } from '@mui/material';
 
 import { ConfigSelect } from '../components';
+import { DefaultWebServerPort } from '../consts';
 import { Config, Device } from '../types';
 
 type CreateDeviceDialogProps = {
@@ -32,6 +33,7 @@ export const CreateDeviceDialog = (props: CreateDeviceDialogProps) => {
     ipaVersion: device ? device.ipaVersion : null,
     notes: device ? device.notes : null,
     lastSeen: device ? device.lastSeen : null,
+    webserverPort: device ? device.webserverPort : DefaultWebServerPort,
     enabled: device ? device.enabled : true
   });
 
@@ -101,6 +103,14 @@ export const CreateDeviceDialog = (props: CreateDeviceDialogProps) => {
             onChange={e => setLocalDevice({ ...localDevice, ipaVersion: e.target.value })}
           />
         </div>
+        <TextField
+          fullWidth
+          margin="normal"
+          label="Webserver Port"
+          type="number"
+          value={localDevice.webserverPort || DefaultWebServerPort}
+          onChange={e => setLocalDevice({ ...localDevice, webserverPort: parseInt(e.target.value) })}
+        />
         <TextField
           fullWidth
           margin="normal"

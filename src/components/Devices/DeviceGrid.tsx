@@ -24,7 +24,7 @@ interface DeviceGridProps {
   configs: Config[];
   devices: Device[];
   onReload: () => void;
-};;
+};
 
 interface PhoneModelState {
   open: boolean;

@@ -20,6 +20,7 @@ export type Device = {
   ipaVersion: string | null;
   notes?: string | null;
   lastSeen: Date | null;
+  webserverPort: number;
   enabled: boolean;
 
   createdAt?: Date;

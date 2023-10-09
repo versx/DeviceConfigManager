@@ -21,6 +21,6 @@
 
 **Admin Dashboard**  
 [![Admin Dashboard](.github/images/admin-dashboard.png)](.github/images/admin-dashboard.png)  
-| Dashboard | Users | Settings |
-| ------------- | ------------- | ------------- |
-| <a href="https://raw.githubusercontent.com/versx/DeviceConfigManager/react/.github/images/admin-dashboard.png">![Admin Dashboard](.github/images/admin-dashboard.png)</a> | <a href="https://raw.githubusercontent.com/versx/DeviceConfigManager/react/.github/images/admin-users.png">![Users](.github/images/admin-users.png)</a> | <a href="https://raw.githubusercontent.com/versx/DeviceConfigManager/react/.github/images/admin-settings.png">![Admin Settings](.github/images/admin-settings.png)</a> |
+| Users | Settings |
+| ------------- | ------------- |  
+| <a href="https://raw.githubusercontent.com/versx/DeviceConfigManager/react/.github/images/admin-users.png">![Users](.github/images/admin-users.png)</a> | <a href="https://raw.githubusercontent.com/versx/DeviceConfigManager/react/.github/images/admin-settings.png">![Admin Settings](.github/images/admin-settings.png)</a> |
