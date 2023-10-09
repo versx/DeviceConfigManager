@@ -17,7 +17,7 @@ export const DefaultScheduleInterval = 60; // seconds
 export const DefaultWebServerPort = 8080;
 
 export const LogsFolder = resolve(__dirname, '../../server/static/logs');
-export const DefaultLogsRotateInterval = '1d'; // rotate daily
+export const DefaultLogsRotateInterval = '30m'; // check if needs to rotate every 30 minutes
 export const DefaultLogsRotateMaxFiles = 5; // keep up to 10 back copies
 export const DefaultLogsRotateMaxSize = '1M'; // rotate every 1 MBs written
 
