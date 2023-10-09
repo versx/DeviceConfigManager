@@ -29,7 +29,7 @@ export const ScheduleCard = (props: ScheduleCardProps) => {
   const { schedule, onEdit, onDelete, onEnable } = props;
 
   return (
-    <Card elevation={3} style={{borderRadius: 16}}>
+    <Card elevation={3} style={{border: '1px solid grey', borderRadius: 16}}>
       <CardContent>
         <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', flexDirection: 'row', marginBottom: 8 }}>
           <ScheduleIcon color="primary" fontSize="large" sx={{marginRight: 1}} />

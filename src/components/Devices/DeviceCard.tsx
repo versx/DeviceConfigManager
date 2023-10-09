@@ -41,12 +41,11 @@ export const DeviceCard = (props: DeviceCardProps) => {
       arrow
     >
       <Card
-        //title="Test"
         variant="elevation"
         elevation={3}
         onMouseOver={(event: any) => event.currentTarget.style.cursor = 'pointer'}
         onClick={handleViewDevice}
-        style={{borderRadius: 16}}
+        style={{border: '1px solid grey', borderRadius: 16}}
       >
         <CardHeader
           avatar={
@@ -74,7 +73,7 @@ export const DeviceCard = (props: DeviceCardProps) => {
           }
           style={{paddingBottom: 3}}
         />
-        <Divider />
+        <Divider variant="middle" />
         <CardContent style={{paddingTop: 8, marginTop: 0}}>
           <div style={{display: 'flex', flexDirection: 'row', justifyContent: 'space-between', marginBottom: 8}}>
             <Typography variant="body2" color="textSecondary" component="p">

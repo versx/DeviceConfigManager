@@ -9,7 +9,7 @@ export const DashboardItem = (props: any) => {
   const Icon = icon;
 
   return (
-    <Card variant="outlined">
+    <Card variant="outlined" style={{border: '1px solid grey', borderRadius: 8}}>
       <CardContent>
         <Typography
           variant="h4"

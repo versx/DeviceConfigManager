@@ -26,11 +26,11 @@ import {
   StyledTableCell,
   StyledTableRow,
 } from '../components';
-import { DeviceOnlineIcon, DeviceOfflineIcon } from '../consts';
+import { ActiveMenuItemColor, DeviceOnlineIcon, DeviceOfflineIcon } from '../consts';
 import { formatDate, isDeviceOnline } from '../modules';
 import { ConfigService, DeviceService, ScheduleService } from '../services';
 import { getUserToken } from '../stores';
-import { Config, Device, DeviceStat ,Schedule } from '../types';
+import { Config, Device, DeviceStat, Schedule } from '../types';
 
 export const DashboardPage = () => {
   const [configs, setConfigs] = useState<Config[]>([]);
@@ -101,7 +101,7 @@ export const DashboardPage = () => {
         Dashboard
       </Typography>
 
-      <Container component={Paper} elevation={3} style={{marginTop: 32, padding: 16}}>
+      <Container component={Paper} elevation={3} style={{borderRadius: 8, marginTop: 32, padding: 16}}>
         <Typography variant="h5" gutterBottom style={{textAlign: 'center'}}>
           Overview
         </Typography>
@@ -130,7 +130,7 @@ export const DashboardPage = () => {
         </Grid>
       </Container>
 
-      <Container component={Paper} elevation={3} style={{marginTop: 32, padding: 16}}>
+      <Container component={Paper} elevation={3} style={{borderRadius: 8, marginTop: 32, padding: 16}}>
         <Typography variant="h5" gutterBottom style={{textAlign: 'center'}}>
           Devices
         </Typography>
@@ -162,11 +162,11 @@ export const DashboardPage = () => {
         </Grid>
       </Container>
 
-      <Container component={Paper} elevation={3} style={{marginTop: 32, padding: 16}}>
+      <Container component={Paper} elevation={3} style={{borderRadius: 8, marginTop: 32, padding: 16}}>
         <Typography variant="h5" gutterBottom style={{textAlign: 'center'}}>
           Devices Offline
         </Typography>
-        <TableContainer component={Paper} elevation={0}>
+        <TableContainer component={Paper} elevation={1} style={{border: '1px solid grey'}}>
           <Table stickyHeader>
             <SortableTableHead
               disableCheckbox
@@ -208,9 +208,9 @@ export const DashboardPage = () => {
                   <StyledTableCell align="right">
                     <Button
                       variant="contained"
-                      color="success"
                       size="small"
-                      //onClick={() => handleViewLogs(device.uuid)}
+                      style={{backgroundColor: ActiveMenuItemColor, color: '#fff'}}
+                      // TODO: onClick={() => handleRestart(device.uuid)}
                     >
                       Restart
                     </Button>

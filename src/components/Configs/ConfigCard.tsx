@@ -4,6 +4,7 @@ import {
   CardActions,
   CardContent,
   Container,
+  Divider,
   FormControlLabel,
   Grid,
   IconButton,
@@ -92,7 +93,7 @@ export const ConfigCard = (props: ConfigCardProps) => {
     <Card
       variant="elevation"
       elevation={3}
-      style={{...classes.card, borderRadius: 16}}
+      style={{...classes.card, border: '1px solid grey', borderRadius: 16}}
     >
       <Container component={Paper} elevation={3}>
         <CardContent>
@@ -114,8 +115,11 @@ export const ConfigCard = (props: ConfigCardProps) => {
                   />
                 }
                 label="Enabled"
-                style={{...classes.element, fontSize: 12}}
+                style={{...classes.element, marginBottom: 0, fontSize: 12}}
               />
+            </Grid>
+            <Grid item xs={12} style={{marginBottom: 8}}>
+              <Divider variant="fullWidth" />
             </Grid>
             <Grid item xs={12} style={{marginBottom: 8}}>
               <Typography variant="body2" color="textSecondary" component="p">
@@ -145,6 +149,7 @@ export const ConfigCard = (props: ConfigCardProps) => {
             </Grid>
           </Grid>
         </CardContent>
+        <Divider variant="middle" />
         <CardActions style={{ justifyContent: 'space-between', whiteSpace: 'nowrap' }}>
           <div style={{ flex: 1 }}>
             <Tooltip title="View Config" arrow>
