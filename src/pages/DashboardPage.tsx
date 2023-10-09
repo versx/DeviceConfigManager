@@ -27,7 +27,7 @@ import {
   StyledTableCell,
   StyledTableRow,
 } from '../components';
-import { ActiveMenuItemColor, DeviceOnlineIcon, DeviceOfflineIcon } from '../consts';
+import { ActiveMenuItemColor, DeviceOnlineIcon, DeviceOfflineIcon, Routes } from '../consts';
 import { formatDate, isDeviceOnline } from '../modules';
 import { ConfigService, DeviceService, ScheduleService } from '../services';
 import { getUserToken } from '../stores';
@@ -122,23 +122,26 @@ export const DashboardPage = () => {
         <Grid container spacing={3}>
           <Grid item xs={12} sm={4}>
             <DashboardItem
-              title="Total Configs"
+              title="Configs"
               value={configs.length.toLocaleString()}
               icon={SettingsIcon}
+              href={Routes.configs}
             />
           </Grid>
           <Grid item xs={12} sm={4}>
             <DashboardItem
-              title="Total Devices"
+              title="Devices"
               value={devices.length.toLocaleString()}
               icon={DevicesOtherIcon}
+              href={Routes.devices}
             />
           </Grid>
           <Grid item xs={12} sm={4}>
             <DashboardItem
-              title="Total Schedules"
+              title="Schedules"
               value={schedules.length.toLocaleString()}
               icon={EventNoteIcon}
+              href={Routes.schedules}
             />
           </Grid>
         </Grid>

@@ -43,9 +43,9 @@ const getLogger = (uuid: string, level: string = 'debug') => {
   const logger = new Logger({
     name: uuid,
     // 0: silly, 1: trace, 2: debug, 3: info, 4: warn, 5: error, 6: fatal
-    minLevel: getLogLevel(level), // TODO: Make configurable
+    minLevel: getLogLevel(level),
     // pretty | json | hidden
-    type: 'hidden', // TODO: Make configurable?
+    type: 'hidden',
     stylePrettyLogs: true,
     prettyLogTemplate: '[{{yyyy}}.{{mm}}.{{dd}} {{hh}}:{{MM}}:{{ss}}:{{ms}}] [{{logLevelName}}] [{{name}}] ',
   });
