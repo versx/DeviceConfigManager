@@ -8,7 +8,7 @@ import { LogRouter } from './log.routes';
 import { ScheduleRouter } from './schedule.routes';
 import { SettingsRouter } from './settings.routes';
 import { UserRouter } from './user.routes';
-import { ConfigApiRoute } from '../consts';
+import { ConfigApiRoute, LogNewApiRoute } from '../consts';
 import { ConfigController, LogController } from '../controllers';
 import { BearerTokenMiddleware, LoggingMiddleware } from '../middleware';
 
@@ -26,8 +26,9 @@ export const ApiRouter = (app: Application) => {
   // Initialize auth routes
   AuthRouter(app);
 
+  // Initialize device API routes
   app.post(ConfigApiRoute, BearerTokenMiddleware, ConfigController.getConfig);
-  app.post('/api/log/new', BearerTokenMiddleware, LogController.createLog);
+  app.post(LogNewApiRoute, BearerTokenMiddleware, LogController.createLog);
 
   // Initialize config routes
   ConfigRouter(app);

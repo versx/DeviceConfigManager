@@ -1,9 +1,13 @@
 import { resolve } from 'path';
 
+// Device API routes
+export const BaseDeviceApiRoute = '/api/';
+export const ConfigApiRoute = BaseDeviceApiRoute + 'config';
+export const LogNewApiRoute = BaseDeviceApiRoute + 'log/new';
+
 // API routes
-export const BaseApiRoute = '/api/';
+export const BaseApiRoute = '/api/v2/';
 export const AuthApiRoute = BaseApiRoute + 'auth';
-export const ConfigApiRoute = BaseApiRoute + 'config';
 export const ConfigsApiRoute = BaseApiRoute + 'configs';
 export const DevicesApiRoute = BaseApiRoute + 'devices';
 export const LogsApiRoute = BaseApiRoute + 'logs';
