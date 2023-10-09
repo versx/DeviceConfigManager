@@ -119,7 +119,7 @@ const getDeviceConfig = async (model: DeviceModel, autoSyncIP: boolean) => {
   if (!device?.config) {
     const defaultConfig = await ConfigService.getDefaultConfig();
     // No default config so don't give config response
-    if (defaultConfig) {
+    if (!defaultConfig) {
       logError(`[${model.uuid}] No config assigned to device and no default config is set!`);
       return {
         status: 'error',
