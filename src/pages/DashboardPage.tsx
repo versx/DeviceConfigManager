@@ -29,26 +29,7 @@ export const DashboardPage = () => {
         return;
       }
 
-      //setSchedules(response.schedules);
-      setSchedules([{
-        name: 'Test',
-        config: 'Main',
-        startTime: new Date(),
-        endTime: new Date(),
-        uuids: ["TestSE", "Test2SE"],
-        timezoneOffset: -7,
-        nextConfig: 'Test',
-        enabled: true,
-      },{
-        name: 'Test2',
-        config: 'Test',
-        startTime: new Date(),
-        endTime: new Date(),
-        uuids: ["Test2SE"],
-        timezoneOffset: -7,
-        nextConfig: 'Main',
-        enabled: false,
-      }]);
+      setSchedules(response.schedules);
     });
 
     ConfigService.getConfigs().then((response: any) => {
