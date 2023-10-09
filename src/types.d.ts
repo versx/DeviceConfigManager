@@ -28,6 +28,22 @@ export type Device = {
   config?: ConfigModel | null;
 };
 
+export type Log = {
+  uuid: string;
+  message: string;
+  logLevel: string;
+  date: Date;
+};
+
+export type LogArchive = {
+  path: string;
+  fileName: string;
+  data: string;
+  date: Date;
+  compressed: boolean;
+  size: number;
+};
+
 export type Schedule = {
   name: string;
   config: string;

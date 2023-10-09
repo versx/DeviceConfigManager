@@ -28,11 +28,16 @@ interface DeviceTableProps {
   devices: Device[];
   onEdit: (device: Device) => void;
   onDelete: (uuid: string) => void;
+  onViewLogs: (uuid: string) => void;
   onReload: () => void;
 };
 
 export const DeviceTable = (props: DeviceTableProps) => {
-  const { devices, onEdit, onDelete, onReload } = props;
+  const {
+    devices,
+    onEdit, onDelete,
+    onViewLogs, onReload,
+  } = props;
   const [search, setSearch] = useState('');
   const [order, setOrder] = useState<Order>('asc');
   const [orderBy, setOrderBy] = useState<keyof Device>('uuid');
@@ -188,7 +193,6 @@ export const DeviceTable = (props: DeviceTableProps) => {
                     {DeviceTableHeadCells.map((headCell: HeadCell<Device>, index: number) => (headCell.isAdmin || !headCell.isAdmin) && (
                       <StyledTableCell
                         key={index}
-                        //id={labelId}
                         component={index === 0 ? 'th' : undefined}
                         scope={index === 0 ? 'row' : undefined}
                         align={headCell.align ?? 'left'}
@@ -197,7 +201,6 @@ export const DeviceTable = (props: DeviceTableProps) => {
                           display: index > 0 && headCell.hidden ? 'none' : 'table-cell',
                           ...headCell.style,
                         }}
-
                       >
                         {headCell.format
                           ? headCell.format(row, row[headCell.id])
@@ -205,73 +208,15 @@ export const DeviceTable = (props: DeviceTableProps) => {
                         }
                       </StyledTableCell>
                     ))}
-                    {/*
-                    <StyledTableCell
-                      id={labelId}
-                      component="th"
-                      scope="row"
-                      padding="none"
-                      align="left"
-                      sx={{ display: { xs: 'table-cell' } }}
-                    >
-                      {// eslint-disable-next-line jsx-a11y/img-redundant-alt //}
-                      <img
-                        src={isOnline ? DeviceOnlineIcon : DeviceOfflineIcon}
-                        alt="device status image"
-                        style={{
-                          width: 64,
-                          height: 64,
-                        }}
-                      />
-                    </StyledTableCell>
-                    <StyledTableCell align="left">
-                      {row.uuid}
-                    </StyledTableCell>
-                    <StyledTableCell align="left">
-                      {row.config ?? '-'}
-                    </StyledTableCell>
-                    <StyledTableCell align="left" sx={{ display: { xs: 'none', sm: 'table-cell' } }}>
-                      {row.model ?? '-'}
-                    </StyledTableCell>
-                    <StyledTableCell
-                      align="left"
-                      sx={{ display: { xs: 'none', sm: 'none', md: 'table-cell' } }}
-                    >
-                      {row.iosVersion ?? '-'}
-                    </StyledTableCell>
-                    <StyledTableCell
-                      align="left"
-                      sx={{ display: { xs: 'none', sm: 'none', md: 'table-cell' } }}
-                      //display: headCell.hidden ?? false ? 'none' : 'flex-inline',
-                    >
-                      {row.ipaVersion ?? '-'}
-                    </StyledTableCell>
-                    <StyledTableCell align="left" sx={{ display: { xs: 'none', sm: 'none', md: 'table-cell' } }}>
-                      {row.ipAddr ?? '-'}
-                    </StyledTableCell>
-                    <StyledTableCell
-                      align="left"
-                      title={moment(row.createdAt).format('MMMM Do YYYY, h:mm:ss a')}
-                      sx={{ display: { xs: 'none', sm: 'none', md: 'none', lg: 'table-cell' } }}
-                    >
-                      {row.lastSeen ? moment(row.lastSeen).calendar() : 'Never'}
-                    </StyledTableCell>
-                    <StyledTableCell align="left" sx={{ display: { xs: 'none', sm: 'table-cell' } }}>
-                      {row.enabled ? 'Yes' : 'No'}
-                    </StyledTableCell>
-                    <StyledTableCell
-                      align="left"
-                      title={moment(row.createdAt).format('MMMM Do YYYY, h:mm:ss a')}
-                      sx={{ display: { xs: 'none', sm: 'none', md: 'none', lg: 'table-cell' } }}
-                    >
-                      {moment(row.createdAt).calendar()}
-                    </StyledTableCell>
-                    */}
                     <StyledTableCell align="left" sx={{ display: { xs: 'table-cell' } }}>
                       <DeviceActionsButtonGroup
                         model={row}
                         onEdit={onEdit}
                         onDelete={onDelete}
+                        onViewLogs={(e) => {
+                          e.stopPropagation();
+                          onViewLogs(row.uuid);
+                        }}
                       />
                     </StyledTableCell>
                   </StyledTableRow>

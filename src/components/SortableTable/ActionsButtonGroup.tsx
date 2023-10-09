@@ -4,6 +4,7 @@ import {
   Tooltip,
 } from '@mui/material';
 import {
+  Article as LogsIcon,
   Delete as DeleteIcon,
   Edit as EditIcon,
 } from '@mui/icons-material'
@@ -15,6 +16,7 @@ export interface ActionsButtonGroupProps<T, TKey> {
   model: T;
   onEdit: (event: any, model: T) => void;
   onDelete: (event: any, id: TKey) => void;
+  onViewLogs?: (event: any, id: TKey) => void;
 }
 
 export const ConfigActionsButtonGroup = (props: ActionsButtonGroupProps<Config, string>) => {
@@ -34,10 +36,9 @@ export const ConfigActionsButtonGroup = (props: ActionsButtonGroupProps<Config, 
       <Tooltip title="Delete config" arrow>
         <IconButton
           size="small"
-          color="error"
           onClick={(e) => onDelete(e, model.name)}
         >
-          <DeleteIcon />
+          <DeleteIcon color="error" />
         </IconButton>
       </Tooltip>
     </ButtonGroup>
@@ -45,10 +46,18 @@ export const ConfigActionsButtonGroup = (props: ActionsButtonGroupProps<Config, 
 };
 
 export const DeviceActionsButtonGroup = (props: ActionsButtonGroupProps<Device, string>) => {
-  const { model, onEdit, onDelete } = props;
+  const { model, onEdit, onDelete, onViewLogs } = props;
 
   return (
     <ButtonGroup variant="outlined">
+      <Tooltip title="View device logs" arrow>
+        <IconButton
+          size="small"
+          onClick={(e) => onViewLogs && onViewLogs(e, model.uuid)}
+        >
+          <LogsIcon />
+        </IconButton>
+      </Tooltip>
       <Tooltip title="Edit device" arrow>
         <IconButton
           size="small"
@@ -61,10 +70,9 @@ export const DeviceActionsButtonGroup = (props: ActionsButtonGroupProps<Device, 
       <Tooltip title="Delete device" arrow>
         <IconButton
           size="small"
-          color="error"
           onClick={(e) => onDelete(e, model.uuid)}
         >
-          <DeleteIcon />
+          <DeleteIcon color="error" />
         </IconButton>
       </Tooltip>
     </ButtonGroup>
@@ -88,10 +96,9 @@ export const UserActionsButtonGroup = (props: ActionsButtonGroupProps<User, numb
       <Tooltip title="Delete short URL" arrow>
         <IconButton
           size="small"
-          color="error"
           onClick={(e) => onDelete(e, model.id!)}
         >
-          <DeleteIcon />
+          <DeleteIcon color="error" />
         </IconButton>
       </Tooltip>
     </ButtonGroup>

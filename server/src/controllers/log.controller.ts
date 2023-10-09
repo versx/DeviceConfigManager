@@ -3,25 +3,13 @@ import { Request, Response } from 'express';
 import { LogService } from '../services';
 
 const getLogs = (req: Request, res: Response) => {
-  const results = LogService.getLoggers();
-  res.json({
-    status: 'ok',
-    logs: results,
-  });
-};
+  const { uuid } = req.query;
+  const { logs, archives } = LogService.getLogs(uuid?.toString()!, true);
 
-const getLog = (req: Request, res: Response) => {
-  const { name } = req.params;
-  const log = LogService.getLogger(name);
-  if (!log) {
-    return res.json({
-      status: 'error',
-      message: 'Log not found.',
-    });
-  }
   res.json({
     status: 'ok',
-    log,
+    logs,
+    archives,
   });
 };
 
@@ -44,15 +32,25 @@ const createLog = (req: Request, res: Response) => {
 };
 
 const deleteLog = (req: Request, res: Response) => {
-  const { name } = req.query;
-  if (!name) {
+  const { uuid, archive } = req.query;
+  if (!uuid) {
     return res.json({
       status: 'error',
       error: 'No log file specified.',
     });
   }
 
-  const log = LogService.deleteLogger(name.toString());
+  if (archive) {
+    if (!LogService.deleteLogArchive(uuid.toString(), archive.toString())) {
+      return res.json({
+        status: 'error',
+        error: `Failed to delete log archive.`,
+      });
+    }
+    return res.json({ status: 'ok' });
+  }
+
+  const log = LogService.deleteLogs(uuid.toString());
   if (!log) {
     return res.json({
       status: 'error',
@@ -64,7 +62,6 @@ const deleteLog = (req: Request, res: Response) => {
 };
 
 export const LogController = {
-  getLog,
   getLogs,
   createLog,
   deleteLog,

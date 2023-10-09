@@ -5,6 +5,8 @@ export const ActiveMenuItemColor = '#0088fe'; //'#1e90ff';
 
 export const DefaultWebServerPort = 8080;
 
+export const DefaultLogsReloadInterval = 5; // seconds
+
 export const DefaultEnableRegistration = true;
 export const DefaultUserTheme = 'system';
 

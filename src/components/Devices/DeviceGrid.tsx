@@ -15,7 +15,7 @@ import { useSnackbar } from 'notistack';
 
 import { DeviceCard, DeviceTable } from '..';
 import { StorageKeys } from '../../consts';
-import { CreateDeviceDialog } from '../../dialogs';
+import { CreateDeviceDialog, ViewDeviceLogsDialog } from '../../dialogs';
 import { get, set } from '../../modules';
 import { DeviceService } from '../../services';
 import { Config, Device } from '../../types';
@@ -40,6 +40,8 @@ export const DeviceGrid = (props: DeviceGridProps) => {
     open: false,
     editModel: undefined,
   });
+  const [openLogsDialog, setOpenLogsDialog] = useState(false);
+  const [device, setDevice] = useState<string | null>(null);
   const { enqueueSnackbar } = useSnackbar();
 
   const handleAlignment = (event: any, newAlignment: string | null) => setAlignment(newAlignment);
@@ -93,6 +95,11 @@ export const DeviceGrid = (props: DeviceGridProps) => {
 
     enqueueSnackbar(`Device deleted successfully!`, { variant: 'success' });
     onReload();
+  };
+
+  const handleViewLogs = (uuid: string) => {
+    setDevice(uuid);
+    setOpenLogsDialog(true);
   };
 
   return (
@@ -153,6 +160,7 @@ export const DeviceGrid = (props: DeviceGridProps) => {
                 onAssign={handleAssign}
                 onEdit={handleEdit}
                 onDelete={handleDelete}
+                onViewLogs={handleViewLogs}
               />
             </Grid>
           ))}
@@ -162,6 +170,7 @@ export const DeviceGrid = (props: DeviceGridProps) => {
           devices={devices}
           onEdit={handleEdit}
           onDelete={handleDelete}
+          onViewLogs={handleViewLogs}
           onReload={onReload}
         />
       )}
@@ -172,6 +181,12 @@ export const DeviceGrid = (props: DeviceGridProps) => {
         device={state.editModel}
         onClose={handleClose}
         onSave={handleSubmit}
+      />
+
+      <ViewDeviceLogsDialog
+        open={openLogsDialog}
+        uuid={device!}
+        onClose={() => setOpenLogsDialog(false)}
       />
     </>
   );

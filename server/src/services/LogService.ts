@@ -1,51 +1,211 @@
-import { resolve } from 'path';
-import { Logger } from 'tslog';
+import { existsSync, readFileSync, rmSync, statSync, writeFileSync } from 'fs';
+import { basename, resolve } from 'path';
 import { createStream } from 'rotating-file-stream';
+import { ILogObjMeta, Logger } from 'tslog';
 
-const loggers: { [name: string]: Logger<any> } = {};
+import { logs } from '../config.json';
+import {
+  DefaultLogsRotateInterval,
+  DefaultLogsRotateMaxFiles,
+  DefaultLogsRotateMaxSize,
+  LogsFolder,
+} from '../consts';
+import { LogArchiveModel, LogModel } from '../types';
 
-const getLoggers = () => loggers;
+interface LogsResponse {
+  uuid: string;
+  logs: LogModel[];
+  archives: LogArchiveModel[];
+};
 
-const getLogger = (name: string, level: string = 'info') => {
-  if (loggers[name]) {
-    return loggers[name];
+const loggers: { [uuid: string]: Logger<any> } = {};
+
+const getLogger = (uuid: string, level: string = 'info') => {
+  if (loggers[uuid]) {
+    createLogFile(uuid);
+    return loggers[uuid];
   }
 
-  const logFolder = resolve(__dirname, '../../static/logs');
-  const logFileName = `${name}.log`;
-  //const logPath = resolve(logFolder, logFileName);
+  const logFileName = `${uuid}.log`;
   const stream = createStream(logFileName, {
-    size: '1M', // rotate every 10 MegaBytes written
-    maxSize: '1M', // rotate every 10 MegaBytes written
-    interval: '1d', //'1h', // rotate daily
+    interval: logs.rotate.interval ?? DefaultLogsRotateInterval,
     compress: 'gzip', // compress rotated files
-    path: logFolder,
+    maxFiles: logs.rotate.maxFiles ?? DefaultLogsRotateMaxFiles,
+    maxSize: logs.rotate.maxSize ?? DefaultLogsRotateMaxSize,
+    path: LogsFolder,
   });
-  stream.on('rotated', (filename) => {
+  stream.on('rotation', () => {
+    console.log('Log file rotation started:', logFileName);
+  });
+  stream.on('rotated', (filename: string) => {
     console.log('Log file rotated:', filename);
   });
-  stream.on('error', (err) => {
-    console.error('Log rotation error:', err);
+  stream.on('removed', (filename: string) => {
+    console.warn('Log file removed:', filename);
+  });
+  stream.on('warning', (err: Error) => {
+    console.warn('Log file rotation warning:', err);
+  });
+  stream.on('error', (err: Error) => {
+    console.error('Log file rotation error:', err);
   });
 
   const logger = new Logger({
-    name,
+    name: uuid,
     //minLevel: level,
-    type: 'pretty',
+    type: 'pretty', // pretty/json
+    stylePrettyLogs: true,
   });
-  logger.attachTransport((logObj) => {
-    stream.write(JSON.stringify(logObj) + '\n');
+  logger.attachTransport((logObj: ILogObjMeta) => {
+    createLogFile(uuid);
+
+    const meta = logObj['_meta'];
+    const obj = {
+      uuid: meta?.name,
+      message: logObj['0'],
+      date: meta?.date,
+      logLevel: meta?.logLevelName,
+    };
+    stream.write(JSON.stringify(obj) + '\n');
   });
 
-  return loggers[name] = logger;
+  return loggers[uuid] = logger;
 };
 
-const deleteLogger = (name: string) => {
-  return true;
+const getLogs = (uuid: string, includeArchieved: boolean = false): LogsResponse => {
+  createLogFile(uuid);
+
+  const logFileName = `${uuid}.log`;
+  const logPath = resolve(LogsFolder, logFileName);
+  const json = readFileSync(logPath, { encoding: 'utf-8' });
+  if (!json) {
+    return { uuid, logs: [], archives: [] };
+  }
+
+  const messages = json
+    .split('\n')
+    .filter((msg) => !!msg)
+    .map((msg) => JSON.parse(msg));
+
+  return {
+    uuid,
+    logs: messages,
+    archives: includeArchieved
+      ? getLogArchives(uuid)
+      : [],
+  };
+};
+
+const deleteLogs = (uuid: string, includeArchieved: boolean = false) => {
+  const logPath = resolve(LogsFolder, `${uuid}.log`);
+  if (!existsSync(logPath)) {
+    return true;
+  }
+
+  try {
+    clearLogFile(uuid);
+    //writeFileSync(logPath, '');
+    //rmSync(logPath, { force: true });
+
+    if (includeArchieved) {
+      const archivedLogs = getLogArchives(uuid);
+      for (const archivedLog of archivedLogs) {
+        try {
+          rmSync(archivedLog.path, { force: true });
+        } catch (err) {
+          console.error('Failed to delete archived log:', err);
+        }
+      }
+    }
+
+    return true;
+  } catch (err) {
+    console.error('Failed to delete log:', logPath, err);
+  }
+  return false;
+};
+
+const deleteLogArchive = (uuid: string, archive: string) => {
+  if (!existsSync(archive)) {
+    return true;
+  }
+
+  try {
+    const manifestPath = resolve(LogsFolder, `${uuid}.log.txt`);
+    const manifest = readFileSync(manifestPath, { encoding: 'utf-8' })
+      ?.split('\n')
+      ?.filter(path => path !== archive)
+      ?.join('\n');
+    writeFileSync(manifestPath, manifest);
+    rmSync(archive, { force: true });
+
+    return true;
+  } catch (err) {
+    console.error('Failed to delete log archive:', archive, err);
+  }
+  return false;
+};
+
+const createLogFile = (uuid: string) => {
+  const path = resolve(LogsFolder, `${uuid}.log`);
+  if (existsSync(path)) {
+    return;
+  }
+
+  writeFileSync(path, '');
+};
+
+const clearLogFile = (uuid: string) => {
+  const path = resolve(LogsFolder, `${uuid}.log`);
+  if (!existsSync(path)) {
+    createLogFile(uuid);
+    return;
+  }
+
+  writeFileSync(path, '');
+};
+
+const getLogArchives = (uuid: string, limit: number = 10) => {
+  const archiveManifestPath = resolve(LogsFolder, `${uuid}.log.txt`);
+  if (!existsSync(archiveManifestPath)) {
+    return [];
+  }
+
+  const manifest = readFileSync(archiveManifestPath, { encoding: 'utf-8' })
+    ?.split('\n')
+    ?.filter((path) => !!path);
+  const archiveLogPaths = manifest.slice(0, Math.min(limit, manifest.length));
+  const archives = [];
+  for (const archiveLogPath of archiveLogPaths) {
+    if (!existsSync(archiveLogPath)) {
+      continue;
+    }
+    const fileName = basename(archiveLogPath);
+    const data = readFileSync(archiveLogPath, { encoding: 'utf-8' });
+    const logDate = fileName.split('-')[0];
+    const compressed = archiveLogPath.endsWith('.log.gz');
+    const date = new Date(
+      parseInt(logDate.substr(0,4)), 
+      parseInt(logDate.substr(4,2)) - 1, 
+      parseInt(logDate.substr(6,2))
+    );
+    const size = statSync(archiveLogPath).size;
+    archives.push({
+      path: archiveLogPath,
+      fileName,
+      data,
+      compressed,
+      date,
+      size,
+    });
+  }
+  return archives;
 };
 
 export const LogService = {
-  getLoggers,
   getLogger,
-  deleteLogger,
+  getLogs,
+  getLogArchives,
+  deleteLogs,
+  deleteLogArchive,
 };

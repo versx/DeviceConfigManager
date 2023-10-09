@@ -7,9 +7,11 @@ import {
 } from '@mui/material';
 import {
   ArrowForwardIos as ArrowForwardIosIcon,
+  Article as ViewLogsIcon,
   Delete as DeleteIcon,
   Edit as EditIcon,
   MoreVert as MoreVertIcon,
+  Settings as SettingsIcon,
 } from '@mui/icons-material';
 
 import { Config, Device } from '../../types';
@@ -20,10 +22,14 @@ interface DeviceDropdownMenuProps {
   onAssign: (uuid: string, config: string | null) => void;
   onEdit: (device: Device) => void;
   onDelete: (uuid: string) => void;
+  onViewLogs: (uuid: string) => void;
 };
 
 export const DeviceDropdownMenu = (props: DeviceDropdownMenuProps) => {
-  const { configs, device, onAssign, onEdit, onDelete } = props;
+  const {
+    configs, device,
+    onAssign, onEdit, onDelete, onViewLogs,
+  } = props;
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
   const [subMenuAnchorEl, setSubMenuAnchorEl] = useState<null | HTMLElement>(null);
 
@@ -77,6 +83,13 @@ export const DeviceDropdownMenu = (props: DeviceDropdownMenuProps) => {
     onDelete(uuid);
   };
 
+  const handleViewLogs = (event: any, uuid: string) => {
+    event.stopPropagation();
+
+    handleMenuClose(event);
+    onViewLogs(uuid);;
+  };
+
   return (
     <>
       <Tooltip title="Edit device" arrow>
@@ -96,11 +109,10 @@ export const DeviceDropdownMenu = (props: DeviceDropdownMenuProps) => {
       <Tooltip title="Delete device" arrow>
         <IconButton
           aria-label="Delete device"
-          color="error"
           size="small"
           onClick={(e) => handleDelete(e, device.uuid)}
         >
-          <DeleteIcon />
+          <DeleteIcon color="error" />
         </IconButton>
       </Tooltip>
 
@@ -120,10 +132,14 @@ export const DeviceDropdownMenu = (props: DeviceDropdownMenuProps) => {
           //onMouseOver={handleSubMenuOpen}
           //onMouseOut={handleSubMenuClose}
         >
+          <SettingsIcon />&nbsp;
           Assign Config&nbsp;
           <ArrowForwardIosIcon fontSize="small" />
         </MenuItem>
-        {/*<MenuItem key="edit" onClick={(e) => handleEdit(e, device)}>Edit</MenuItem>*/}
+        <MenuItem key="logs" onClick={(e) => handleViewLogs(e, device.uuid)}>
+          <ViewLogsIcon />&nbsp;
+          View Logs
+        </MenuItem>
       </Menu>
 
       <Menu

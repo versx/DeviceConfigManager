@@ -49,7 +49,8 @@ export function stableSort<T>(array: readonly T[], comparator: (a: T, b: T) => n
   return stabilizedThis.map((el) => el[0]);
 };
 
-export const getUnix = () => Math.round(new Date().getTime() / 1000);
+export const getUnix = () => getUnixTime(new Date());
+export const getUnixTime = (date: Date) => Math.round(date.getTime() / 1000);
 
 export const formatDateForDateTimeInput = (date: Date): string => {
   const yyyy = date.getFullYear();
@@ -317,4 +318,23 @@ export const toArr2 = (obj: any) => {
     newSettings.push({ name: key, value: obj[key] });
   }
   return newSettings
+};
+
+export const formatFileSize = (bytes: number, si: boolean = false, dp: number = 1) => {
+  const thresh = si ? 1000 : 1024;
+  if (Math.abs(bytes) < thresh) {
+    return bytes + ' B';
+  }
+
+  const units = si 
+    ? ['kB', 'MB', 'GB', 'TB', 'PB', 'EB', 'ZB', 'YB'] 
+    : ['KiB', 'MiB', 'GiB', 'TiB', 'PiB', 'EiB', 'ZiB', 'YiB'];
+  const r = 10**dp;
+  let u = -1;
+  do {
+    bytes /= thresh;
+    ++u;
+  } while (Math.round(Math.abs(bytes) * r) / r >= thresh && u < units.length - 1);
+
+  return bytes.toFixed(dp) + ' ' + units[u];
 };

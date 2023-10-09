@@ -24,6 +24,11 @@ export type AppConfig = {
     colors: {
       [type: ColorType]: string;
     };
+    rotate: {
+      interval: string;
+      maxFiles: number;
+      maxSize: string;
+    };
   };
   timezone: string;
   autoSyncIP: boolean;
@@ -69,8 +74,19 @@ export type DeviceModel = {
 };
 
 export type LogModel = {
-  name: string;
+  uuid: string;
+  message: string;
+  logLevel: string;
+  date: Date;
+};
+
+export type LogArchiveModel = {
+  path: string;
+  fileName: string;
   data: string;
+  date: Date;
+  compressed: boolean;
+  size: number;
 };
 
 export type ScheduleModel = {

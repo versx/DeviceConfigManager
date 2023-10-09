@@ -74,8 +74,8 @@ export const ScheduleCard = (props: ScheduleCardProps) => {
             </IconButton>
           </Tooltip>
           <Tooltip title="Delete Schedule" arrow>
-            <IconButton color="error" onClick={() => onDelete(schedule.name)}>
-              <DeleteIcon />
+            <IconButton onClick={() => onDelete(schedule.name)}>
+              <DeleteIcon color="error" />
             </IconButton>
           </Tooltip>
         </div>

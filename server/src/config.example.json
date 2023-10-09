@@ -27,6 +27,11 @@
       "date": "#4287f5",
       "warn": "#ffff00",
       "error": "#ff0000"
+    },
+    "rotate": {
+      "interval": "1d",
+      "maxFiles": 5,
+      "maxSize": "1M"
     }
   },
   "timezone": "America/Denver"

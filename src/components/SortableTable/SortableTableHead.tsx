@@ -4,7 +4,11 @@ import {
   TableHead,
   TableSortLabel,
 } from '@mui/material';
-import { ArrowDownward as ArrowDownwardIcon } from '@mui/icons-material';
+import {
+  ArrowDownward as ArrowDownwardIcon,
+  Check as CheckIcon,
+  Close as CloseIcon,
+} from '@mui/icons-material';
 import { visuallyHidden } from '@mui/utils';
 import moment from 'moment';
 
@@ -140,7 +144,8 @@ export const DeviceTableHeadCells: readonly HeadCell<Device>[] = [
     label: 'Enabled',
     style: { display: { xs: 'none', sm: 'table-cell' } },
     maxWidth: 75,
-    format: (row: Device, value: any) => value ? 'Yes' : 'No',
+    //format: (row: Device, value: any) => value ? 'Yes' : 'No',
+    format: (row: Device, value: any) => value ? <CheckIcon color="success" /> : <CloseIcon color="error" />,
   },
   {
     id: 'createdAt',
@@ -241,7 +246,15 @@ export const SortableTableHead = <T extends unknown>(props: TableProps<T>) => {
             </TableSortLabel>
           </StyledTableCell>
         ))}
-        <StyledTableCell align="left" sx={{ display: { xs: 'table-cell' } }}>
+        <StyledTableCell
+          align="left"
+          sx={{
+            display: { xs: 'table-cell' },
+            minWidth: 50,
+            maxWidth: 50,
+            width: 50,
+          }}
+        >
           <strong>Actions</strong>
         </StyledTableCell>
       </StyledTableRow>

@@ -5,6 +5,7 @@ export * from './CardDisplay';
 export * from './Charts';
 export * from './Configs';
 export * from './Devices';
+export * from './Logs';
 export * from './Nav';
 export * from './Routes';
 export * from './Schedules';

@@ -1,3 +1,5 @@
+import { resolve } from 'path';
+
 // API routes
 export const BaseApiRoute = '/api/';
 export const AuthApiRoute = BaseApiRoute + 'auth';
@@ -13,6 +15,11 @@ export const DefaultExpiresIn = 365 * 86400; // 1 year
 export const DefaultMaxSlugLimit = 1000;
 export const DefaultScheduleInterval = 60; // seconds
 export const DefaultWebServerPort = 8080;
+
+export const LogsFolder = resolve(__dirname, '../../server/static/logs');
+export const DefaultLogsRotateInterval = '1d'; // rotate daily
+export const DefaultLogsRotateMaxFiles = 5; // keep up to 10 back copies
+export const DefaultLogsRotateMaxSize = '1M'; // rotate every 1 MBs written
 
 // Database table options
 export const SequelizeOptions = {
