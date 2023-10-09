@@ -2,6 +2,7 @@ import { Sequelize } from 'sequelize';
 
 import { Config } from './Config';
 import { Device } from './Device';
+import { DeviceStat } from './DeviceStat';
 import { Schedule } from './Schedule';
 import { Setting } from './Setting';
 import { User } from './User';
@@ -14,6 +15,7 @@ const sequelize = new Sequelize(config.database);
 export const db: SequelizeDatabaseConnection = { connection: sequelize };
 db.config = Config(sequelize);
 db.device = Device(sequelize);
+db.deviceStat = DeviceStat(sequelize);
 db.schedule = Schedule(sequelize);
 db.setting = Setting(sequelize);
 db.user = User(sequelize);
@@ -23,6 +25,13 @@ db.config.hasOne(db.device, {
   //as: 'config',
   foreignKey: 'config',
   //onDelete: 'CASCADE',
+  onUpdate: 'CASCADE',
+});
+
+db.device.hasMany(db.deviceStat, {
+  as: 'deviceStats',
+  foreignKey: 'uuid',
+  onDelete: 'CASCADE',
   onUpdate: 'CASCADE',
 });
 

@@ -1,6 +1,6 @@
 import { Request, Response } from 'express';
 
-import { LogService } from '../services';
+import { DeviceService, LogService } from '../services';
 
 const getLogs = (req: Request, res: Response) => {
   const { uuid } = req.query;
@@ -13,19 +13,18 @@ const getLogs = (req: Request, res: Response) => {
   });
 };
 
-const createLog = (req: Request, res: Response) => {
+const createLog = async (req: Request, res: Response) => {
   const { uuid, messages } = req.body;
   const logger = LogService.getLogger(uuid);
 
   for (let i = messages.length - 1; i >= 0; i--) {
     const message = messages[i];
-    if (message.includes('Initializing')) {
-      // TODO: Add device restarts to Device model
-      //const result = await Stats.counter(uuid + '-' + today + '-gamerestarts');
-      logger.info(message);
-      continue;
-    }
     logger.info(message);
+
+    if (message.includes('Initializing')) {
+      // TODO: Format date to YYYY-MM-DD
+      await DeviceService.createDeviceStat(uuid.toString(), new Date(new Date().toDateString()));
+    }
   }
 
   res.json({ status: 'ok' });

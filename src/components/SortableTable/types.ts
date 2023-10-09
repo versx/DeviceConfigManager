@@ -24,6 +24,7 @@ export interface TableProps<T> {
   orderBy: string;
   rowCount: number;
   isAdmin: boolean;
+  disableCheckbox?: boolean;
 };
 
 export interface TableToolbarProps {

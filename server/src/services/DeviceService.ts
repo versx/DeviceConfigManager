@@ -19,10 +19,13 @@ const assignConfig = async (deviceUuid: string, configName: string): Promise<Dev
 
 const getDevices = async (): Promise<DeviceModel[]> => {
   const models = await db.device.findAll({
-    //include: [{
+    include: [{
     //  model: db.config,
     //  as: 'config',
-    //}],
+    //},{
+      model: db.deviceStat,
+      as: 'deviceStats',
+    }],
   });
   return models;
 };
@@ -61,6 +64,24 @@ const deleteDevice = async (uuid: string): Promise<boolean> => {
   return true;
 };
 
+const createDeviceStat = async (uuid: string, date: Date) => {
+  const exists = await db.deviceStat.findOne({
+    where: { uuid, date },
+  });
+  if (exists) {
+    exists.set({ restarts: exists.restarts + 1 });
+    await exists.save();
+    return exists;
+  }
+
+  const model = await db.deviceStat.create({
+    uuid,
+    date,
+    restarts: 1,
+  });
+  return model;
+};
+
 export const DeviceService = {
   assignConfig,
   getDevice,
@@ -68,4 +89,5 @@ export const DeviceService = {
   createDevice,
   updateDevice,
   deleteDevice,
+  createDeviceStat,
 };

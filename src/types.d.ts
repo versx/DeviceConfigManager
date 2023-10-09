@@ -26,6 +26,16 @@ export type Device = {
   updatedAt?: Date;
 
   config?: ConfigModel | null;
+  deviceStats?: DeviceStat[];
+};
+
+export type DeviceStat = {
+  uuid: string;
+  date: Date;
+  restarts: number;
+
+  createdAt?: Date;
+  updatedAt?: Date;
 };
 
 export type Log = {

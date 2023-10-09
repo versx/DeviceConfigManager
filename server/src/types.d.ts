@@ -39,6 +39,7 @@ export type SequelizeDatabaseConnection = {
   connection: Sequelize;
   config?: Model;
   device?: Model;
+  deviceStat?: Model;
   schedule?: Model;
   setting?: Model;
   user?: Model;
@@ -73,6 +74,13 @@ export type DeviceModel = {
   updatedAt?: Date;
 
   config?: ConfigModel | null;
+  deviceStats?: DeviceStatModel[];
+};
+
+export type DeviceStatModel = {
+  uuid: string;
+  date: Date;
+  restarts: number;
 };
 
 export type LogModel = {
