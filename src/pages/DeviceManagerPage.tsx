@@ -1,5 +1,5 @@
 import { Buffer } from 'buffer';
-import React, { useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import {
   Button,
@@ -22,7 +22,7 @@ const imageHeader = 'data:image/png;base64,';
 export const DeviceManagerPage = () => {
   const { uuid } = useParams();
   const [devices, setDevices] = useState<Device[]>([]);
-  const [selectedDevice, setSelectedDevice] = useState<string | null>('');
+  const [selectedDevice, setSelectedDevice] = useState<string | null>('none');
   const [response, setResponse] = useState<any>('');
   const [error, setError] = useState<string | null>('');
   const [screenshot, setScreenshot] = useState<string>();
@@ -64,17 +64,19 @@ export const DeviceManagerPage = () => {
     }
   };
 
-  const handleReload = () => {
+  const handleReload = useCallback(() => {
     DeviceService.getDevices().then((response: any) => {
       if (response?.status !== 'ok') {
         return;
       }
 
       setDevices(response.devices);
+      const selected = response.devices.find((device: Device) => device.uuid === uuid);
+      setSelectedDevice(selected?.ipAddr ? selected.ipAddr : 'none');
     });
-  };
+  }, [uuid]);
 
-  useEffect(() => handleReload(), []);
+  useEffect(() => handleReload(), [handleReload]);
 
   return (
     <Container>
