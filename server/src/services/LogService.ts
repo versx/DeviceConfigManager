@@ -20,9 +20,8 @@ interface LogsResponse {
 
 const loggers: { [uuid: string]: Logger<any> } = {};
 
-const getLogger = (uuid: string, level: string = 'info') => {
+const getLogger = (uuid: string, level: string = 'debug') => {
   if (loggers[uuid]) {
-    createLogFile(uuid);
     return loggers[uuid];
   }
 
@@ -34,27 +33,18 @@ const getLogger = (uuid: string, level: string = 'info') => {
     maxSize: logs.rotate.maxSize ?? DefaultLogsRotateMaxSize,
     path: LogsFolder,
   });
-  stream.on('rotation', () => {
-    console.log('Log file rotation started:', logFileName);
-  });
-  stream.on('rotated', (filename: string) => {
-    console.log('Log file rotated:', filename);
-  });
-  stream.on('removed', (filename: string) => {
-    console.warn('Log file removed:', filename);
-  });
-  stream.on('warning', (err: Error) => {
-    console.warn('Log file rotation warning:', err);
-  });
-  stream.on('error', (err: Error) => {
-    console.error('Log file rotation error:', err);
-  });
+  //stream.on('rotation', () => console.log('Log file rotation started:', logFileName));
+  //stream.on('rotated', (fileName: string) => console.log('Log file rotated:', fileName));
+  //stream.on('removed', (fileName: string) => console.warn('Log file removed:', fileName));
+  stream.on('warning', (err: Error) => console.warn('Log file rotation warning:', err));
+  stream.on('error', (err: Error) => console.error('Log file rotation error:', err));
 
   const logger = new Logger({
     name: uuid,
-    //minLevel: level,
+    minLevel: getLogLevel(level), // 0: silly, 1: trace, 2: debug, 3: info, 4: warn, 5: error, 6: fatal
     type: 'pretty', // pretty/json
     stylePrettyLogs: true,
+    prettyLogTemplate: '[{{yyyy}}.{{mm}}.{{dd}} {{hh}}:{{MM}}:{{ss}}:{{ms}}] [{{logLevelName}}] [{{name}}] ',
   });
   logger.attachTransport((logObj: ILogObjMeta) => {
     createLogFile(uuid);
@@ -200,6 +190,19 @@ const getLogArchives = (uuid: string, limit: number = 10) => {
     });
   }
   return archives;
+};
+
+const getLogLevel = (level: string) => {
+  switch (level.toLowerCase()) {
+    case 'silly': return 0;
+    case 'trace': return 1;
+    case 'debug': return 2;
+    case 'info': return 3;
+    case 'warn': return 4;
+    case 'error': return 5;
+    case 'fatal': return 6;
+    default: return 3;
+  }
 };
 
 export const LogService = {
