@@ -37,7 +37,7 @@ export const SettingsPage = () => {
       </Typography>
 
       <div style={{ display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center' }}>
-        <Container component={Paper} elevation={0} style={{ padding: '20px', marginTop: '20px', border: '1px solid grey' }}>
+        <Container component={Paper} elevation={1} style={{ padding: '20px', marginTop: '20px', border: '1px solid grey' }}>
           <Typography variant="h6" align="center" gutterBottom>
             Theme
           </Typography>
@@ -47,14 +47,14 @@ export const SettingsPage = () => {
           />
         </Container>
 
-        <Container component={Paper} elevation={0} style={{ padding: '20px', marginTop: '20px', border: '1px solid grey' }}>
+        <Container component={Paper} elevation={1} style={{ padding: '20px', marginTop: '20px', border: '1px solid grey' }}>
           <Typography variant="h6" align="center" gutterBottom>
             API Key
           </Typography>
           <ApiKeyTextField initialValue={currentUser?.apiKey} />
         </Container>
 
-        <Container component={Paper} elevation={0} style={{ padding: '20px', marginTop: '20px', border: '1px solid grey' }}>
+        <Container component={Paper} elevation={1} style={{ padding: '20px', marginTop: '20px', border: '1px solid grey' }}>
           <Typography variant="h6" align="center" gutterBottom>
             Change Password
           </Typography>

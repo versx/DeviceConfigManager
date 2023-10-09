@@ -18,9 +18,9 @@ export const useStyles: any = ((theme: Theme) => ({
   },
   logItem: {
     //padding: theme.spacing(1),
-    borderBottom: '1px solid #e0e0e0',
-    //display: 'flex',
-    //alignItems: 'center',
+    borderBottom: '1px solid rgba(128, 128, 128, 0.3)',
+    display: 'flex',
+    alignItems: 'center',
   },
   logLevel: {
     fontWeight: 'bold',

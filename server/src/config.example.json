@@ -30,7 +30,7 @@
       "error": "#ff0000"
     },
     "rotate": {
-      "interval": "30m",
+      "interval": "1h",
       "maxFiles": 5,
       "maxSize": "1M"
     }
