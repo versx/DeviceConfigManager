@@ -1,4 +1,4 @@
-import { existsSync, readFileSync, rmSync, statSync, writeFileSync } from 'fs';
+import { existsSync, mkdirSync, readFileSync, rmSync, statSync, writeFileSync } from 'fs';
 import { basename, resolve } from 'path';
 import { createStream } from 'rotating-file-stream';
 import { ILogObjMeta, Logger } from 'tslog';
@@ -25,13 +25,14 @@ const getLogger = (uuid: string, level: string = 'debug') => {
     return loggers[uuid];
   }
 
+  const deviceLogFolder = resolve(LogsFolder, uuid);
   const logFileName = `${uuid}.log`;
   const stream = createStream(logFileName, {
     interval: logs.rotate.interval ?? DefaultLogsRotateInterval,
     compress: 'gzip', // compress rotated files
     maxFiles: logs.rotate.maxFiles ?? DefaultLogsRotateMaxFiles,
     maxSize: logs.rotate.maxSize ?? DefaultLogsRotateMaxSize,
-    path: LogsFolder,
+    path: deviceLogFolder,
   });
   //stream.on('rotation', () => console.log('Log file rotation started:', logFileName));
   //stream.on('rotated', (fileName: string) => console.log('Log file rotated:', fileName));
@@ -68,7 +69,7 @@ const getLogs = (uuid: string, includeArchieved: boolean = false): LogsResponse 
   createLogFile(uuid);
 
   const logFileName = `${uuid}.log`;
-  const logPath = resolve(LogsFolder, logFileName);
+  const logPath = resolve(LogsFolder, uuid, logFileName);
   const json = readFileSync(logPath, { encoding: 'utf-8' });
   if (!json) {
     return { uuid, logs: [], archives: [] };
@@ -89,7 +90,7 @@ const getLogs = (uuid: string, includeArchieved: boolean = false): LogsResponse 
 };
 
 const deleteLogs = (uuid: string, includeArchieved: boolean = false) => {
-  const logPath = resolve(LogsFolder, `${uuid}.log`);
+  const logPath = resolve(LogsFolder, uuid, `${uuid}.log`);
   if (!existsSync(logPath)) {
     return true;
   }
@@ -123,7 +124,7 @@ const deleteLogArchive = (uuid: string, archive: string) => {
   }
 
   try {
-    const manifestPath = resolve(LogsFolder, `${uuid}.log.txt`);
+    const manifestPath = resolve(LogsFolder, uuid, `${uuid}.log.txt`);
     const manifest = readFileSync(manifestPath, { encoding: 'utf-8' })
       ?.split('\n')
       ?.filter(path => path !== archive)
@@ -139,7 +140,11 @@ const deleteLogArchive = (uuid: string, archive: string) => {
 };
 
 const createLogFile = (uuid: string) => {
-  const path = resolve(LogsFolder, `${uuid}.log`);
+  const folder = resolve(LogsFolder, uuid);
+  if (!existsSync(folder)) {
+    mkdirSync(folder, { recursive: true });
+  }
+  const path = resolve(folder, `${uuid}.log`);
   if (existsSync(path)) {
     return;
   }
@@ -148,7 +153,7 @@ const createLogFile = (uuid: string) => {
 };
 
 const clearLogFile = (uuid: string) => {
-  const path = resolve(LogsFolder, `${uuid}.log`);
+  const path = resolve(LogsFolder, uuid, `${uuid}.log`);
   if (!existsSync(path)) {
     createLogFile(uuid);
     return;
@@ -158,7 +163,7 @@ const clearLogFile = (uuid: string) => {
 };
 
 const getLogArchives = (uuid: string, limit: number = 10) => {
-  const archiveManifestPath = resolve(LogsFolder, `${uuid}.log.txt`);
+  const archiveManifestPath = resolve(LogsFolder, uuid, `${uuid}.log.txt`);
   if (!existsSync(archiveManifestPath)) {
     return [];
   }

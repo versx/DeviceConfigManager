@@ -8,6 +8,125 @@
 
 # Device Config Manager  
 
+## Prerequisites
+- [Node.js v18 or higher](https://nodejs.org/en/download)  
+
+
+## Installation
+
+1. Clone repository: `git clone https://github.com/versx/DeviceConfigManager dcm`  
+
+### Client  
+1. Install packages: `npm install`  
+1. Copy example config: `cp src/config.example.json src/config.json`  
+1. Fill out config options.  
+1. Build project in root folder: `npm run build`  
+1. Run: `npm run start`  
+
+### Server  
+1. Change directories: `cd server`  
+1. Install packages: `npm install`  
+1. Copy example config: `cp src/config.example.json src/config.json`  
+1. Fill out config options.  
+1. Build project in root folder: `npm run build`  
+1. Run: `npm run start`  
+
+
+## Updating  
+
+### Client
+1. Pull latest changes in root folder `git pull`  
+1. Build client project in root folder: `npm run build`  
+1. Run `npm run start`  
+
+### Server
+1. Pull latest changes in root folder `git pull`  
+1. Change directories: `cd server`  
+1. Build server project: `npm run build`  
+1. Run `npm run start`  
+
+
+## Configuration
+
+### Client  
+```json
+{
+  // Base API url address of server.
+  "apiUrl": "http://127.0.0.1:9992/api/v2/"
+}
+```
+
+### Server
+```json
+{
+  // Host IP address to list on.
+  "host": "0.0.0.0",
+  // Port to listen on.
+  "port": 9992,
+  // Authorization options.
+  "auth": {
+    // Initial Administrator user account seed.
+    "admin": {
+      // Username for admin account.
+      "username": "admin",
+      // Password for admin account.
+      "password": "p4ssw0rd!"
+    },
+    // Secret token used for creating JsonWebTokens (JWTs).
+    "secret": "auth token",
+    // MITM authorization bearer tokens allowed, leave blank to allow all.
+    "bearerTokens": []
+  },
+  // Keep device IP addresses updated in database.
+  "autoSyncIP": true,
+  // Database options.
+  "database": {
+    // Database dialect to use. (i.e. mysql/mariadb)
+    "dialect": "mysql",
+    // Database host address.
+    "host": "127.0.0.1",
+    // Database listening port.
+    "port": 3306,
+    // Database account username.
+    "username": "root",
+    // Database account password.
+    "password": "password",
+    // Database name.
+    "database": "dcmdb",
+    // Timezone used for `createdAt` and `updatedAt` column values.
+    "timezone": "America/Denver",
+    // Whether to enable or disable Sequelize database
+    // query logging.
+    "logging": false
+  },
+  // Logging options.
+  "logs": {
+    // Log level to use. (none, trace, debug, info, warn, error)
+    "level": "info",
+    // Log color options.
+    "colors": {
+      "text": "#ffffff",
+      "variable": "#ff624d",
+      "date": "#4287f5",
+      "warn": "#ffff00",
+      "error": "#ff0000"
+    },
+    // Log rotation options.
+    "rotate": {
+      // How often to check if log file should be rotated
+      "interval": "1h",
+      // Maximum number of rotated log files to keep
+      "maxFiles": 5,
+      // Maximum size of log file before rotated
+      "maxSize": "1M"
+    }
+  },
+  // 
+  "timezone": "America/Denver"
+}
+```
+
+
 ## Screenshots  
 **Dashboard**  
 [![Dashboard](.github/images/dashboard.png)](.github/images/dashboard.png)  

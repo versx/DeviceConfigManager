@@ -14,7 +14,7 @@ import {
 import { useSnackbar } from 'notistack';
 
 import { DeviceCard, DeviceTable } from '..';
-import { StorageKeys } from '../../consts';
+import { ActiveMenuItemColor, StorageKeys } from '../../consts';
 import { CreateDeviceDialog, ViewDeviceLogsDialog } from '../../dialogs';
 import { get, set } from '../../modules';
 import { DeviceService } from '../../services';
@@ -119,6 +119,7 @@ export const DeviceGrid = (props: DeviceGridProps) => {
             aria-label="Grid"
             value="left"
             onClick={() => handleDeviceDisplayChange('grid')}
+            style={{backgroundColor: alignment === 'left' ? ActiveMenuItemColor : 'inherit'}}
           >
             <GridOnIcon />
           </ToggleButton>
@@ -126,6 +127,7 @@ export const DeviceGrid = (props: DeviceGridProps) => {
             aria-label="Table"
             value="right"
             onClick={() => handleDeviceDisplayChange('table')}
+            style={{backgroundColor: alignment === 'right' ? ActiveMenuItemColor : 'inherit'}}
           >
             <TableRowsIcon />
           </ToggleButton>

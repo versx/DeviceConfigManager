@@ -7,6 +7,7 @@ import {
 import { useSnackbar } from 'notistack';
 
 import { DeviceGrid } from '../components';
+import { ActiveMenuItemColor } from '../consts';
 import { ConfigService, DeviceService } from '../services';
 import { Config, Device } from '../types';
 
@@ -49,6 +50,11 @@ export const DevicesPage = () => {
       <Button
         variant="contained"
         onClick={() => window.location.href = '/devices/Test2SE'}
+        style={{
+          backgroundColor: ActiveMenuItemColor,
+          color: '#fff',
+          position: 'absolute',
+        }}
       >
         Device Manager
       </Button>

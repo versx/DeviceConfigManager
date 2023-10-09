@@ -33,7 +33,7 @@ export const ConfigSelect = (props: ConfigSelectProps) => {
         />
       )}
       style={{
-        marginBottom: 16,
+        marginBottom: 8,
       }}
     />
   );

@@ -44,7 +44,7 @@ export const LogArchiveList = (props: LogArchiveListProps) => {
         <hr style={{padding: 0, margin: 0 }} />
         <AccordionDetails style={{padding: 8}}>
           <List dense disablePadding>
-            {archives.map((archive, index) => (
+            {archives?.length > 0 ? archives?.map((archive, index) => (
               <ListItem key={index} dense>
                 <ListItemText
                   primary={archive.fileName}
@@ -68,7 +68,11 @@ export const LogArchiveList = (props: LogArchiveListProps) => {
                   </IconButton>
                 </ListItemSecondaryAction>
               </ListItem>
-            ))}
+            )) : (
+              <Typography align="center" variant="body2" color="textSecondary" style={{marginLeft: 16}}>
+                No log archives available.
+              </Typography>
+            )}
           </List>
         </AccordionDetails>
       </Accordion>
