@@ -5,14 +5,12 @@ import {
 } from '@mui/material';
 
 import {
-  ApiKeyTextField,
   BreadcrumbItem,
   Breadcrumbs,
   ChangePassword,
   ThemeSelector,
 } from '../components';
 import { useColorMode } from '../contexts';
-import { getUserToken } from '../stores';
 
 const crumbs: BreadcrumbItem[] = [{
   text: 'Dashboard',
@@ -26,7 +24,6 @@ const crumbs: BreadcrumbItem[] = [{
 
 export const SettingsPage = () => {
   const { mode, setColorMode } = useColorMode();
-  const currentUser = getUserToken();
 
   return (
     <Container style={{ height: '35vh' }}>
@@ -45,13 +42,6 @@ export const SettingsPage = () => {
             theme={mode}
             onThemeChange={setColorMode}
           />
-        </Container>
-
-        <Container component={Paper} elevation={1} style={{ padding: '20px', marginTop: '20px', border: '1px solid grey' }}>
-          <Typography variant="h6" align="center" gutterBottom>
-            API Key
-          </Typography>
-          <ApiKeyTextField initialValue={currentUser?.apiKey} />
         </Container>
 
         <Container component={Paper} elevation={1} style={{ padding: '20px', marginTop: '20px', border: '1px solid grey' }}>

@@ -3,6 +3,7 @@ import { Sequelize } from 'sequelize';
 import { Config } from './Config';
 import { Device } from './Device';
 import { DeviceStat } from './DeviceStat';
+import { RefreshToken } from './RefreshToken';
 import { Schedule } from './Schedule';
 import { Setting } from './Setting';
 import { User } from './User';
@@ -16,6 +17,7 @@ export const db: SequelizeDatabaseConnection = { connection: sequelize };
 db.config = Config(sequelize);
 db.device = Device(sequelize);
 db.deviceStat = DeviceStat(sequelize);
+db.refreshToken = RefreshToken(sequelize);
 db.schedule = Schedule(sequelize);
 db.setting = Setting(sequelize);
 db.user = User(sequelize);
@@ -33,6 +35,14 @@ db.device.hasMany(db.deviceStat, {
   foreignKey: 'uuid',
   onDelete: 'CASCADE',
   onUpdate: 'CASCADE',
+});
+
+db.refreshToken.belongsTo(db.user);
+db.user.hasOne(db.refreshToken, {
+  foreignKey: 'userId',
+  as: 'tokens',
+  onUpdate: 'CASCADE',
+  //onDelete: 'CASCADE',
 });
 
 export const testConnection = async () => {

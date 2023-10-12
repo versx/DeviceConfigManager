@@ -12,10 +12,6 @@ export const User = (sequelize: Sequelize) =>
       type: DataTypes.STRING,
       allowNull: false,
     },
-    apiKey: {
-      type: DataTypes.STRING,
-      allowNull: false,
-    },
     enabled: {
       type: DataTypes.BOOLEAN,
       allowNull: false,

@@ -37,7 +37,7 @@ export const SequelizeOptions = {
 export const UserAttributes = [
   'id',
   'username',
-  'apiKey',
+  'password',
   'enabled',
   'root',
   'createdAt',

@@ -8,7 +8,8 @@ export type AppConfig = {
       username: string;
       password: string;
     };
-    secret: string;
+    accessTokenSecret: string;
+    refreshTokenSecret: string;
     bearerTokens: string[];
   };
   database: {
@@ -40,6 +41,7 @@ export type SequelizeDatabaseConnection = {
   config?: Model;
   device?: Model;
   deviceStat?: Model;
+  refreshToken?: Model;
   schedule?: Model;
   setting?: Model;
   user?: Model;
@@ -99,6 +101,15 @@ export type LogArchiveModel = {
   size: number;
 };
 
+export type RefreshTokenModel = {
+  userId: number;
+  accessToken: string;
+  refreshToken: string;
+
+  createdAt?: Date;
+  updatedAt?: Date;
+};
+
 export type ScheduleModel = {
   name: string;
   config: string;
@@ -125,9 +136,19 @@ export type UserModel = {
   id?: number;
   username: string;
   password: string;
-  apiKey?: string;
   enabled?: boolean;
   root?: boolean;
+
+  tokens?: UserTokensModel;
+
+  createdAt?: Date;
+  updatedAt?: Date;
+};
+
+export type UserTokensModel = {
+  userId: number;
+  accessToken: string;
+  refreshToken: string;
 
   createdAt?: Date;
   updatedAt?: Date;

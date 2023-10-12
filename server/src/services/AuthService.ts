@@ -9,7 +9,7 @@ import { db } from '../models';
 
 const login = async (username: string, password: string) => {
   try {
-    const user = await db.user.findOne({ where: { username } });
+    const user = await UserService.getUserBy({ username });
     if (!user) {
       return false;
     }
@@ -23,12 +23,17 @@ const login = async (username: string, password: string) => {
       return false;
     }
 
+    const accessToken = generateAccessToken(user.username, user.root);
+    const refreshToken = generateRefreshToken(user.username, user.root);
+    await addRefreshToken(user.id!, accessToken, refreshToken);
+
     return {
       id: user.id,
       username: user.username,
-      apiKey: user.apiKey,
       enabled: user.enabled,
       root: user.root,
+      accessToken,
+      refreshToken,
     };
   } catch (err) {
     logError(err);
@@ -48,20 +53,59 @@ const register = async (username: string, password: string) => {
 
 const generateAccessToken = (username: string, isRoot: boolean = false): string => {
   const signOptions = { expiresIn: DefaultExpiresIn };
-  const accessToken = sign({ username, root: isRoot }, config.auth.secret, signOptions);
+  const accessToken = sign({ username, root: isRoot }, config.auth.accessTokenSecret, signOptions);
   return accessToken;
 };
 
 const verifyAccessToken = (accessToken: string): Promise<any | false> => new Promise((resolve, reject) => {
   try {
-    const decoded = verify(accessToken, config.auth.secret);
+    const decoded = verify(accessToken, config.auth.accessTokenSecret);
     // TODO: Check if decoded.exp expired
-    return resolve(decoded);
+    resolve(decoded);
   } catch (err) {
-    logError(err.message);
-    return resolve(false);
+    logError(err);
+    resolve(false);
   }
 });
+
+const generateRefreshToken = (username: string, isRoot: boolean = false) => {
+  const refreshToken = sign({ username, root: isRoot }, config.auth.refreshTokenSecret);
+  return refreshToken
+};
+
+const getRefreshToken = async (userId: number) => {
+  const entity = await db.refreshToken.findByPk(userId);
+  return entity;
+};
+
+const addRefreshToken = async (userId: number, accessToken: string, refreshToken: string) => {
+  const entity = await getRefreshToken(userId);
+  if (!entity) {
+    await db.refreshToken.create({
+      userId: userId,
+      accessToken: accessToken,
+      refreshToken: refreshToken,
+    });
+    return;
+  }
+
+  if (entity.accessToken === accessToken && entity.refreshToken === refreshToken) {
+    return;
+  }
+
+  entity.set({
+    accessToken,
+    refreshToken,
+  });
+  await entity.save();
+};
+
+const deleteRefreshToken = async (userId: number) => {
+  const entity = await getRefreshToken(userId);
+  if (entity) {
+    entity.destroy();
+  }
+};
 
 const createVerificationCode = () => {
   const verificationCode = randomBytes(32).toString('hex');
@@ -75,6 +119,9 @@ export const AuthService = {
   login,
   register,
   generateAccessToken,
+  generateRefreshToken,
   verifyAccessToken,
+  addRefreshToken,
+  deleteRefreshToken,
   createVerificationCode,
 };

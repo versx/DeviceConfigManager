@@ -54,7 +54,7 @@ export const SidebarDrawer = (props: SidebarDrawerProps) => {
         >
           <img
             src="/logo192.png"
-            alt="URLminify Logo"
+            alt="logo"
             style={{
               height: 28,
               width: 28,

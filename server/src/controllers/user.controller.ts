@@ -87,26 +87,6 @@ const changePassword = async (req: Request, res: Response) => {
   res.json({ status: 'ok' });
 };
 
-const resetApiKey = async (req: Request, res: Response) => {
-  const { id } = req.params;
-  if (!id) {
-    return res.json({
-      status: 'error',
-      error: 'No user ID specified.',
-    });
-  }
-
-  const result = await UserService.resetApiKey(parseInt(id));
-  if (!result) {
-    return res.json({
-      status: 'error',
-      error: `Failed to reset API key.`,
-    });
-  }
-
-  res.json({ status: 'ok', apiKey: result });
-};
-
 export const UserController = {
   createUser,
   getUser,
@@ -114,5 +94,4 @@ export const UserController = {
   updateUser,
   deleteUser,
   changePassword,
-  resetApiKey,
 };

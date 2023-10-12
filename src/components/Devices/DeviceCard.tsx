@@ -95,7 +95,7 @@ export const DeviceCard = (props: DeviceCardProps) => {
             Last Seen: {device.lastSeen ? moment(device.lastSeen).calendar() : 'Never'}
           </Typography>
           <Typography variant="body2" color="textSecondary" component="p" style={{marginBottom: 8}}>
-            Enabled: {device.enabled ? 'Yes' : 'No'}
+            Enabled: <span style={{color: device.enabled ? 'green' : 'red'}}>{device.enabled ? 'Yes' : 'No'}</span>
           </Typography>
           {device.notes && (
             <Typography variant="body2" color="textSecondary" component="p">

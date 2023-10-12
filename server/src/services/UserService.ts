@@ -1,6 +1,6 @@
 import { compareSync, hashSync } from 'bcryptjs';
 
-import { AuthService, btoa, logError, logWarn } from '.';
+import { logError, logWarn } from '.';
 import {
   DefaultUserPasswordIterations,
   UserAttributes,
@@ -31,6 +31,10 @@ const getUserBy = async (where: any): Promise<UserModel> => {
   const result = await db.user.findOne({
     where,
     attributes: UserAttributes,
+    include: [{
+      as: 'tokens',
+      model: db.refreshToken,
+    }],
   });
   return result;
 };
@@ -41,8 +45,6 @@ const createUser = async (user: UserModel, isRoot: boolean = false): Promise<Use
     return false;
   }
 
-  const accessToken = AuthService.generateAccessToken(user.username, isRoot);
-  const apiKey = btoa(accessToken);
   const password = hashSync(user.password, DefaultUserPasswordIterations);
 
   // Create new user account
@@ -50,7 +52,6 @@ const createUser = async (user: UserModel, isRoot: boolean = false): Promise<Use
     username: user.username,
     password,
     enabled: true,
-    apiKey,
     root: isRoot,
   });
   return result;
@@ -94,22 +95,6 @@ const changePassword = async (userId: number, oldPassword: string, newPassword: 
   }
 };
 
-const resetApiKey = async (id: number) => {
-  try {
-    const user = await getUser(id);
-    const accessToken = AuthService.generateAccessToken(user.username, user.root);
-    const apiKey = btoa(accessToken);
-
-    user.set({ apiKey });
-    await user.save();
-
-    return apiKey;
-  } catch (err) {
-    logError(err);
-    return null;
-  }
-};
-
 const isValidPassword = (password: string, hashedPassword: string) => {
   const passwordIsValid = compareSync(password, hashedPassword);
   return passwordIsValid;
@@ -123,6 +108,5 @@ export const UserService = {
   createUser,
   deleteUser,
   changePassword,
-  resetApiKey,
   isValidPassword,
 };

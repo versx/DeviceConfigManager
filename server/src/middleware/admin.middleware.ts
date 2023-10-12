@@ -1,6 +1,6 @@
 import { NextFunction, Request, Response } from 'express';
 
-import { atob, AuthService, logError, UserService } from '../services';
+import { AuthService, logError, UserService } from '../services';
 
 export const AdminMiddleware = async (req: Request, res: Response, next: NextFunction) => {
   let token = req.headers['x-access-token']?.toString();
@@ -16,8 +16,7 @@ export const AdminMiddleware = async (req: Request, res: Response, next: NextFun
     }
   }
 
-  const apiKey = atob(token);
-  const decoded = await AuthService.verifyAccessToken(apiKey);
+  const decoded = await AuthService.verifyAccessToken(token);
   if (!decoded) {
     return res.json({
       status: 'error',
@@ -27,17 +26,17 @@ export const AdminMiddleware = async (req: Request, res: Response, next: NextFun
 
   const nameOrId = decoded?.username ?? decoded?.id;
   const user = await UserService.getUserBy({ username: nameOrId });
-  if (!user?.apiKey) {
+  if (!user?.tokens?.accessToken) {
     return res.json({
       status: 'error',
-      error: 'User does not have an API key!',
+      error: 'User does not have an access token!',
     });
   }
 
-  if (user?.apiKey !== token) {
+  if (user?.tokens?.accessToken !== token) {
     return res.json({
       status: 'error',
-      error: 'Invalid API key!',
+      error: 'Invalid access token!',
     });
   }
 

@@ -14,5 +14,4 @@ export const UserRouter = (app: Application) => {
 
   app.get(`${UsersApiRoute}/:id`, UserController.getUser);
   app.post(`${UsersApiRoute}/:id/password/reset`, UserController.changePassword);
-  app.post(`${UsersApiRoute}/:id/key/reset`, UserController.resetApiKey);
 };
