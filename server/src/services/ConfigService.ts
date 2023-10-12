@@ -77,7 +77,7 @@ const getDeviceConfig = async (model: DeviceModel, autoSyncIP: boolean) => {
   if (device) {
     // Device exists
     logDebug(`[${model.uuid}] Device exists, updating...`);
-    device.lastSeen = new Date(); // TODO: Timezone
+    device.lastSeen = new Date();
     // Only update client IP if it hasn't been set yet or if auto sync is
     // enabled while IP doesn't match.
     if (model.ipAddr && (!device.ipAddr || device.ipAddr !== model.ipAddr) && autoSyncIP) {

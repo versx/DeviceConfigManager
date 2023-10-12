@@ -26,6 +26,7 @@ export const StorageKeys = {
 };
 
 export const SettingKeys = {
+  AgentUrls: 'agent_urls',
   EnableRegistration: 'enable_registration',
 };
 

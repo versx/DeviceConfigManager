@@ -72,7 +72,7 @@ export const DashboardPage = () => {
       enqueueSnackbar(`Failed to restart device ${device.uuid} because it has no IP address set.`, { variant: 'error' });
       return;
     }
-    const response = await DeviceService.sendRequest(device.ipAddr, device.webserverPort, 'restart');
+    const response = await DeviceService.sendDeviceRequest(device.ipAddr, device.webserverPort, 'restart');
     if (response?.error) {
       enqueueSnackbar(`Failed to restart device ${device.uuid} with error: ${response?.message}`, { variant: 'error' });
       return;

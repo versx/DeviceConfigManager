@@ -313,7 +313,11 @@ export const toObj = (arr: any[]) => arr.reduce((acc: any, item: any) => {
 
 export const toArr = (obj: any, name: string, value: any) => {
   const newSettings: Setting[] = [];
-  for (const key of Object.keys(obj)) {
+  const keys = Object.keys(obj);
+  if (!keys.includes(name)) {
+    newSettings.push({ name, value });
+  }
+  for (const key of keys) {
     newSettings.push({ name: key, value: key === name ? value : obj[key] });
   }
   return newSettings
