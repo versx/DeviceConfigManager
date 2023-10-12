@@ -52,7 +52,7 @@ const deleteDevice = async (uuid: string) => {
   }
 };
 
-const sendRequest = async (ipAddr: string, port: number = 8080, actionType: string) => {
+const sendDeviceRequest = async (ipAddr: string, port: number = 8080, actionType: string) => {
   try {
     const url = `http://${ipAddr}:${port}/${actionType}`;
     const response = await fetch(url, {
@@ -67,15 +67,12 @@ const sendRequest = async (ipAddr: string, port: number = 8080, actionType: stri
       case 'screen':
         const arrayBuffer = await response.arrayBuffer();
         if (arrayBuffer.byteLength <= 0) {
-          //return Base64ImageHeader;
           return { error: false, data: Base64ImageHeader };
         }
 
         const base64 = Base64ImageHeader + Buffer.from(arrayBuffer).toString('base64');
-        //setScreenshot(base64);
-        return { error: false, data: base64 };
         // TODO: Send screenshot to backend to save
-        //break;
+        return { error: false, data: base64 };
       case 'restart':
         responseData = await response.text();
         break;
@@ -83,13 +80,30 @@ const sendRequest = async (ipAddr: string, port: number = 8080, actionType: stri
         responseData = await response.json();
         break;
     }
-
-    //setResponse(responseData);
-    //return responseData;
     return { error: false, data: responseData };
   } catch (err: any) {
-    //setError(err.message);
     return { error: true, message: err.message };
+  }
+};
+
+const sendAgentRequest = async (payload: any, remoteAgentUrls: string[]) => {
+  if (remoteAgentUrls.length === 0) {
+    return;
+  }
+
+  try {
+    for (const remoteAgentUrl of remoteAgentUrls) {
+      const response = await fetch(remoteAgentUrl, {
+        method: 'POST',
+        body: JSON.stringify(payload),
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      });
+      console.log('response', response);
+    }
+  } catch (err: any) {
+    console.error(err);
   }
 };
 
@@ -99,5 +113,6 @@ export const DeviceService = {
   createDevice,
   updateDevice,
   deleteDevice,
-  sendRequest,
+  sendDeviceRequest,
+  sendAgentRequest,
 };

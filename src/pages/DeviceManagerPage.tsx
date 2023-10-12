@@ -10,6 +10,8 @@ import {
   Typography,
 } from '@mui/material';
 
+import { SettingKeys } from '../consts';
+import { useServerSettings } from '../hooks';
 import { DeviceService } from '../services';
 import { Device } from '../types';
 
@@ -23,6 +25,8 @@ export const DeviceManagerPage = () => {
   const [response, setResponse] = useState<any>('');
   const [error, setError] = useState<string | null>('');
   const [screenshot, setScreenshot] = useState<string>();
+  const { settings } = useServerSettings();
+  const remoteAgentUrls = settings[SettingKeys.AgentUrls]?.split(',') ?? [];
 
   const handleReload = useCallback(() => {
     DeviceService.getDevices().then((response: any) => {
@@ -70,7 +74,7 @@ export const DeviceManagerPage = () => {
         <Button
           variant="contained"
           onClick={async () => {
-            const response = await DeviceService.sendRequest(selectedDevice!, 8080, 'screen');
+            const response = await DeviceService.sendDeviceRequest(selectedDevice!, 8080, 'screen');
             if (response?.error) {
               setError(response.message);
             } else {
@@ -84,7 +88,7 @@ export const DeviceManagerPage = () => {
         <Button
           variant="contained"
           onClick={async () => {
-            const response = await DeviceService.sendRequest(selectedDevice!, 8080, 'account');
+            const response = await DeviceService.sendDeviceRequest(selectedDevice!, 8080, 'account');
             if (response?.error) {
               setError(response.message);
             } else {
@@ -98,7 +102,7 @@ export const DeviceManagerPage = () => {
         <Button
           variant="contained"
           onClick={async () => {
-            const response = await DeviceService.sendRequest(selectedDevice!, 8080, 'restart');
+            const response = await DeviceService.sendDeviceRequest(selectedDevice!, 8080, 'restart');
             if (response?.error) {
               setError(response.message);
             } else {
@@ -111,16 +115,7 @@ export const DeviceManagerPage = () => {
         </Button>
         <Button
           variant="contained"
-          // TODO: Send reboot request to backend
-          onClick={async () => {
-            const response = await DeviceService.sendRequest(selectedDevice!, 8080, 'reboot');
-            if (response?.error) {
-              setError(response.message);
-            } else {
-              setError('');
-              setResponse(response.data);
-            }
-          }}
+          onClick={async () => await DeviceService.sendAgentRequest({ type: 'reboot', device: uuid }, remoteAgentUrls)}
         >
           Reboot Device
         </Button>

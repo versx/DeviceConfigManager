@@ -97,6 +97,13 @@ export const AdminDashboardPage = () => {
           </Grid>
         </Grid>
       </Container>
+
+      <Container component={Paper} elevation={6} style={{ padding: '16px', marginTop: '24px', marginBottom: '24px', border: '1px solid grey', borderRadius: '8px' }}>
+        <Typography variant="h5" gutterBottom style={{textAlign: 'center'}}>
+          Device Behavior Statistics
+        </Typography>
+        TODO: Add device behavior statistics
+      </Container>
     </Container>
   );
 };

@@ -1,6 +1,5 @@
 import { ChangeEvent } from 'react';
 import {
-  Box,
   Container,
   FormControlLabel,
   Paper,
@@ -9,7 +8,7 @@ import {
 } from '@mui/material';
 import { Theme, useTheme } from '@mui/material/styles';
 
-import { BreadcrumbItem, Breadcrumbs, IOSSwitch } from '../../components';
+import { AgentUrlsTextField, BreadcrumbItem, Breadcrumbs, IOSSwitch } from '../../components';
 import { DefaultEnableRegistration, SettingKeys } from '../../consts';
 import { useServerSettings } from '../../hooks';
 
@@ -58,6 +57,10 @@ export const AdminSettingsPage = () => {
     setSetting(name, newValue);
   };
 
+  const handleSave = (urls: string[]) => {
+    setSetting(SettingKeys.AgentUrls, urls.join(','));
+  };
+
   return (
     <Container style={classes.root}>
       <Breadcrumbs crumbs={crumbs} />
@@ -65,7 +68,7 @@ export const AdminSettingsPage = () => {
         Admin - Settings
       </Typography>
 
-      <Box component={Paper} elevation={0} sx={classes.container}>
+      <Container component={Paper} elevation={0} sx={classes.container}>
         <div style={classes.inputContainer}>
           <Tooltip
             arrow
@@ -77,7 +80,7 @@ export const AdminSettingsPage = () => {
                   sx={{ m: 1 }}
                   name={SettingKeys.EnableRegistration}
                   checked={settings
-                    ? parseInt(settings[SettingKeys.EnableRegistration]) !== 0
+                    ? parseInt(settings[SettingKeys.EnableRegistration] ?? DefaultEnableRegistration) !== 0
                     : DefaultEnableRegistration
                   }
                   onChange={handleChange}
@@ -87,9 +90,15 @@ export const AdminSettingsPage = () => {
               style={classes.element}
             />
           </Tooltip>
+
           <br />
+
+          <AgentUrlsTextField
+            initialUrls={settings[SettingKeys.AgentUrls]?.split(',') ?? []}
+            onSave={handleSave}
+          />
         </div>
-      </Box>
+      </Container>
     </Container>
   );
 };
