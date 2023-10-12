@@ -85,11 +85,6 @@ export const ConfigCard = (props: ConfigCardProps) => {
   };
 
   return (
-    <Tooltip
-      title={`Click or tap to view device config ${config.name}`}
-      placement="left-start"
-      arrow
-    >
     <Card
       variant="elevation"
       elevation={3}
@@ -192,6 +187,5 @@ export const ConfigCard = (props: ConfigCardProps) => {
         </CardActions>
       </Container>
     </Card>
-    </Tooltip>
   );
 };

@@ -14,8 +14,8 @@ import { Config, Device, User } from '../../types';
 
 export interface ActionsButtonGroupProps<T, TKey> {
   model: T;
-  onEdit: (event: any, model: T) => void;
-  onDelete: (event: any, id: TKey) => void;
+  onEdit: (model: T) => void;
+  onDelete: (id: TKey) => void;
   onViewLogs?: (event: any, id: TKey) => void;
 }
 
@@ -27,7 +27,7 @@ export const ConfigActionsButtonGroup = (props: ActionsButtonGroupProps<Config, 
       <Tooltip title="Edit config" arrow>
         <IconButton
           size="small"
-          onClick={(e) => onEdit(e, model)}
+          onClick={() => onEdit(model)}
           style={{ color: ActiveMenuItemColor }}
         >
           <EditIcon />
@@ -36,7 +36,7 @@ export const ConfigActionsButtonGroup = (props: ActionsButtonGroupProps<Config, 
       <Tooltip title="Delete config" arrow>
         <IconButton
           size="small"
-          onClick={(e) => onDelete(e, model.name)}
+          onClick={() => onDelete(model.name)}
         >
           <DeleteIcon color="error" />
         </IconButton>
@@ -61,7 +61,7 @@ export const DeviceActionsButtonGroup = (props: ActionsButtonGroupProps<Device, 
       <Tooltip title="Edit device" arrow>
         <IconButton
           size="small"
-          onClick={(e) => onEdit(e, model)}
+          onClick={() => onEdit(model)}
           style={{ color: ActiveMenuItemColor }}
         >
           <EditIcon />
@@ -70,7 +70,7 @@ export const DeviceActionsButtonGroup = (props: ActionsButtonGroupProps<Device, 
       <Tooltip title="Delete device" arrow>
         <IconButton
           size="small"
-          onClick={(e) => onDelete(e, model.uuid)}
+          onClick={(e) => onDelete(model.uuid)}
         >
           <DeleteIcon color="error" />
         </IconButton>
@@ -87,7 +87,7 @@ export const UserActionsButtonGroup = (props: ActionsButtonGroupProps<User, numb
       <Tooltip title="Edit short URL" arrow>
         <IconButton
           size="small"
-          onClick={(e) => onEdit(e, model)}
+          onClick={() => onEdit(model)}
           style={{ color: ActiveMenuItemColor }}
         >
           <EditIcon />
@@ -96,7 +96,7 @@ export const UserActionsButtonGroup = (props: ActionsButtonGroupProps<User, numb
       <Tooltip title="Delete short URL" arrow>
         <IconButton
           size="small"
-          onClick={(e) => onDelete(e, model.id!)}
+          onClick={() => onDelete(model.id!)}
         >
           <DeleteIcon color="error" />
         </IconButton>

@@ -25,6 +25,10 @@ import {
   SettingsPage,
 } from './pages';
 
+// TODO: Ensure cascade deletion/updates of devices, configs, and schedules
+// TODO: Device behavior statistics (uptime, restarts, etc.)
+// TODO: Statistic charts
+
 const App = () => {
   return (
     <Router>

@@ -39,6 +39,7 @@ export const DeviceCard = (props: DeviceCardProps) => {
       title={`Click or tap to view device ${device.uuid}`}
       placement="left-start"
       arrow
+      followCursor
     >
       <Card
         variant="elevation"

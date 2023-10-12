@@ -120,12 +120,12 @@ export const DrawerAppBar = (props: any) => {
             <>
               {NavItems.map((item: DropdownItem, index: number) =>
                 (((isAuthenticated && item.requiresAuth) || (!isAuthenticated && !item.requiresAuth)) && (
-                <Tooltip
-                  arrow
-                  key={index}
-                  title={item.tooltip ?? item.text}
-                >
-                  <a href={item.path} style={{textDecoration: 'none', color: 'inherit'}}>
+                <a href={item.path} style={{textDecoration: 'none', color: 'inherit'}}>
+                  <Tooltip
+                    arrow
+                    key={index}
+                    title={item.tooltip ?? item.text}
+                  >
                     <Button
                       style={{
                         textDecoration: 'none',
@@ -143,8 +143,8 @@ export const DrawerAppBar = (props: any) => {
                     >
                       {item.text}
                     </Button>
-                  </a>
-                </Tooltip>
+                  </Tooltip>
+                </a>
               )))}
               {isAdmin && (
                 <Tooltip title="Admin Dashboard" arrow>

@@ -46,16 +46,14 @@ export const ScheduleCard = (props: ScheduleCardProps) => {
             Next Config: {schedule.nextConfig}
           </Typography>
         </div>
-        <div style={{display: 'flex', flexDirection: 'row', justifyContent: 'space-between', marginBottom: 8}}>
-          <Typography color="textSecondary">
-            Start: {new Date(schedule.startTime).toLocaleTimeString()}
-          </Typography>
-          <Typography color="textSecondary">
-            End: {new Date(schedule.endTime).toLocaleTimeString()}
-          </Typography>
-        </div>
-        <Typography color="textSecondary" style={{marginBottom: 8}}>
+        <Typography color="textSecondary">
           Timezone: {getTimezoneName(schedule.timezoneOffset)}
+        </Typography>
+        <Typography color="textSecondary">
+          Start: {new Date(schedule.startTime).toLocaleString()}
+        </Typography>
+        <Typography color="textSecondary" style={{marginBottom: 8}}>
+          End: {new Date(schedule.endTime).toLocaleString()}
         </Typography>
         <Typography color="textSecondary">
           Devices:
