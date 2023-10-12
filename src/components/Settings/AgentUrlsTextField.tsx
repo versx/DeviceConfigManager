@@ -31,7 +31,7 @@ export const AgentUrlsTextField = (props: AgentUrlsTextFieldProps) => {
 
   return (
     <Paper elevation={3} style={{ padding: '20px' }}>
-      {urls.map((url, index) => (
+      {urls?.map((url: string, index: number) => (
         <div key={index} style={{ marginBottom: '15px', display: 'flex', alignItems: 'center' }}>
           <TextField 
             fullWidth

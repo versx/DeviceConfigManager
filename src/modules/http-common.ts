@@ -19,7 +19,6 @@ export const http = () => {
     if (user?.accessToken) {
       config.headers = {
         ...config.headers,
-        //'Content-Type': 'application/json',
         'x-access-token': user?.accessToken,
       };
     }
@@ -43,12 +42,11 @@ export const http = () => {
         if (newToken?.accessToken) {
           originalRequest.headers = {
             ...originalRequest.headers,
-            //'Content-Type': 'application/json',
             'x-access-token': newToken?.accessToken,
           };
         }
       } catch (err: any) {
-        console.error('http.interceptors.response.error:', err);
+        console.error('interceptors response:', err);
         //window.location.href = Routes.login;
       }
       return http(originalRequest);

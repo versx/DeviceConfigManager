@@ -40,38 +40,34 @@ export const useServerSettings = () => {
   };
 
   const fetchSettings = useCallback(() => {
-    try {
-      const options = {
-        headers: {
-          'Accept': 'application/json',
-          'Content-Type': 'application/json',
-          'If-None-Match': localStorage.getItem(StorageKeys.SettingsETag) as string | undefined,
-        },
-      };
-      http()
-        .get('settings', options)
-        .then(({ data, headers }) => {
-          if (data.status !== 'ok') {
-            enqueueSnackbar(`Failed to fetch settings with error: ${data.error}`, { variant: 'error' });
-            return;
-          }
+    const options = {
+      headers: {
+        'Accept': 'application/json',
+        'Content-Type': 'application/json',
+        'If-None-Match': localStorage.getItem(StorageKeys.SettingsETag) as string | undefined,
+      },
+    };
+    http()
+      .get('settings', options)
+      .then(({ data, headers }) => {
+        if (data.status !== 'ok') {
+          enqueueSnackbar(`Failed to fetch settings with error: ${data.error}`, { variant: 'error' });
+          return;
+        }
 
-          const settingsObj = toObj(data.settings);
-          setSettingsState(settingsObj);
-          localStorage.setItem(StorageKeys.ServerSettings, JSON.stringify(settingsObj));
+        const settingsObj = toObj(data.settings);
+        setSettingsState(settingsObj);
+        localStorage.setItem(StorageKeys.ServerSettings, JSON.stringify(settingsObj));
 
-          const etag = headers.etag?.toString();
-          localStorage.setItem(StorageKeys.SettingsETag, etag);
-        })
-        .catch((err: any) => {
-          // 304 is not an error
-          if (err.response?.status !== 304) {
-            console.error(err);
-          }
-        });
-    } catch (err) {
-      console.error(err);
-    }
+        const etag = headers.etag?.toString();
+        localStorage.setItem(StorageKeys.SettingsETag, etag);
+      })
+      .catch((err: any) => {
+        // 304 is not an error
+        if (err.response?.status !== 304) {
+          console.error(err);
+        }
+      });
   }, [enqueueSnackbar]);
 
   useEffect(() => fetchSettings(), [fetchSettings]);

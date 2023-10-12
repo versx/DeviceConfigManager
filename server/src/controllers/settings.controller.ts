@@ -14,11 +14,10 @@ const getSettings = async (req: Request, res: Response) => {
     // No changes, send Not Modified
     //res.status(304).end();
     res.setHeader('ETag', currentETag);
-    res.json({
+    return res.json({
       status: 'ok',
       settings: cachedSettings,
     });
-    return;
   }
 
   cachedSettings = await SettingsService.getSettings();

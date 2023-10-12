@@ -94,7 +94,7 @@ export const AdminSettingsPage = () => {
           <br />
 
           <AgentUrlsTextField
-            initialUrls={settings[SettingKeys.AgentUrls]?.split(',') ?? []}
+            initialUrls={settings ? (settings[SettingKeys.AgentUrls] ?? '')?.split(',') ?? [] : []}
             onSave={handleSave}
           />
         </div>

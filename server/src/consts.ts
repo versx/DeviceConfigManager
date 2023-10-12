@@ -45,9 +45,3 @@ export const UserAttributes = [
 ];
 
 export const DefaultUserPasswordIterations = 8;
-
-export const SettingKeys = {
-  EnableRegistration: 'enable_registration',
-  EnableTelemetry: 'enable_telemetry',
-  MaxSlugLimit: 'max_slug_limit',
-};
