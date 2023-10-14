@@ -5,12 +5,11 @@ import {
   Button,
   ButtonGroup,
   Card,
+  CardHeader,
   Container,
   Divider,
   Grid,
-  MenuItem,
   Paper,
-  Select,
   Typography,
 } from '@mui/material';
 import { enqueueSnackbar } from 'notistack';
@@ -103,15 +102,6 @@ export const DeviceManagerPage = () => {
       >
         Manage Device {uuid}
       </Typography>
-
-      <Button
-        variant="contained"
-        onClick={() => handleViewLogs(uuid!)}
-        size="small"
-        style={{ marginBottom: 16 }}
-      >
-        View Logs
-      </Button>
       <Grid container spacing={2}>
         <Grid item xs={12} md={8}>
           {/*
@@ -149,20 +139,9 @@ export const DeviceManagerPage = () => {
 
         <Grid item xs={12}>
           <Card elevation={3} style={{ flex: 1, padding: '16px' }}>
-            <Select
-              fullWidth
-              value={selectedDevice || 'none'}
-              variant="outlined"
-              size="small"
-              onChange={(e) => setSelectedDevice(e.target.value as string)}
-            >
-              <MenuItem key="none" value="none" selected disabled>Select a device</MenuItem>
-              {devices.map((device: Device, index: number) => (
-                <MenuItem key={index} value={device.ipAddr!}>{device.uuid}</MenuItem>
-              ))}
-            </Select>
-            <br />
-  
+            <CardHeader
+              title="Actions"
+            />
             <ButtonGroup
               variant="contained"
               aria-label="outlined primary button group"
@@ -216,6 +195,12 @@ export const DeviceManagerPage = () => {
                 onClick={async () => await DeviceService.sendAgentRequest({ type: 'reboot', device: uuid }, remoteAgentUrls)}
               >
                 Reboot Device
+              </Button>
+              <Button
+                variant="contained"
+                onClick={() => handleViewLogs(uuid!)}
+              >
+                View Logs
               </Button>
             </ButtonGroup>
           </Card>
