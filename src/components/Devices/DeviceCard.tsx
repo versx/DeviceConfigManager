@@ -80,7 +80,7 @@ export const DeviceCard = (props: DeviceCardProps) => {
         />
         <Divider variant="middle" />
         <CardContent style={{paddingTop: 8, marginTop: 0}}>
-          <div style={{display: 'flex', flexDirection: 'row', justifyContent: 'space-between', marginBottom: 8}}>
+          <div style={{display: 'flex', flexDirection: 'row', justifyContent: 'space-between'}}>
             <Typography variant="body2" color="textSecondary" component="p">
               Config: {device.config ?? NotAssigned}
             </Typography>
@@ -88,28 +88,28 @@ export const DeviceCard = (props: DeviceCardProps) => {
               IP Address: {device.ipAddr ?? '--'}
             </Typography>
           </div>
-          <div style={{display: 'flex', flexDirection: 'row', justifyContent: 'space-between', marginBottom: 8}}>
+          <div style={{display: 'flex', flexDirection: 'row', justifyContent: 'space-between'}}>
             <Typography variant="body2" color="textSecondary" component="p">
-              iOS Version: {device.iosVersion ?? '--'}
+              <small>iOS Version: {device.iosVersion ?? '--'}</small>
             </Typography>
             <Typography variant="body2" color="textSecondary" component="p">
-              IPA Version: {device.ipaVersion ?? '--'}
+              <small>IPA Version: {device.ipaVersion ?? '--'}</small>
             </Typography>
           </div>
-          <Typography variant="body2" color="textSecondary" component="p" style={{marginBottom: 8}}>
-            Last Seen: {device.lastSeen ? moment(device.lastSeen).calendar() : Never}
+          <div style={{display: 'flex', flexDirection: 'row', justifyContent: 'space-between'}}>
+            <Typography variant="body2" color="textSecondary" component="p">
+              <small>Restarts: {restarts.toLocaleString()}</small>
+            </Typography>
+            <Typography variant="body2" color="textSecondary" component="p">
+              <small>Enabled: <span style={{color: device.enabled ? 'green' : 'red'}}>{device.enabled ? 'Yes' : 'No'}</span></small>
+            </Typography>
+          </div>
+          <Typography variant="body2" color="textSecondary" component="p">
+            <small>Last Seen: {device.lastSeen ? moment(device.lastSeen).calendar() : Never}</small>
           </Typography>
-          <div style={{display: 'flex', flexDirection: 'row', justifyContent: 'space-between', marginBottom: 8}}>
-            <Typography variant="body2" color="textSecondary" component="p">
-              Restarts: {restarts.toLocaleString()}
-            </Typography>
-            <Typography variant="body2" color="textSecondary" component="p">
-              Enabled: <span style={{color: device.enabled ? 'green' : 'red'}}>{device.enabled ? 'Yes' : 'No'}</span>
-            </Typography>
-          </div>
           {device.notes && (
             <Typography variant="body2" color="textSecondary" component="p">
-              Notes: {device.notes}
+              <small>Notes: {device.notes}</small>
             </Typography>
           )}
         </CardContent>
