@@ -30,6 +30,7 @@ import {
 
 import { DeviceDetails, LineChart } from '../components';
 import { SettingKeys } from '../consts';
+import { ViewDeviceLogsDialog } from '../dialogs';
 import { useServerSettings } from '../hooks';
 import { DeviceService } from '../services';
 import { Device, DeviceStat } from '../types';
@@ -46,6 +47,8 @@ export const DeviceManagerPage = () => {
   const [screenshot, setScreenshot] = useState<string>();
   const [deviceStats, setDeviceStats] = useState<DeviceStat[]>([]);
   //const [date, setDate] = useState('');
+  const [openLogsDialog, setOpenLogsDialog] = useState(false);
+  const [device, setDevice] = useState<string | null>(null);
 
   const { settings } = useServerSettings();
   const remoteAgentUrls = settings[SettingKeys.AgentUrls]?.split(',') ?? [];
@@ -57,6 +60,11 @@ export const DeviceManagerPage = () => {
     LineElement, PointElement,
     Title, Tooltip,
   );
+
+  const handleViewLogs = (uuid: string) => {
+    setDevice(uuid);
+    setOpenLogsDialog(true);
+  };
 
   const handleReloadStats = useCallback(() => {
     DeviceService.getDeviceStats(uuid!, '').then((response: any) => {
@@ -96,6 +104,14 @@ export const DeviceManagerPage = () => {
         Manage Device {uuid}
       </Typography>
 
+      <Button
+        variant="contained"
+        onClick={() => handleViewLogs(uuid!)}
+        size="small"
+        style={{ marginBottom: 16 }}
+      >
+        View Logs
+      </Button>
       <Grid container spacing={2}>
         <Grid item xs={12} md={8}>
           {/*
@@ -222,6 +238,12 @@ export const DeviceManagerPage = () => {
         </Card>
       }
       {error && <Typography color="error">{error}</Typography>}
+
+      <ViewDeviceLogsDialog
+        open={openLogsDialog}
+        uuid={device!}
+        onClose={() => setOpenLogsDialog(false)}
+      />
     </Container>
   );
 };
