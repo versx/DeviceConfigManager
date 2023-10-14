@@ -12,9 +12,8 @@ interface BarChartProps {
 
 export const BarChart = (props: BarChartProps) => {
   const { title, height = '300px', width = '100%', stats } = props;
-  const statsToday = stats.filter(stat =>
-    formatDate(new Date(stat.date)) === formatDate(new Date('2023-10-14'))
-  );
+  const today = formatDate(new Date());
+  const statsToday = stats.filter(stat => formatDate(new Date(stat.date + ' 00:00:00')) === today);
   const labels = statsToday.map(stat => stat.uuid);
   const data = statsToday.map(stat => stat.restarts);
 

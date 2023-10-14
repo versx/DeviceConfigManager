@@ -56,7 +56,7 @@ export const getUnixTime = (date: Date) => Math.round(date.getTime() / 1000);
 export const formatDate = (date: Date): string => {
   const yyyy = date.getFullYear();
   const mm = String(date.getMonth() + 1).padStart(2, '0'); // January is 0!
-  const dd = String(date.getDate()).padStart(2, '0'); // TODO: Check date
+  const dd = String(date.getDate()).padStart(2, '0');
   return `${yyyy}-${mm}-${dd}`;
 };
 
