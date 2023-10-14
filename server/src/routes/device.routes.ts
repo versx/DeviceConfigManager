@@ -15,4 +15,8 @@ export const DeviceRouter = (app: Application) => {
   app.use(ValidateMiddleware)
     .route(`${DevicesApiRoute}/assign`)
       .post(DeviceController.assignConfig);
+  
+  app.use(ValidateMiddleware)
+    .route(`${DevicesApiRoute}/stats`)
+      .get(DeviceController.getDeviceStats);
 };

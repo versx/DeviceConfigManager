@@ -10,7 +10,7 @@ export const DeviceStat = (sequelize: Sequelize) =>
       allowNull: false,
     },
     date: {
-      type: DataTypes.DATE,
+      type: DataTypes.DATEONLY,
       primaryKey: true,
       allowNull: false,
     },

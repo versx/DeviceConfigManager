@@ -9,7 +9,10 @@ import {
 import moment from 'moment';
 
 import { DeviceDropdownMenu } from '..';
-import { DeviceOnlineIcon, DeviceOfflineIcon } from '../../consts';
+import {
+  DeviceOnlineIcon, DeviceOfflineIcon,
+  Never, NotAssigned, UnknownModel,
+} from '../../consts';
 import { isDeviceOnline } from '../../modules';
 import { Config, Device } from '../../types';
 
@@ -61,7 +64,7 @@ export const DeviceCard = (props: DeviceCardProps) => {
             />
           }
           title={device.uuid}
-          subheader={device.model ?? 'Unknown Model'}
+          subheader={device.model ?? UnknownModel}
           action={
             <DeviceDropdownMenu
               configs={configs}
@@ -78,7 +81,7 @@ export const DeviceCard = (props: DeviceCardProps) => {
         <CardContent style={{paddingTop: 8, marginTop: 0}}>
           <div style={{display: 'flex', flexDirection: 'row', justifyContent: 'space-between', marginBottom: 8}}>
             <Typography variant="body2" color="textSecondary" component="p">
-              Config: {device.config ?? 'Not Assigned'}
+              Config: {device.config ?? NotAssigned}
             </Typography>
             <Typography variant="body2" color="textSecondary" component="p">
               IP Address: {device.ipAddr ?? '--'}
@@ -93,7 +96,7 @@ export const DeviceCard = (props: DeviceCardProps) => {
             </Typography>
           </div>
           <Typography variant="body2" color="textSecondary" component="p" style={{marginBottom: 8}}>
-            Last Seen: {device.lastSeen ? moment(device.lastSeen).calendar() : 'Never'}
+            Last Seen: {device.lastSeen ? moment(device.lastSeen).calendar() : Never}
           </Typography>
           <Typography variant="body2" color="textSecondary" component="p" style={{marginBottom: 8}}>
             Enabled: <span style={{color: device.enabled ? 'green' : 'red'}}>{device.enabled ? 'Yes' : 'No'}</span>

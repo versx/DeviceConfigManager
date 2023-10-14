@@ -15,6 +15,10 @@ export const Base64ImageHeader = 'data:image/png;base64,';
 export const DeviceOnlineIcon = 'https://raw.githubusercontent.com/versx/DeviceConfigManager/master/static/img/online.png';
 export const DeviceOfflineIcon = 'https://raw.githubusercontent.com/versx/DeviceConfigManager/master/static/img/offline.png';
 
+export const Never = 'Never';
+export const NotAssigned = 'Not Assigned';
+export const UnknownModel = 'Unknown Model';
+
 export const StorageKeys = {
   AdminOpen: 'adminOpen',
   ColorMode: 'colorMode',
@@ -28,6 +32,7 @@ export const StorageKeys = {
 export const SettingKeys = {
   AgentUrls: 'agent_urls',
   EnableRegistration: 'enable_registration',
+  EnableAutoSyncIP: 'enable_auto_sync_ip',
 };
 
 export const Routes = {

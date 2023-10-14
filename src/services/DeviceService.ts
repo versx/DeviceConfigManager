@@ -52,6 +52,16 @@ const deleteDevice = async (uuid: string) => {
   }
 };
 
+const getDeviceStats = async (uuid: string, date?: string) => {
+  try {
+    const response = await http()
+      .get(`devices/stats?uuid=${uuid}&date=${date}`);
+    return response.data;
+  } catch (err) {
+    console.error(err);
+  }
+};
+
 const sendDeviceRequest = async (ipAddr: string, port: number = 8080, actionType: string) => {
   try {
     const url = `http://${ipAddr}:${port}/${actionType}`;
@@ -113,6 +123,8 @@ export const DeviceService = {
   createDevice,
   updateDevice,
   deleteDevice,
+  getDeviceStats,
+
   sendDeviceRequest,
   sendAgentRequest,
 };

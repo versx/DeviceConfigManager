@@ -50,10 +50,10 @@ export const ScheduleCard = (props: ScheduleCardProps) => {
           Timezone: {getTimezoneName(schedule.timezoneOffset)}
         </Typography>
         <Typography color="textSecondary">
-          Start: {new Date(schedule.startTime).toLocaleString()}
+          Starts: {new Date(schedule.startTime).toLocaleString()}
         </Typography>
         <Typography color="textSecondary" style={{marginBottom: 8}}>
-          End: {new Date(schedule.endTime).toLocaleString()}
+          Ends: {new Date(schedule.endTime).toLocaleString()}
         </Typography>
         <Typography color="textSecondary">
           Devices:

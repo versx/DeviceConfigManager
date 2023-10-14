@@ -55,7 +55,8 @@ export const getUnixTime = (date: Date) => Math.round(date.getTime() / 1000);
 export const formatDate = (date: Date): string => {
   const yyyy = date.getFullYear();
   const mm = String(date.getMonth() + 1).padStart(2, '0'); // January is 0!
-  const dd = String(date.getDate()).padStart(2, '0');
+  const dd = String(date.getDate() + 1).padStart(2, '0'); // TODO: Check date
+  //console.log('date:', date, yyyy, mm, dd);
   return `${yyyy}-${mm}-${dd}`;
 };
 
@@ -348,4 +349,13 @@ export const formatFileSize = (bytes: number, si: boolean = false, dp: number = 
   } while (Math.round(Math.abs(bytes) * r) / r >= thresh && u < units.length - 1);
 
   return bytes.toFixed(dp) + ' ' + units[u];
+};
+
+export const getRandomColor = () => {
+  const letters = '0123456789ABCDEF';
+  let color = '#';
+  for (let i = 0; i < 6; i++) {
+    color += letters[Math.floor(Math.random() * 16)];
+  }
+  return color;
 };

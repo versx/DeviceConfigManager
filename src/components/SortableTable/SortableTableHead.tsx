@@ -18,7 +18,7 @@ import {
   StyledTableRow,
   TableProps,
 } from '..';
-import { DeviceOnlineIcon, DeviceOfflineIcon } from '../../consts';
+import { DeviceOnlineIcon, DeviceOfflineIcon, Never } from '../../consts';
 import { formatDate, isDeviceOnline } from '../../modules';
 import { Config, Device, User } from '../../types';
 
@@ -158,7 +158,7 @@ export const DeviceTableHeadCells: readonly HeadCell<Device>[] = [
     align: 'left',
     label: 'Last Seen',
     style: { display: { xs: 'none', sm: 'none', md: 'none', lg: 'table-cell' } },
-    format: (row: Device, value: any) => value ? moment(value).calendar() : 'Never',
+    format: (row: Device, value: any) => value ? moment(value).calendar() : Never,
   },
   {
     id: 'enabled',
@@ -231,7 +231,7 @@ export const OfflineDeviceTableHeadCells: readonly HeadCell<Device>[] = [
     //minWidth: 100,
     //maxWidth: 100,
     style: { display: { xs: 'none', sm: 'none', md: 'none', lg: 'table-cell' } },
-    format: (row: Device, value: any) => value ? moment(value).calendar() : 'Never',
+    format: (row: Device, value: any) => value ? moment(value).calendar() : Never,
   },
 ];
 

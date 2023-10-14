@@ -120,11 +120,10 @@ export const DrawerAppBar = (props: any) => {
             <>
               {NavItems.map((item: DropdownItem, index: number) =>
                 (((isAuthenticated && item.requiresAuth) || (!isAuthenticated && !item.requiresAuth)) && (
-                <a href={item.path} style={{textDecoration: 'none', color: 'inherit'}}>
+                <a key={index} href={item.path} style={{textDecoration: 'none', color: 'inherit'}}>
                   <Tooltip
-                    arrow
-                    key={index}
                     title={item.tooltip ?? item.text}
+                    arrow
                   >
                     <Button
                       style={{

@@ -78,6 +78,19 @@ const deleteDevice = async (req: Request, res: Response) => {
   res.json({ status: 'ok' });
 };
 
+const getDeviceStats = async (req: Request, res: Response) => {
+  const { uuid, date } = req.query;
+  const stats = await DeviceService.getDeviceStats(uuid?.toString() ?? '', date?.toString() ?? '');
+  if (!stats) {
+    return res.json({
+      status: 'error',
+      error: `Failed to get device stats.`,
+    });
+  }
+
+  res.json({ status: 'ok', stats });
+};
+
 export const DeviceController = {
   assignConfig,
   getDevice,
@@ -85,4 +98,5 @@ export const DeviceController = {
   createDevice,
   updateDevice,
   deleteDevice,
+  getDeviceStats,
 };

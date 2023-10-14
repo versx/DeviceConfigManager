@@ -49,7 +49,7 @@ export const DevicesPage = () => {
 
       <Button
         variant="contained"
-        onClick={() => window.location.href = '/devices/Test2SE'}
+        onClick={() => window.location.href = '/devices/none'}
         style={{
           backgroundColor: ActiveMenuItemColor,
           color: '#fff',

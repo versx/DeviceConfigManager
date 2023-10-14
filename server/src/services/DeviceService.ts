@@ -64,6 +64,15 @@ const deleteDevice = async (uuid: string): Promise<boolean> => {
   return true;
 };
 
+const getDeviceStats = async (uuid: string, date: string) => {
+  const whereClause: any = {};
+  if (uuid) whereClause.uuid = uuid;
+  if (date) whereClause.date = date;
+
+  const models = await db.deviceStat.findAll({ where: whereClause });
+  return models;
+};
+
 const createDeviceStat = async (uuid: string, date: Date) => {
   const exists = await db.deviceStat.findOne({
     where: { uuid, date },
@@ -89,5 +98,6 @@ export const DeviceService = {
   createDevice,
   updateDevice,
   deleteDevice,
+  getDeviceStats,
   createDeviceStat,
 };
