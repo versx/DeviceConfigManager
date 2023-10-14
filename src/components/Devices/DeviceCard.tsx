@@ -13,7 +13,7 @@ import {
   DeviceOnlineIcon, DeviceOfflineIcon,
   Never, NotAssigned, UnknownModel,
 } from '../../consts';
-import { isDeviceOnline } from '../../modules';
+import { getDeviceRestartCount, isDeviceOnline } from '../../modules';
 import { Config, Device } from '../../types';
 
 interface DeviceCardProps {
@@ -31,6 +31,7 @@ export const DeviceCard = (props: DeviceCardProps) => {
     onAssign, onEdit, onDelete, onViewLogs,
   } = props;
   const isOnline = isDeviceOnline(device?.lastSeen);
+  const restarts = getDeviceRestartCount(device);
 
   const handleViewDevice = () => {
     // Open device manager page
@@ -98,9 +99,14 @@ export const DeviceCard = (props: DeviceCardProps) => {
           <Typography variant="body2" color="textSecondary" component="p" style={{marginBottom: 8}}>
             Last Seen: {device.lastSeen ? moment(device.lastSeen).calendar() : Never}
           </Typography>
-          <Typography variant="body2" color="textSecondary" component="p" style={{marginBottom: 8}}>
-            Enabled: <span style={{color: device.enabled ? 'green' : 'red'}}>{device.enabled ? 'Yes' : 'No'}</span>
-          </Typography>
+          <div style={{display: 'flex', flexDirection: 'row', justifyContent: 'space-between', marginBottom: 8}}>
+            <Typography variant="body2" color="textSecondary" component="p">
+              Restarts: {restarts.toLocaleString()}
+            </Typography>
+            <Typography variant="body2" color="textSecondary" component="p">
+              Enabled: <span style={{color: device.enabled ? 'green' : 'red'}}>{device.enabled ? 'Yes' : 'No'}</span>
+            </Typography>
+          </div>
           {device.notes && (
             <Typography variant="body2" color="textSecondary" component="p">
               Notes: {device.notes}

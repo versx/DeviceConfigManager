@@ -1,7 +1,7 @@
 import { DateTime } from 'luxon';
 
 import { Order } from '../components';
-import { Setting } from '../types';
+import { Device, Setting } from '../types';
 
 export const substr = (text: string, maxChars: number = 30, addEllipsis: boolean = true) => {
   if (text.length <= maxChars) {
@@ -55,8 +55,7 @@ export const getUnixTime = (date: Date) => Math.round(date.getTime() / 1000);
 export const formatDate = (date: Date): string => {
   const yyyy = date.getFullYear();
   const mm = String(date.getMonth() + 1).padStart(2, '0'); // January is 0!
-  const dd = String(date.getDate() + 1).padStart(2, '0'); // TODO: Check date
-  //console.log('date:', date, yyyy, mm, dd);
+  const dd = String(date.getDate() - 1).padStart(2, '0'); // TODO: Check date
   return `${yyyy}-${mm}-${dd}`;
 };
 
@@ -358,4 +357,19 @@ export const getRandomColor = () => {
     color += letters[Math.floor(Math.random() * 16)];
   }
   return color;
+};
+
+export const getDeviceRestartCount = (device: Device) => {
+  let restarts = 0;
+  if ((device.deviceStats ?? []).length === 0) {
+    return restarts;
+  }
+
+  for (const stat of device.deviceStats!) {
+    if (formatDate(new Date(stat.date)) !== formatDate(new Date())) {
+      continue;
+    }
+    restarts += stat.restarts;
+  }
+  return restarts;
 };

@@ -27,13 +27,13 @@ export const DevicesPage = () => {
   const [devices, setDevices] = useState<Device[]>([]);
   const [configs, setConfigs] = useState<Config[]>([]);
   const [deviceStats, setDeviceStats] = useState<DeviceStat[]>([]);
-  const [date, setDate] = useState('');
+  const [date, setDate] = useState(formatDate(new Date()));
   const { enqueueSnackbar } = useSnackbar();
 
   ChartJS.register(ArcElement, BarElement, CategoryScale, Legend, LinearScale, Title, Tooltip);
 
-  const handleReloadStats = useCallback((uuid?: string, date?: string) => {
-    DeviceService.getDeviceStats(uuid ?? '', date ?? '').then((response: any) => {
+  const handleReloadStats = useCallback((newDate?: string) => {
+    DeviceService.getDeviceStats('', newDate ?? '').then((response: any) => {
       if (response?.status !== 'ok') {
         enqueueSnackbar(`Failed to fetch device stats with error: ${response?.error}`, { variant: 'error' });
         return;
@@ -59,12 +59,12 @@ export const DevicesPage = () => {
       setConfigs(response.configs);
     });
 
-    handleReloadStats();
-  }, [enqueueSnackbar, handleReloadStats]);
+    handleReloadStats(date);
+  }, [date, enqueueSnackbar, handleReloadStats]);
 
-  const handleDateChange = (date: string) => {
-    setDate(date);
-    handleReloadStats('', date);
+  const handleDateChange = (newDate: string) => {
+    setDate(newDate);
+    handleReloadStats(newDate);
   };
 
   useEffect(() => handleReload(), [handleReload]);
@@ -80,6 +80,27 @@ export const DevicesPage = () => {
       >
         Devices
       </Typography>
+
+      <TextField
+        //fullWidth
+        margin="normal"
+        label="Date"
+        type="date"
+        value={date ? formatDate(new Date(date)) : ''}
+        InputLabelProps={{
+          shrink: true,
+        }}
+        onChange={e => handleDateChange(e.target.value)}
+        style={{
+          marginBottom: 10,
+          //right: 0,
+          marginLeft: '100%',
+        }}
+      />
+      <BarChart
+        stats={deviceStats}
+      />
+      <br />
 
       <Button
         variant="contained"
@@ -97,25 +118,6 @@ export const DevicesPage = () => {
         configs={configs}
         devices={devices}
         onReload={handleReload}
-      />
-
-      <TextField
-        fullWidth
-        margin="normal"
-        label="Date"
-        type="date"
-        value={date ? formatDate(new Date(date)) : ''}
-        InputLabelProps={{
-          shrink: true,
-        }}
-        onChange={e => handleDateChange(e.target.value)}
-        style={{
-          marginBottom: 10,
-        }}
-      />
-
-      <BarChart
-        stats={deviceStats}
       />
 
       <DeviceStats

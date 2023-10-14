@@ -19,23 +19,8 @@ import {
   TableProps,
 } from '..';
 import { DeviceOnlineIcon, DeviceOfflineIcon, Never } from '../../consts';
-import { formatDate, isDeviceOnline } from '../../modules';
+import { getDeviceRestartCount, isDeviceOnline } from '../../modules';
 import { Config, Device, User } from '../../types';
-
-const getDeviceRestartCount = (device: Device) => {
-  let restarts = 0;
-  if ((device.deviceStats ?? []).length === 0) {
-    return restarts;
-  }
-
-  for (const stat of device.deviceStats!) {
-    if (formatDate(new Date(stat.date)) !== formatDate(new Date())) {
-      continue;
-    }
-    restarts += stat.restarts;
-  }
-  return restarts;
-};
 
 export const ConfigTableHeadCells: readonly HeadCell<Config>[] = [
   {
