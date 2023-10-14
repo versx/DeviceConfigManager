@@ -10,6 +10,8 @@ export const DefaultLogsReloadInterval = 5; // seconds
 export const DefaultEnableRegistration = true;
 export const DefaultUserTheme = 'system';
 
+export const DefaultDeviceRestartsShown = 10;
+
 export const Base64ImageHeader = 'data:image/png;base64,';
 
 export const DeviceOnlineIcon = 'https://raw.githubusercontent.com/versx/DeviceConfigManager/master/static/img/online.png';

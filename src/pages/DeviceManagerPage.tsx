@@ -9,7 +9,6 @@ import {
   Divider,
   MenuItem,
   Select,
-  TextField,
   Typography,
 } from '@mui/material';
 import { enqueueSnackbar } from 'notistack';
@@ -18,16 +17,18 @@ import {
   BarElement,
   CategoryScale,
   Chart as ChartJS,
+  Filler,
   Legend,
   LinearScale,
+  LineElement,
+  PointElement,
   Title,
   Tooltip,
 } from 'chart.js';
 
-import { BarChart, DeviceDetails } from '../components';
+import { DeviceDetails, LineChart } from '../components';
 import { SettingKeys } from '../consts';
 import { useServerSettings } from '../hooks';
-import { formatDate } from '../modules';
 import { DeviceService } from '../services';
 import { Device, DeviceStat } from '../types';
 
@@ -43,16 +44,21 @@ export const DeviceManagerPage = () => {
   const [screenshot, setScreenshot] = useState<string>();
 
   const [deviceStats, setDeviceStats] = useState<DeviceStat[]>([]);
-  const [date, setDate] = useState('');
+  //const [date, setDate] = useState('');
 
   const { settings } = useServerSettings();
   const remoteAgentUrls = settings[SettingKeys.AgentUrls]?.split(',') ?? [];
   const deviceDetails = devices.find(device => device.ipAddr === selectedDevice);
 
-  ChartJS.register(ArcElement, BarElement, CategoryScale, Legend, LinearScale, Title, Tooltip);
+  ChartJS.register(
+    ArcElement, BarElement, CategoryScale,
+    Filler, Legend, LinearScale,
+    LineElement, PointElement,
+    Title, Tooltip,
+  );
 
-  const handleReloadStats = useCallback((date?: string) => {
-    DeviceService.getDeviceStats(uuid!, date ?? '').then((response: any) => {
+  const handleReloadStats = useCallback(() => {
+    DeviceService.getDeviceStats(uuid!, '').then((response: any) => {
       if (response?.status !== 'ok') {
         enqueueSnackbar(`Failed to fetch device stats with error: ${response?.error}`, { variant: 'error' });
         return;
@@ -72,13 +78,8 @@ export const DeviceManagerPage = () => {
       setSelectedDevice(selected?.ipAddr ? selected.ipAddr : 'none');
     });
 
-    handleReloadStats(date);
-  }, [uuid, date, handleReloadStats]);
-
-  const handleDateChange = (date: string) => {
-    setDate(date);
-    handleReloadStats(date);
-  };
+    handleReloadStats();
+  }, [uuid, handleReloadStats]);
 
   useEffect(() => handleReload(), [handleReload]);
 
@@ -94,6 +95,7 @@ export const DeviceManagerPage = () => {
         Manage Device {uuid}
       </Typography>
 
+      {/*
       <TextField
         //fullWidth
         margin="normal"
@@ -108,7 +110,9 @@ export const DeviceManagerPage = () => {
           marginBottom: 10,
         }}
       />
-      <BarChart
+      */}
+      <LineChart
+        title="Device Restart History"
         stats={deviceStats}
       />
 
