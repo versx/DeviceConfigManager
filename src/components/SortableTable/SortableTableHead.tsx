@@ -209,6 +209,16 @@ export const OfflineDeviceTableHeadCells: readonly HeadCell<Device>[] = [
     format: (row: Device, value: any) => value ?? '--',
   },
   {
+    id: 'restarts' as 'uuid',
+    disablePadding: false,
+    align: 'left',
+    label: 'Restarts',
+    //minWidth: 100,
+    //maxWidth: 100,
+    style: { display: { xs: 'none', sm: 'none', md: 'table-cell' } },
+    format: (row: Device, value: any) => getDeviceRestartCount(row).toLocaleString(),
+  },
+  {
     id: 'lastSeen',
     disablePadding: false,
     align: 'left',

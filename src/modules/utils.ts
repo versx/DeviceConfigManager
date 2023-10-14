@@ -369,8 +369,9 @@ export const getDeviceRestartCount = (device: Device) => {
     return restarts;
   }
 
+  const today = formatDate(new Date());
   for (const stat of device.deviceStats!) {
-    if (formatDate(new Date(stat.date)) !== formatDate(new Date())) {
+    if (formatDate(new Date(stat.date + ' 00:00:00')) !== today) {
       continue;
     }
     restarts += stat.restarts;

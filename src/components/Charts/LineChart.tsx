@@ -31,7 +31,7 @@ export const LineChart = (props: LineChartProps) => {
     return {
       label: device,
       data: dates.map(date => {
-        const entry = stats.find(stat => stat.uuid === device && formatDate(new Date(stat.date)) === date);
+        const entry = stats.find(stat => stat.uuid === device && formatDate(new Date(stat.date + ' 00:00:00')) === date);
         return entry ? entry.restarts : 0;
       }),
       fill,

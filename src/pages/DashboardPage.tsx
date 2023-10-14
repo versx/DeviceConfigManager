@@ -51,7 +51,7 @@ export const DashboardPage = () => {
       if ((device.deviceStats ?? []).length === 0) {
         continue;
       }
-      const deviceStats = device.deviceStats?.filter((stat: DeviceStat) => formatDate(new Date(stat.date)) === formatDate(new Date())) ?? [];
+      const deviceStats = device.deviceStats?.filter((stat: DeviceStat) => formatDate(new Date(stat.date + ' 00:00:00')) === formatDate(new Date())) ?? [];
       for (const stat of deviceStats) {
         restarts += stat.restarts;
       }
