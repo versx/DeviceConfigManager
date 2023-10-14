@@ -1,6 +1,5 @@
 import React, { useCallback, useEffect, useState } from 'react';
 import {
-  Button,
   Container,
   Paper,
   Typography,
@@ -18,7 +17,7 @@ import {
 } from 'chart.js';
 
 import { BarChart, DeviceGrid } from '../components';
-import { ActiveMenuItemColor, DefaultDeviceRestartsShown } from '../consts';
+import { DefaultDeviceRestartsShown } from '../consts';
 import { formatDate, getTopDeviceRestarts } from '../modules';
 import { ConfigService, DeviceService } from '../services';
 import { Config, Device, DeviceStat } from '../types';
@@ -102,18 +101,6 @@ export const DevicesPage = () => {
           stats={deviceStats}
         />
       </Container>
-
-      <Button
-        variant="contained"
-        onClick={() => window.location.href = '/devices/none'}
-        style={{
-          backgroundColor: ActiveMenuItemColor,
-          color: '#fff',
-          position: 'absolute',
-        }}
-      >
-        Device Manager
-      </Button>
 
       <DeviceGrid
         configs={configs}
