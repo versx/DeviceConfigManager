@@ -5,13 +5,18 @@ import { DeviceStat } from '../../types';
 
 interface LineChartProps {
   title: string;
+  fill: boolean;
   height?: string | number;
   width?: string | number;
   stats: DeviceStat[];
 };
 
 export const LineChart = (props: LineChartProps) => {
-  const { title, height = '300px', width = '100%', stats } = props;
+  const {
+    title, fill,
+    height = '300px', width = '100%',
+    stats,
+  } = props;
 
   // Extract unique devices
   const devices = Array.from(new Set(stats.map(stat => stat.uuid)));
@@ -29,7 +34,7 @@ export const LineChart = (props: LineChartProps) => {
         const entry = stats.find(stat => stat.uuid === device && formatDate(new Date(stat.date)) === date);
         return entry ? entry.restarts : 0;
       }),
-      fill: true,
+      fill,
       backgroundColor: getRandomColor(), // Each device gets a random color
     };
   });
@@ -41,6 +46,8 @@ export const LineChart = (props: LineChartProps) => {
         datasets: datasets,
       }}
       options={{
+        //spanGaps: true,
+        //showLine: true,
         scales: {
           x: {
             type: 'category',
@@ -63,8 +70,10 @@ export const LineChart = (props: LineChartProps) => {
         },
       }}
       style={{
-        maxHeight: height,
-        maxWidth: width,
+        minHeight: height,
+        minWidth: width,
+        width: '100%',
+        backgroundColor: '#272727',
       }}
     />
   );

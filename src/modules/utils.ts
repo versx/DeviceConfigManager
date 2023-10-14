@@ -1,7 +1,8 @@
 import { DateTime } from 'luxon';
 
 import { Order } from '../components';
-import { Device, Setting } from '../types';
+import { DefaultDeviceRestartsShown } from '../consts';
+import { Device, DeviceStat, Setting } from '../types';
 
 export const substr = (text: string, maxChars: number = 30, addEllipsis: boolean = true) => {
   if (text.length <= maxChars) {
@@ -55,7 +56,7 @@ export const getUnixTime = (date: Date) => Math.round(date.getTime() / 1000);
 export const formatDate = (date: Date): string => {
   const yyyy = date.getFullYear();
   const mm = String(date.getMonth() + 1).padStart(2, '0'); // January is 0!
-  const dd = String(date.getDate() - 1).padStart(2, '0'); // TODO: Check date
+  const dd = String(date.getDate()).padStart(2, '0'); // TODO: Check date
   return `${yyyy}-${mm}-${dd}`;
 };
 
@@ -372,4 +373,21 @@ export const getDeviceRestartCount = (device: Device) => {
     restarts += stat.restarts;
   }
   return restarts;
+};
+
+export const getTopDeviceRestarts = (deviceStats: DeviceStat[], limit: number = DefaultDeviceRestartsShown) => {
+  const deviceRestarts = new Map<string, DeviceStat>();
+  for (const stat of deviceStats) {
+    if (deviceRestarts.has(stat.uuid)) {
+      const existingStat = deviceRestarts.get(stat.uuid)!;
+      existingStat.restarts += stat.restarts;
+    } else {
+      deviceRestarts.set(stat.uuid, { ...stat }); // Create a copy to avoid mutating the original array
+    }
+  }
+
+  const sorted = Array
+    .from(deviceRestarts.values())
+    .sort((a, b) => b.restarts - a.restarts);
+  return sorted.slice(0, limit);
 };

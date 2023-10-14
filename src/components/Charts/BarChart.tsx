@@ -1,52 +1,72 @@
 import { Bar } from 'react-chartjs-2';
 
-import { getRandomColor } from '../../modules';
+import { formatDate, getRandomColor } from '../../modules';
 import { DeviceStat } from '../../types';
 
 interface BarChartProps {
+  title: string;
+  height?: string | number;
+  width?: string | number;
   stats: DeviceStat[];
 };
 
 export const BarChart = (props: BarChartProps) => {
-  const { stats } = props;
-
-  // Extract unique devices
-  const devices = Array.from(new Set(stats.map(stat => stat.uuid)));
-
-  // Sort data by date
-  stats.sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
-
-  // Extract unique dates
-  const dates = Array.from(new Set(stats.map(stat => new Date(stat.date).toLocaleDateString())));
-
-  const datasets = devices.map(device => {
-    return {
-      label: device,
-      data: dates.map(date => {
-        const entry = stats.find(stat => stat.uuid === device && new Date(stat.date).toLocaleDateString() === date);
-        return entry ? entry.restarts : 0;
-      }),
-      backgroundColor: getRandomColor(), // Each device gets a random color
-    };
-  });
+  const { title, height = '300px', width = '100%', stats } = props;
+  const statsToday = stats.filter(stat =>
+    formatDate(new Date(stat.date)) === formatDate(new Date('2023-10-14'))
+  );
+  const labels = statsToday.map(stat => stat.uuid);
+  const data = statsToday.map(stat => stat.restarts);
 
   return (
     <Bar
       data={{
-        labels: dates,
-        datasets: datasets,
+        labels,
+        datasets: [{
+          label: 'Devices',
+          data,
+          backgroundColor: getRandomColor(),
+        }],
+        //labels: [...labels],
+        //datasets: statsToday.map(stat => ({
+        //  label: stat.uuid,
+        //  data: [stat.restarts],
+        //  backgroundColor: getRandomColor(),
+        //})),
       }}
       options={{
         scales: {
           x: {
             type: 'category',
-            //beginAtZero: true,
+            title: {
+              display: true,
+              text: 'UUID',
+            },
           },
           y: {
             type: 'linear',
             beginAtZero: true,
+            title: {
+              display: true,
+              text: 'Restarts',
+            },
           },
         },
+        responsive: true,
+        maintainAspectRatio: true,
+        plugins: {
+          legend: {
+            position: 'top',
+          },
+          title: {
+            display: true,
+            text: title,
+          },
+        },
+      }}
+      style={{
+        maxHeight: height,
+        maxWidth: width,
       }}
     />
   );

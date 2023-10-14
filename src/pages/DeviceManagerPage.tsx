@@ -7,6 +7,7 @@ import {
   Card,
   Container,
   Divider,
+  Grid,
   MenuItem,
   Select,
   Typography,
@@ -42,7 +43,6 @@ export const DeviceManagerPage = () => {
   const [response, setResponse] = useState<any>('');
   const [error, setError] = useState<string | null>('');
   const [screenshot, setScreenshot] = useState<string>();
-
   const [deviceStats, setDeviceStats] = useState<DeviceStat[]>([]);
   //const [date, setDate] = useState('');
 
@@ -95,106 +95,113 @@ export const DeviceManagerPage = () => {
         Manage Device {uuid}
       </Typography>
 
-      {/*
-      <TextField
-        //fullWidth
-        margin="normal"
-        label="Date"
-        type="date"
-        value={date ? formatDate(new Date(date)) : ''}
-        InputLabelProps={{
-          shrink: true,
-        }}
-        onChange={e => handleDateChange(e.target.value)}
-        style={{
-          marginBottom: 10,
-        }}
-      />
-      */}
-      <LineChart
-        title="Device Restart History"
-        stats={deviceStats}
-      />
+      <Grid container spacing={2}>
+        <Grid item xs={12} md={8}>
+          {/*
+          <TextField
+            //fullWidth
+            margin="normal"
+            label="Date"
+            type="date"
+            value={date ? formatDate(new Date(date)) : ''}
+            InputLabelProps={{
+              shrink: true,
+            }}
+            onChange={e => handleDateChange(e.target.value)}
+            style={{
+              marginBottom: 10,
+            }}
+          />
+          */}
+          <LineChart
+            fill
+            title="Device Restart History"
+            stats={deviceStats}
+            width="100%"
+            height="300px"
+          />
+        </Grid>
 
-      <div style={{ display: 'flex', gap: '24px', marginBottom: '24px' }}>
-        {/* Control Panel */}
-        <Card elevation={3} style={{ flex: 1, padding: '16px' }}>
-          <Select
-            fullWidth
-            value={selectedDevice || 'none'}
-            variant="outlined"
-            size="small"
-            onChange={(e) => setSelectedDevice(e.target.value as string)}
-          >
-            <MenuItem key="none" value="none" selected disabled>Select a device</MenuItem>
-            {devices.map((device: Device, index: number) => (
-              <MenuItem key={index} value={device.ipAddr!}>{device.uuid}</MenuItem>
-            ))}
-          </Select>
-          <br />
+        <Grid item xs={12} md={4}>
+          <Card elevation={3}>
+            <DeviceDetails device={deviceDetails!} />
+          </Card>
+        </Grid>
 
-          <ButtonGroup
-            variant="contained"
-            aria-label="outlined primary button group"
-            size="small"
-            style={{ marginTop: 8, marginBottom: 8 }}
-          >
-            <Button
-              variant="contained"
-              onClick={async () => {
-                const response = await DeviceService.sendDeviceRequest(selectedDevice!, 8080, 'screen');
-                if (response?.error) {
-                  setError(response.message);
-                } else {
-                  setError('');
-                  setScreenshot(response.data);
-                }
-              }}
+        <Grid item xs={12}>
+          <Card elevation={3} style={{ flex: 1, padding: '16px' }}>
+            <Select
+              fullWidth
+              value={selectedDevice || 'none'}
+              variant="outlined"
+              size="small"
+              onChange={(e) => setSelectedDevice(e.target.value as string)}
             >
-              Screenshot
-            </Button>
-            <Button
+              <MenuItem key="none" value="none" selected disabled>Select a device</MenuItem>
+              {devices.map((device: Device, index: number) => (
+                <MenuItem key={index} value={device.ipAddr!}>{device.uuid}</MenuItem>
+              ))}
+            </Select>
+            <br />
+  
+            <ButtonGroup
               variant="contained"
-              onClick={async () => {
-                const response = await DeviceService.sendDeviceRequest(selectedDevice!, 8080, 'account');
-                if (response?.error) {
-                  setError(response.message);
-                } else {
-                  setError('');
-                  setResponse(response.data);
-                }
-              }}
+              aria-label="outlined primary button group"
+              size="small"
+              style={{ marginTop: 8, marginBottom: 8 }}
             >
-              Account
-            </Button>
-            <Button
-              variant="contained"
-              onClick={async () => {
-                const response = await DeviceService.sendDeviceRequest(selectedDevice!, 8080, 'restart');
-                if (response?.error) {
-                  setError(response.message);
-                } else {
-                  setError('');
-                  setResponse(response.data);
-                }
-              }}
-            >
-              Restart Game
-            </Button>
-            <Button
-              variant="contained"
-              onClick={async () => await DeviceService.sendAgentRequest({ type: 'reboot', device: uuid }, remoteAgentUrls)}
-            >
-              Reboot Device
-            </Button>
-          </ButtonGroup>
-        </Card>
-
-        {/* Device Details */}
-        <Card elevation={3} style={{ minWidth: '280px', maxWidth: '320px' }}>
-          <DeviceDetails device={deviceDetails!} />
-        </Card>
-      </div>
+              <Button
+                variant="contained"
+                onClick={async () => {
+                  const response = await DeviceService.sendDeviceRequest(selectedDevice!, 8080, 'screen');
+                  if (response?.error) {
+                    setError(response.message);
+                  } else {
+                    setError('');
+                    setScreenshot(response.data);
+                  }
+                }}
+              >
+                Screenshot
+              </Button>
+              <Button
+                variant="contained"
+                onClick={async () => {
+                  const response = await DeviceService.sendDeviceRequest(selectedDevice!, 8080, 'account');
+                  if (response?.error) {
+                    setError(response.message);
+                  } else {
+                    setError('');
+                    setResponse(response.data);
+                  }
+                }}
+              >
+                Account
+              </Button>
+              <Button
+                variant="contained"
+                onClick={async () => {
+                  const response = await DeviceService.sendDeviceRequest(selectedDevice!, 8080, 'restart');
+                  if (response?.error) {
+                    setError(response.message);
+                  } else {
+                    setError('');
+                    setResponse(response.data);
+                  }
+                }}
+              >
+                Restart Game
+              </Button>
+              <Button
+                variant="contained"
+                onClick={async () => await DeviceService.sendAgentRequest({ type: 'reboot', device: uuid }, remoteAgentUrls)}
+              >
+                Reboot Device
+              </Button>
+            </ButtonGroup>
+          </Card>
+        </Grid>
+      </Grid>
 
       {/* Response and Screenshot */}
       {response && 

@@ -1,6 +1,6 @@
 import { Request, Response } from 'express';
 
-import { DeviceService, formatDate, LogService } from '../services';
+import { DeviceService, LogService } from '../services';
 
 const getLogs = (req: Request, res: Response) => {
   const { uuid } = req.query;
@@ -22,7 +22,7 @@ const createLog = async (req: Request, res: Response) => {
     logger.info(message);
 
     if (message.includes('Initializing')) {
-      await DeviceService.createDeviceStat(uuid.toString(), new Date(formatDate(new Date())));
+      await DeviceService.createDeviceStat(uuid.toString(), new Date());
     }
   }
 

@@ -2,8 +2,11 @@ import {
   Card,
   CardContent,
   Divider,
+  Grid,
   Typography,
+  useMediaQuery,
 } from '@mui/material';
+import { Theme } from '@mui/material/styles';
 import moment from 'moment';
 
 import {
@@ -19,6 +22,8 @@ interface DeviceDetailsProps {
 
 export const DeviceDetails = (props: DeviceDetailsProps) => {
   const { device } = props;
+  const isSmallScreen = useMediaQuery((theme: Theme) => theme.breakpoints.down('md'));
+  
   if (!device) return null;
 
   const isOnline = isDeviceOnline(device.lastSeen);
@@ -39,30 +44,48 @@ export const DeviceDetails = (props: DeviceDetailsProps) => {
           &nbsp;Device Details
         </Typography>
         <Divider />
-        <Typography variant="body1">
-          <strong>UUID:</strong> {device.uuid}
-        </Typography>
-        <Typography variant="body1">
-          <strong>Config:</strong> {device.config || NotAssigned}
-        </Typography>
-        <Typography variant="body1">
-          <strong>Model:</strong> {device.model || UnknownModel}
-        </Typography>
-        <Typography variant="body1">
-          <strong>iOS Version:</strong> {device.iosVersion || '--'}
-        </Typography>
-        <Typography variant="body1">
-          <strong>IPA Version:</strong> {device.ipaVersion || '--'}
-        </Typography>
-        <Typography variant="body1">
-          <strong>Last Seen:</strong> {device.lastSeen ? moment(device.lastSeen).calendar() : Never}
-        </Typography>
-        <Typography variant="body1">
-          <strong>Enabled:</strong> {device.enabled ? 'Yes' : 'No'}
-        </Typography>
-        <Typography variant="body1">
-          <strong>Notes:</strong> {device.notes || '--'}
-        </Typography>
+        <Grid container direction={isSmallScreen ? 'row' : 'column'} spacing={isSmallScreen ? 2 : 0}>
+          <Grid item xs={isSmallScreen ? 6 : 12}>
+            <Typography variant="body1">
+              <strong>UUID:</strong> {device.uuid}
+            </Typography>
+          </Grid>
+          <Grid item xs={isSmallScreen ? 6 : 12}>
+            <Typography variant="body1">
+              <strong>Config:</strong> {device.config || NotAssigned}
+            </Typography>
+          </Grid>
+          <Grid item xs={isSmallScreen ? 6 : 12}>
+            <Typography variant="body1">
+              <strong>Model:</strong> {device.model || UnknownModel}
+            </Typography>
+          </Grid>
+          <Grid item xs={isSmallScreen ? 6 : 12}>
+            <Typography variant="body1">
+              <strong>iOS Version:</strong> {device.iosVersion || '--'}
+            </Typography>
+          </Grid>
+          <Grid item xs={isSmallScreen ? 6 : 12}>
+            <Typography variant="body1">
+              <strong>IPA Version:</strong> {device.ipaVersion || '--'}
+            </Typography>
+          </Grid>
+          <Grid item xs={isSmallScreen ? 6 : 12}>
+            <Typography variant="body1">
+              <strong>Last Seen:</strong> {device.lastSeen ? moment(device.lastSeen).calendar() : Never}
+            </Typography>
+          </Grid>
+          <Grid item xs={isSmallScreen ? 6 : 12}>
+            <Typography variant="body1">
+              <strong>Enabled:</strong> {device.enabled ? 'Yes' : 'No'}
+            </Typography>
+          </Grid>
+          <Grid item xs={isSmallScreen ? 6 : 12}>
+            <Typography variant="body1">
+              <strong>Notes:</strong> {device.notes || '--'}
+            </Typography>
+        </Grid>
+      </Grid>
       </CardContent>
     </Card>
   );
