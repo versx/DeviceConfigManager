@@ -54,10 +54,13 @@ export const getUnix = () => getUnixTime(new Date());
 export const getUnixTime = (date: Date) => Math.round(date.getTime() / 1000);
 
 export const formatDate = (date: Date): string => {
-  const yyyy = date.getFullYear();
-  const mm = String(date.getMonth() + 1).padStart(2, '0'); // January is 0!
-  const dd = String(date.getDate()).padStart(2, '0');
-  return `${yyyy}-${mm}-${dd}`;
+  //const yyyy = date.getFullYear();
+  //const mm = String(date.getMonth() + 1).padStart(2, '0'); // January is 0!
+  //const dd = String(date.getDate()).padStart(2, '0');
+  //return `${yyyy}-${mm}-${dd}`;
+  const offset = date.getTimezoneOffset();
+  date = new Date(date.getTime() - (offset*60*1000));
+  return date.toISOString().split('T')[0];
 };
 
 export const formatDateForDateTimeInput = (date: Date): string => {

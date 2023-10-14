@@ -9,6 +9,7 @@ import {
   Divider,
   Grid,
   MenuItem,
+  Paper,
   Select,
   Typography,
 } from '@mui/material';
@@ -113,17 +114,19 @@ export const DeviceManagerPage = () => {
             }}
           />
           */}
-          <LineChart
-            fill
-            title="Device Restart History"
-            stats={deviceStats}
-            width="100%"
-            height="300px"
-          />
+          <Container component={Paper} elevation={3} style={{borderRadius: 5, padding: 16}}>
+            <LineChart
+              fill
+              title="Device Restart History"
+              stats={deviceStats}
+              width="100%"
+              height="300px"
+            />
+          </Container>
         </Grid>
 
         <Grid item xs={12} md={4}>
-          <Card elevation={3}>
+          <Card elevation={3} style={{height: '100%'}}>
             <DeviceDetails device={deviceDetails!} />
           </Card>
         </Grid>

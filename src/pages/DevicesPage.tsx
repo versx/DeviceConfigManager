@@ -2,6 +2,7 @@ import React, { useCallback, useEffect, useState } from 'react';
 import {
   Button,
   Container,
+  Paper,
   Typography,
 } from '@mui/material';
 import { useSnackbar } from 'notistack';
@@ -28,6 +29,7 @@ export const DevicesPage = () => {
   const [deviceStats, setDeviceStats] = useState<DeviceStat[]>([]);
   //const [date, setDate] = useState(formatDate(new Date()));
   const { enqueueSnackbar } = useSnackbar();
+  const today = formatDate(new Date());
 
   ChartJS.register(ArcElement, BarElement, CategoryScale, Legend, LinearScale, Title, Tooltip);
 
@@ -94,10 +96,12 @@ export const DevicesPage = () => {
         }}
       />
       */}
-      <BarChart
-        title={`Top ${DefaultDeviceRestartsShown} Device Restarts Today`}
-        stats={deviceStats}
-      />
+      <Container component={Paper} elevation={0} style={{borderRadius: 5, padding: 16}}>
+        <BarChart
+          title={`Top ${DefaultDeviceRestartsShown} Device Restarts Today (${today})`}
+          stats={deviceStats}
+        />
+      </Container>
 
       <Button
         variant="contained"

@@ -73,7 +73,7 @@ export const LineChart = (props: LineChartProps) => {
         minHeight: height,
         minWidth: width,
         width: '100%',
-        backgroundColor: '#272727',
+        //backgroundColor: '#272727',
       }}
     />
   );

@@ -29,7 +29,7 @@ export const DeviceDetails = (props: DeviceDetailsProps) => {
   const isOnline = isDeviceOnline(device.lastSeen);
 
   return (
-    <Card elevation={3}>
+    <Card elevation={3} style={{height: '100%'}}>
       <CardContent>
         <Typography variant="h6" style={{display: 'flex', alignItems: 'center', justifyContent: 'center'}}>
           <img
