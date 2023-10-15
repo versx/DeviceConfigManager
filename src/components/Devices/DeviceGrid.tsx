@@ -31,6 +31,8 @@ interface PhoneModelState {
   editModel: Device | undefined;
 };
 
+// TODO: Pagination/limit devices shown in grid
+
 export const DeviceGrid = (props: DeviceGridProps) => {
   const { configs, devices, onReload } = props;
   const deviceDisplayMode = get(StorageKeys.DeviceDisplay, 'grid');
