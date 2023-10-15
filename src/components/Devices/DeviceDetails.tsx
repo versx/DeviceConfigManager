@@ -43,8 +43,8 @@ export const DeviceDetails = (props: DeviceDetailsProps) => {
           />
           &nbsp;Device Details
         </Typography>
-        <Divider />
-        <Grid container direction={isSmallScreen ? 'row' : 'column'} spacing={isSmallScreen ? 2 : 0}>
+        <Divider sx={{marginTop: 2, marginBottom: 2}} />
+        <Grid container direction={isSmallScreen ? 'row' : 'column'} spacing={isSmallScreen ? 1 : 0}>
           <Grid item xs={isSmallScreen ? 6 : 12}>
             <Typography variant="body1">
               <strong>UUID:</strong> {device.uuid}
@@ -84,8 +84,8 @@ export const DeviceDetails = (props: DeviceDetailsProps) => {
             <Typography variant="body1">
               <strong>Notes:</strong> {device.notes || '--'}
             </Typography>
+          </Grid>
         </Grid>
-      </Grid>
       </CardContent>
     </Card>
   );

@@ -27,7 +27,7 @@ import {
   Tooltip,
 } from 'chart.js';
 
-import { DeviceDetails, LineChart } from '../components';
+import { BreadcrumbItem, Breadcrumbs, DeviceDetails, LineChart } from '../components';
 import { SettingKeys } from '../consts';
 import { ViewDeviceLogsDialog } from '../dialogs';
 import { useServerSettings } from '../hooks';
@@ -52,6 +52,20 @@ export const DeviceManagerPage = () => {
   const { settings } = useServerSettings();
   const remoteAgentUrls = settings[SettingKeys.AgentUrls]?.split(',') ?? [];
   const deviceDetails = devices.find(device => device.ipAddr === selectedDevice);
+
+  const crumbs: BreadcrumbItem[] = [{
+    text: 'Dashboard',
+    href: '/',
+    selected: false,
+  },{
+    text: 'Devices',
+    href: '/devices',
+    selected: false,
+  },{
+    text: 'Manage Device',
+    href: '/devices/' + uuid,
+    selected: true,
+  }];
 
   ChartJS.register(
     ArcElement, BarElement, CategoryScale,
@@ -93,6 +107,7 @@ export const DeviceManagerPage = () => {
 
   return (
     <Container>
+      <Breadcrumbs crumbs={crumbs} />
       <Typography
         id="tableTitle"
         variant="h4"
@@ -138,9 +153,10 @@ export const DeviceManagerPage = () => {
         </Grid>
 
         <Grid item xs={12}>
-          <Card elevation={3} style={{ flex: 1, padding: '16px' }}>
+          <Card elevation={3} style={{ flex: 1, padding: '16px', marginBottom: 16 }}>
             <CardHeader
               title="Actions"
+              titleTypographyProps={{ variant: 'h6' }}
             />
             <ButtonGroup
               variant="contained"
