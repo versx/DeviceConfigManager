@@ -1,6 +1,7 @@
 import { Line } from 'react-chartjs-2';
 
-import { formatDate, getRandomColor } from '../../modules';
+import { ActiveMenuItemColor } from '../../consts';
+import { formatDate } from '../../modules';
 import { DeviceStat } from '../../types';
 
 interface LineChartProps {
@@ -13,7 +14,7 @@ interface LineChartProps {
 
 export const LineChart = (props: LineChartProps) => {
   const {
-    title, fill,
+    title, //fill,
     height = '300px', width = '100%',
     stats,
   } = props;
@@ -34,8 +35,8 @@ export const LineChart = (props: LineChartProps) => {
         const entry = stats.find(stat => stat.uuid === device && formatDate(new Date(stat.date + ' 00:00:00')) === date);
         return entry ? entry.restarts : 0;
       }),
-      fill,
-      backgroundColor: getRandomColor(), // Each device gets a random color
+      //fill,
+      backgroundColor: 'white',
     };
   });
 
@@ -46,8 +47,9 @@ export const LineChart = (props: LineChartProps) => {
         datasets: datasets,
       }}
       options={{
+        borderColor: ActiveMenuItemColor,
         //spanGaps: true,
-        //showLine: true,
+        showLine: true,
         scales: {
           x: {
             type: 'category',
@@ -73,7 +75,6 @@ export const LineChart = (props: LineChartProps) => {
         minHeight: height,
         minWidth: width,
         width: '100%',
-        //backgroundColor: '#272727',
       }}
     />
   );
