@@ -31,7 +31,24 @@ const register = async (req: Request, res: Response) => {
   res.json({ status: 'ok' });
 };
 
+const refreshTokens = async (req: Request, res: Response) => {
+  const { user } = req.body;
+  const result = await AuthService.refreshTokens(user);
+  if (!result) {
+    return res.json({
+      status: 'error',
+      error: `Failed to refresh tokens.`,
+    });
+  }
+
+  res.json({
+    status: 'ok',
+    user: result,
+  });
+};
+
 export const AuthController = {
   login,
   register,
+  refreshTokens,
 };

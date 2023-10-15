@@ -3,9 +3,10 @@ import { createHash, randomBytes } from 'crypto';
 import { sign, verify } from 'jsonwebtoken';
 
 import config from '../config.json';
-import { UserService, logError } from '.';
+import { logError, UserService } from '.';
 import { DefaultExpiresIn } from '../consts';
 import { db } from '../models';
+import { UserModel } from '../types';
 
 const login = async (username: string, password: string) => {
   try {
@@ -49,6 +50,52 @@ const register = async (username: string, password: string) => {
     logError(err);
     return false;
   }
+};
+
+const refreshTokens = async (user: UserModel) => {
+  if (!user?.tokens?.refreshToken) {
+    return {
+      status: 403,
+      success: false,
+      message: 'No token provided!',
+    };
+  }
+
+  const dbToken = await getRefreshToken(user.id!);
+  //console.log('dbToken:', dbToken);
+  if (!dbToken?.refreshToken) {
+    return {
+      status: 403,
+      success: false,
+      message: 'Invalid refresh token!',
+    };
+  }
+
+  let newAccessToken;
+  let newRefreshToken;
+  let error = false;
+  try {
+    const payload = verify(user.tokens?.refreshToken, config.auth.refreshTokenSecret);
+    if (!payload) {
+      return null;
+    }
+    newAccessToken = generateAccessToken(user.username, user.root);
+    newRefreshToken = generateRefreshToken(user.username, user.root);
+
+    // Save refresh tokens to database or some other storage persistence
+    await addRefreshToken(user.id!, newAccessToken, newRefreshToken);
+  } catch (err) {
+    error = true;
+    logError(err);
+  }
+
+  return {
+    ...user,
+    status: error ? 500 : 200,
+    success: !error,
+    accessToken: newAccessToken,
+    refreshToken: newRefreshToken,
+  };
 };
 
 const generateAccessToken = (username: string, isRoot: boolean = false): string => {
@@ -118,6 +165,7 @@ const createVerificationCode = () => {
 export const AuthService = {
   login,
   register,
+  refreshTokens,
   generateAccessToken,
   generateRefreshToken,
   verifyAccessToken,
