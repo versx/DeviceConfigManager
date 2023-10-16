@@ -7,85 +7,147 @@
 
 
 # Device Config Manager  
-
 To be used with RealDeviceMap macless solutions.  
 
-Central repository for macless client configurations without having to keep track of multiple remote configs and urls. Assign different configurations to different devices and different backends (RealDeviceMap / Lorgnette). When devices connect for the first time, if they don't exist they are created, if the device doesn't have a config assigned, it will try to auto-assign a default config if one exists.  
-You can also pre-create devices and assign configs yourself if needed. Rest endpoint tooling to get screenshot, active logged in account, restart game, reboot device, or view device logs and more.  
+Central repository for macless client configurations without having to keep track of multiple remote configs and urls. Assign different configurations to different devices and different backends (RealDeviceMap, Lorgnette, Golbat, etc).  
 
-## Features  
-- Custom config assignments  
-- Screenshot preview  
-- Device logging  
-- Device endpoint tooling  
-- and more...  
+When a device connects for the first time an entry is created in the database. Otherwise, if the device does not have a config assigned and a default config is set, the default config will be auto-assigned.  
 
-## Supported Providers  
-- GoCheats  
-- Kevin  
-- AI  
+Manually creating devices ahead of time is also possible, if needed. Rest endpoint tooling to get device screenshot, currently logged in account username, restart game, reboot device, view device logs, and more.  
+
+
+## Prerequisites
+- [Node.js v18 or higher](https://nodejs.org/en/download)  
+
 
 ## Installation
-**Normal**  
-1. Create new database `dcm` with utf8_unicode_ci/utf8mb4 character sets and collation  
-1. Clone repository `git clone https://github.com/versx/DeviceConfigManager`  
-1. Install dependencies `npm install`  
-1. Copy config `cp src/config.example.json src/config.json`  
-1. Fill out config `vi src/config.json`  
-1. Run `npm start`  
-1. Access via http://machineip:port/ using username: `root` and password `pass123!`  
-1. Change default password via the Settings page  
-1. (Optional) Setup [DCMAgent](https://github.com/versx/DCMAgent) on the machines the phones are connected to in order to restart the actual device.  
 
-**Docker**  
-1. Create new database `dcm` with utf8_unicode_ci/utf8mb4 character sets and collation  
-1. Clone repository `git clone https://github.com/versx/DeviceConfigManager`  
-1. Copy docker-compose `cp docker-compose.example.yml docker-compose.yml`  
-1. Copy config `cp src/config.example.json src/config.json`  
-1. Fill out config `vi src/config.json`  
-1. Run `docker-compose up -d --build`  
-1. Access via http://machineip:port/ using username: `root` and password `pass123!`  
-1. Change default password via the Settings page  
-1. (Optional) Setup [DCMAgent](https://github.com/versx/DCMAgent) on the machines the phones are connected to in order to restart the actual device.  
+1. Clone repository: `git clone https://github.com/versx/DeviceConfigManager dcm`  
+
+### Client  
+1. Install packages: `npm install`  
+1. Copy example config: `cp src/config.example.json src/config.json`  
+1. Fill out config options.  
+1. Build project in root folder: `npm run build`  
+1. Run: `npm run start`  
+
+### Server  
+1. Change directories: `cd server`  
+1. Install packages: `npm install`  
+1. Copy example config: `cp src/config.example.json src/config.json`  
+1. Fill out config options.  
+1. Build project in root folder: `npm run build`  
+1. Run: `npm run start`  
+
 
 ## Updating  
-**Normal**  
-1. `git pull`  
-1. Run `npm install` in root folder  
-1. Run `npm start`  
 
-**Docker**  
-1. `git pull`  
-1. Run `docker-compose up -d --build`
+### Client
+1. Pull latest changes in root folder `git pull`  
+1. Build client project in root folder: `npm run build`  
+1. Run `npm run start`  
 
-## FAQ
-Q.) Why are devices showing my HAProxy IP address?  
-A.) You need to make sure to set `option forwardfor` in your haproxy.cfg file under defaults so the `x-forward-for` header is sent with the request and the real IP is used.  
+### Server
+1. Pull latest changes in root folder `git pull`  
+1. Change directories: `cd server`  
+1. Build server project: `npm run build`  
+1. Run `npm run start`  
 
-Q.) Why are devices not connecting to backend or sending data to data endpoints?  
-A.) Make sure to **not** include the `/raw` or `/controler` endpoints in the `Backend Url` and `Data Endpoints` config options. These are automatically appended to each URL address.  
 
-Q.) Will I be able to view screenshots and use the device endpoint tools with devices using mac internet sharing?  
-A.) No, since it uses the connected machine's IP address for internet sharing.  
+## Configuration
 
-## Current Issues  
-- Unable to set schedule that switches between days, i.e. Start 11pm and Ends 2am.  
-
-## PM2 (recommended)
-Once everything is setup and running appropriately, you can add this to PM2 ecosystem.config.js file so it is automatically started:  
+### Client  
+```json
+{
+  // Base API url address of server.
+  "apiUrl": "http://127.0.0.1:9992/api/v2/"
+}
 ```
-module.exports = {
-  apps : [
-  {
-    name: 'DeviceConfigManager',
-    script: 'index.js',
-    cwd: '/home/username/DeviceConfigManager/src/',
-    instances: 1,
-    autorestart: true,
-    watch: false,
-    max_memory_restart: '1G',
-    out_file: 'NULL'
-  }
-  ]
-};
+
+### Server
+```json
+{
+  // Host IP address to list on.
+  "host": "0.0.0.0",
+  // Port to listen on.
+  "port": 9992,
+  // Authorization options.
+  "auth": {
+    // Initial Administrator user account seed.
+    "admin": {
+      // Username for admin account.
+      "username": "admin",
+      // Password for admin account.
+      "password": "p4ssw0rd!"
+    },
+    // Secret token used for creating JsonWebTokens (JWTs).
+    "secret": "auth token",
+    // MITM authorization bearer tokens allowed, leave blank to allow all.
+    "bearerTokens": []
+  },
+  // Keep device IP addresses updated in database.
+  "autoSyncIP": true,
+  // Database options.
+  "database": {
+    // Database dialect to use. (i.e. mysql/mariadb)
+    "dialect": "mysql",
+    // Database host address.
+    "host": "127.0.0.1",
+    // Database listening port.
+    "port": 3306,
+    // Database account username.
+    "username": "root",
+    // Database account password.
+    "password": "password",
+    // Database name.
+    "database": "dcmdb",
+    // Timezone used for `createdAt` and `updatedAt` column values.
+    "timezone": "America/Denver",
+    // Whether to enable or disable Sequelize database
+    // query logging.
+    "logging": false
+  },
+  // Logging options.
+  "logs": {
+    // Log level to use. (none, trace, debug, info, warn, error)
+    "level": "info",
+    // Log color options.
+    "colors": {
+      "text": "#ffffff",
+      "variable": "#ff624d",
+      "date": "#4287f5",
+      "warn": "#ffff00",
+      "error": "#ff0000"
+    },
+    // Log rotation options.
+    "rotate": {
+      // How often to check if log file should be rotated
+      "interval": "1h",
+      // Maximum number of rotated log files to keep
+      "maxFiles": 5,
+      // Maximum size of log file before rotated
+      "maxSize": "1M"
+    }
+  },
+  // 
+  "timezone": "America/Denver"
+}
 ```
+
+
+## Screenshots  
+**Dashboard**  
+[![Dashboard](.github/images/dashboard.png)](.github/images/dashboard.png)  
+| Configs | Devices (Grid) | Devices (Table) | Manage Device |  
+| ------------- | ------------- | ------------- | ------------- |  
+| <a href="https://raw.githubusercontent.com/versx/DeviceConfigManager/react/.github/images/configs.png">![Configs](.github/images/configs.png)</a> | <a href="https://raw.githubusercontent.com/versx/DeviceConfigManager/react/.github/images/devices-grid.png">![Devices (Grid)](.github/images/devices-grid.png)</a> | <a href="https://raw.githubusercontent.com/versx/DeviceConfigManager/react/.github/images/devices-table.png">![Devices (Table)](.github/images/devices-table.png)</a>| <a href="https://raw.githubusercontent.com/versx/DeviceConfigManager/react/.github/images/devices-manage.png">![Manage Device](.github/images/devices-manage.png)</a> |  
+
+| Schedules | Settings |  
+| ------------- | ------------- |  
+| <a href="https://raw.githubusercontent.com/versx/DeviceConfigManager/react/.github/images/schedules.png">![Schedules](.github/images/schedules.png)</a> | <a href="https://raw.githubusercontent.com/versx/DeviceConfigManager/react/.github/images/settings.png">![Settings](.github/images/settings.png)</a> |  
+
+**Admin Dashboard**  
+[![Admin Dashboard](.github/images/admin-dashboard.png)](.github/images/admin-dashboard.png)  
+| Users | Settings |
+| ------------- | ------------- |  
+| <a href="https://raw.githubusercontent.com/versx/DeviceConfigManager/react/.github/images/admin-users.png">![Users](.github/images/admin-users.png)</a> | <a href="https://raw.githubusercontent.com/versx/DeviceConfigManager/react/.github/images/admin-settings.png">![Admin Settings](.github/images/admin-settings.png)</a> |

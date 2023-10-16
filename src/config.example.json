@@ -1,34 +1,3 @@
 {
-    "title": "Device Config Manager",
-    "interface": "0.0.0.0",
-    "port": 9991,
-    "tokens": ["Replace with GC/Kevin/AI token"],
-    "locale": "en",
-    "style": "dark",
-    "timezone": "America/Denver",
-    "logging": {
-        "enabled": true,
-        "max_size": 5,
-        "format": "YYYY-MM-DD hh:mm:ss A"
-    },
-    "listeners": [
-        "http://127.0.0.1:6542/"
-    ],
-    "monitor": {
-        "enabled": false,
-        "interval": 5,
-        "threshold": 15,
-        "webhooks": [],
-        "reboot": false,
-        "maxRebootCount": 10
-    },
-    "db": {
-        "host": "127.0.0.1",
-        "port": 3306,
-        "username": "user123",
-        "password": "pass123",
-        "database": "dcm",
-        "charset": "utf8mb4"
-    },
-    "autoSyncIP": true
+  "apiUrl": "http://127.0.0.1:9992/api/v2/"
 }

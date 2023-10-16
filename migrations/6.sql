@@ -1,1 +1,0 @@
-ALTER TABLE `configs` ADD COLUMN `provider` varchar(64) NOT NULL AFTER `name`;

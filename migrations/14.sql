@@ -1,1 +1,0 @@
-ALTER TABLE `devices` ADD COLUMN `exclude_reboots` tinyint DEFAULT 0;

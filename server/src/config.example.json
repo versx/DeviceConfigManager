@@ -1,0 +1,40 @@
+{
+  "host": "0.0.0.0",
+  "port": 9992,
+  "auth": {
+    "admin": {
+      "username": "admin",
+      "password": "p4ssw0rd!"
+    },
+    "accessTokenSecret": "access token secret",
+    "refreshTokenSecret": "refresh token secret",
+    "bearerTokens": []
+  },
+  "autoSyncIP": true,
+  "database": {
+    "dialect": "mysql",
+    "host": "127.0.0.1",
+    "port": 3306,
+    "username": "root",
+    "password": "password",
+    "database": "dcmdb",
+    "timezone": "America/Denver",
+    "logging": false
+  },
+  "logs": {
+    "level": "debug",
+    "colors": {
+      "text": "#ffffff",
+      "variable": "#ff624d",
+      "date": "#4287f5",
+      "warn": "#ffff00",
+      "error": "#ff0000"
+    },
+    "rotate": {
+      "interval": "1h",
+      "maxFiles": 5,
+      "maxSize": "1M"
+    }
+  },
+  "timezone": "America/Denver"
+}
